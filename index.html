@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라인 인테리어 — LINE INTERIOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #0e0d0b;
+  --white: #f5f2ed;
+  --gold: #b89a6a;
+  --gold-light: #d4b88a;
+  --gray: #7a7670;
+  --gray-light: #c8c4bc;
+  --bg: #f5f2ed;
+  --surface: #ede9e2;
+  --border: #d8d3ca;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Noto Sans KR', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--black);
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+img { display: block; width: 100%; }
+a { text-decoration: none; color: inherit; }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  height: 68px;
+  background: rgba(245,242,237,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+  transition: all .3s;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--black);
+}
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--black); }
+.nav-cta {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  background: var(--black);
+  padding: 9px 22px;
+  border: none;
+  cursor: pointer;
+  transition: background .2s;
+}
+.nav-cta:hover { background: var(--gold); }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 68px;
+  overflow: hidden;
+}
+.hero-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 64px 80px 80px;
+  position: relative;
+}
+.hero-left::before {
+  content: 'LINE';
+  position: absolute;
+  top: 50%; left: 40px;
+  transform: translateY(-50%) rotate(-90deg);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gray-light);
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--gold); margin-bottom: 28px;
+}
+.hero-tag::before { content: ''; display: block; width: 32px; height: 0.5px; background: var(--gold); }
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 5vw, 64px);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+.hero h1 em { font-style: italic; color: var(--gold); }
+.hero-sub {
+  font-size: 14px; color: var(--gray);
+  line-height: 1.9; max-width: 380px;
+  margin-bottom: 48px; margin-top: 20px;
+}
+.hero-stats {
+  display: flex; gap: 40px; margin-bottom: 48px;
+  padding-top: 32px; border-top: 0.5px solid var(--border);
+}
+.stat-item { display: flex; flex-direction: column; gap: 4px; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 300;
+  color: var(--black); letter-spacing: -0.01em;
+}
+.stat-num span { font-size: 16px; color: var(--gold); margin-left: 2px; }
+.stat-label { font-size: 11px; letter-spacing: 0.1em; color: var(--gray); }
+.hero-btns { display: flex; gap: 12px; }
+.btn-primary {
+  background: var(--black); color: var(--white);
+  border: none; padding: 14px 32px;
+  font-family: var(--font-body);
+  font-size: 13px; letter-spacing: 0.08em;
+  cursor: pointer; transition: all .25s;
+}
+.btn-primary:hover { background: var(--gold); }
+.btn-ghost {
+  background: transparent; color: var(--black);
+  border: 0.5px solid var(--black); padding: 14px 32px;
+  font-family: var(--font-body);
+  font-size: 13px; letter-spacing: 0.08em;
+  cursor: pointer; transition: all .25s;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.hero-right {
+  position: relative; overflow: hidden;
+  background: var(--surface);
+}
+.hero-img-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  height: 100%; gap: 3px;
+}
+.hero-img-cell {
+  overflow: hidden; position: relative;
+}
+.hero-img-cell:first-child {
+  grid-column: 1 / 3;
+}
+.hero-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-img-placeholder svg { opacity: 0.25; }
+
+/* ─── SECTION BASE ─── */
+.section { padding: 100px 80px; }
+.section-header { margin-bottom: 60px; }
+.section-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--gold); margin-bottom: 16px;
+}
+.section-tag::before { content: ''; display: block; width: 24px; height: 0.5px; background: var(--gold); }
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 300; letter-spacing: 0.02em;
+  line-height: 1.25;
+}
+.section-title em { font-style: italic; color: var(--gold); }
+.section-desc {
+  font-size: 14px; color: var(--gray);
+  line-height: 1.9; max-width: 520px;
+  margin-top: 16px;
+}
+
+/* ─── WHY LINE ─── */
+#why { background: var(--black); color: var(--white); }
+#why .section-tag { color: var(--gold); }
+#why .section-title { color: var(--white); }
+#why .section-desc { color: var(--gray-light); }
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px; margin-top: 60px;
+}
+.why-card {
+  padding: 44px 36px;
+  background: #161512;
+  border-top: 1.5px solid transparent;
+  transition: border-color .3s, background .3s;
+  cursor: default;
+}
+.why-card:hover {
+  border-top-color: var(--gold);
+  background: #1c1a16;
+}
+.why-num {
+  font-family: var(--font-display);
+  font-size: 48px; font-weight: 300;
+  color: #2a2720; margin-bottom: 24px;
+  line-height: 1;
+}
+.why-icon {
+  width: 44px; height: 44px;
+  border: 0.5px solid #3a3730;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.why-card-title {
+  font-size: 16px; font-weight: 500;
+  color: var(--white); margin-bottom: 12px;
+  letter-spacing: 0.03em;
+}
+.why-card-desc {
+  font-size: 13px; color: #8a8680;
+  line-height: 1.85;
+}
+.why-bottom {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; margin-top: 2px;
+}
+.why-bottom-card {
+  padding: 36px; background: #161512;
+  display: flex; align-items: center; gap: 24px;
+  border-left: 1.5px solid transparent;
+  transition: border-color .3s;
+}
+.why-bottom-card:hover { border-left-color: var(--gold); }
+.why-bottom-num {
+  font-family: var(--font-display);
+  font-size: 40px; font-weight: 300;
+  color: var(--gold); white-space: nowrap;
+}
+.why-bottom-num sub { font-size: 16px; color: var(--gray); margin-left: 2px; }
+.why-bottom-text { font-size: 13px; color: #8a8680; line-height: 1.7; }
+.why-bottom-text strong { color: var(--white); display: block; margin-bottom: 4px; font-weight: 500; }
+
+/* ─── CASES (시공 사례) ─── */
+#cases { background: var(--bg); }
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.case-card {
+  position: relative; overflow: hidden;
+  cursor: pointer;
+  background: var(--surface);
+}
+.case-card:hover .case-thumb-inner { transform: scale(1.04); }
+.case-card:hover .case-overlay { opacity: 1; }
+.case-thumb {
+  aspect-ratio: 4/3; overflow: hidden; position: relative;
+}
+.case-thumb-inner {
+  width: 100%; height: 100%;
+  transition: transform .5s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.case-overlay {
+  position: absolute; inset: 0;
+  background: rgba(14,13,11,0.55);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .3s;
+}
+.case-overlay-text {
+  font-size: 12px; letter-spacing: 0.15em;
+  color: var(--white); text-align: center;
+}
+.case-overlay-text svg { margin: 0 auto 8px; }
+.case-body { padding: 20px 22px 24px; }
+.case-type {
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--gold); margin-bottom: 6px;
+}
+.case-name {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 400;
+  color: var(--black); margin-bottom: 6px;
+}
+.case-meta { font-size: 12px; color: var(--gray); }
+
+/* SVG placeholders in case cards */
+.case-svg-bg {
+  width: 100%; height: 100%;
+  position: absolute; top: 0; left: 0;
+}
+
+/* ─── LIGHTBOX MODAL ─── */
+.modal-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(14,13,11,0.95);
+  backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+  padding: 32px;
+}
+.modal-backdrop.open { display: flex; }
+.modal-inner {
+  position: relative;
+  width: 100%; max-width: 900px;
+  max-height: 90vh;
+  display: flex; flex-direction: column;
+  gap: 0;
+}
+.modal-close {
+  position: absolute; top: -44px; right: 0;
+  background: none; border: none; cursor: pointer;
+  color: var(--white); font-size: 13px;
+  letter-spacing: 0.1em; display: flex; align-items: center; gap: 8px;
+}
+.modal-close svg { opacity: 0.7; }
+.modal-title-bar {
+  padding: 20px 24px;
+  background: #161512;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 0.5px solid #2a2720;
+}
+.modal-case-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 300;
+  color: var(--white); letter-spacing: 0.04em;
+}
+.modal-case-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  overflow-y: auto;
+  background: #0a0908;
+  max-height: 520px;
+}
+.modal-img-wrap {
+  aspect-ratio: 4/3; overflow: hidden; position: relative;
+  cursor: zoom-in; background: #161512;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-img-wrap:hover .modal-img-overlay { opacity: 1; }
+.modal-img-inner {
+  width: 100%; height: 100%;
+  transition: transform .4s;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-img-wrap:hover .modal-img-inner { transform: scale(1.05); }
+.modal-img-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .25s;
+}
+
+/* ─── ZOOM LIGHTBOX ─── */
+.zoom-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 1100;
+  background: rgba(0,0,0,0.97);
+  align-items: center; justify-content: center;
+}
+.zoom-backdrop.open { display: flex; }
+.zoom-inner {
+  position: relative;
+  max-width: 90vw; max-height: 90vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.zoom-img-wrap {
+  max-width: 88vw; max-height: 85vh;
+  overflow: hidden; border: 0.5px solid #2a2720;
+  display: flex; align-items: center; justify-content: center;
+}
+.zoom-img-wrap svg { max-width: 80vw; max-height: 80vh; }
+.zoom-close {
+  position: absolute; top: -48px; right: 0;
+  background: none; border: none; cursor: pointer;
+  color: var(--white); font-size: 13px; letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 8px;
+}
+.zoom-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(245,242,237,0.1); border: none;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--white);
+  transition: background .2s;
+}
+.zoom-nav:hover { background: rgba(245,242,237,0.2); }
+.zoom-prev { left: -56px; }
+.zoom-next { right: -56px; }
+.zoom-counter {
+  position: absolute; bottom: -36px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px; color: var(--gray);
+  letter-spacing: 0.1em;
+}
+
+/* ─── CONTACT ─── */
+#contact { background: var(--surface); }
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1.4fr;
+  gap: 80px; align-items: start;
+}
+.contact-info { padding-top: 8px; }
+.contact-detail {
+  display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 28px; padding-bottom: 28px;
+  border-bottom: 0.5px solid var(--border);
+}
+.contact-detail:last-of-type { border-bottom: none; }
+.contact-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  border: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold);
+}
+.contact-detail-label { font-size: 10px; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 4px; }
+.contact-detail-value { font-size: 14px; color: var(--black); font-weight: 400; }
+.contact-detail-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.kakao-row {
+  display: flex; align-items: center; gap: 10px;
+  background: #FEE500; padding: 14px 22px;
+  cursor: pointer; border: none; width: 100%;
+  margin-top: 8px; transition: filter .2s;
+}
+.kakao-row:hover { filter: brightness(0.93); }
+.kakao-row span { font-size: 13px; font-weight: 500; color: #3A1D1D; letter-spacing: 0.04em; }
+
+/* Form */
+.form-wrap {
+  background: var(--white);
+  padding: 40px; border: 0.5px solid var(--border);
+}
+.form-wrap h3 {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 300;
+  margin-bottom: 6px; letter-spacing: 0.04em;
+}
+.form-sub { font-size: 12px; color: var(--gray); margin-bottom: 28px; letter-spacing: 0.05em; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.fg:last-child { margin-bottom: 0; }
+.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gray); }
+.fg input, .fg select, .fg textarea {
+  font-family: var(--font-body); font-size: 14px;
+  background: var(--bg); border: 0.5px solid var(--border);
+  padding: 11px 14px; color: var(--black);
+  outline: none; transition: border-color .2s;
+  width: 100%;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--gold); }
+.fg textarea { min-height: 90px; resize: vertical; }
+.budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.budget-pill {
+  font-size: 12px; padding: 6px 16px;
+  background: var(--bg); border: 0.5px solid var(--border);
+  color: var(--gray); cursor: pointer; letter-spacing: 0.04em;
+  transition: all .2s; font-family: var(--font-body);
+}
+.budget-pill.active { background: var(--black); color: var(--white); border-color: var(--black); }
+.form-submit {
+  width: 100%; background: var(--black); color: var(--white);
+  border: none; padding: 15px; margin-top: 20px;
+  font-family: var(--font-body); font-size: 13px;
+  letter-spacing: 0.1em; cursor: pointer; transition: background .25s;
+}
+.form-submit:hover { background: var(--gold); }
+.form-notice {
+  font-size: 11px; color: var(--gray-light);
+  text-align: center; margin-top: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--black); color: #6a6660;
+  padding: 40px 80px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 0.5px solid #1e1c18;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 18px; letter-spacing: 0.18em; color: #4a4840;
+}
+.footer-info { font-size: 11px; line-height: 1.8; letter-spacing: 0.04em; }
+.footer-copy { font-size: 11px; letter-spacing: 0.06em; }
+
+/* ─── SCROLL ANIMATION ─── */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { padding: 60px 32px 48px; }
+  .hero-left::before { display: none; }
+  .hero-right { height: 320px; }
+  .hero-img-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .hero-img-cell:first-child { grid-column: 1 / 3; }
+  .section { padding: 64px 32px; }
+  .why-grid { grid-template-columns: 1fr; gap: 2px; }
+  .why-bottom { grid-template-columns: 1fr; }
+  .cases-grid { grid-template-columns: 1fr 1fr; }
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+  .modal-gallery { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .cases-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .modal-gallery { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-logo">LINE<span>.</span> INTERIOR</div>
+  <div class="nav-links">
+    <a href="#why">왜 라인인가</a>
+    <a href="#cases">시공사례</a>
+    <a href="#contact">견적문의</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 문의</button>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">PREMIUM INTERIOR DESIGN</div>
+    <h1>공간이 말하는<br><em>당신만의 이야기</em></h1>
+    <p class="hero-sub">라인 인테리어는 단순히 공간을 꾸미는 것이 아니라,<br>
+    그 안에서 살아갈 사람의 이야기를 담습니다.<br>
+    첫 상담부터 준공까지, 세심하게 함께합니다.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">480<span>+</span></div>
+        <div class="stat-label">완공 프로젝트</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">12<span>년</span></div>
+        <div class="stat-label">업계 경력</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4.9<span>★</span></div>
+        <div class="stat-label">고객 만족도</div>
+      </div>
+    </div>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+      <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-grid">
+      <div class="hero-img-cell">
+        <div class="hero-img-placeholder">
+          <svg width="480" height="260" viewBox="0 0 480 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="260" fill="#e8e3da"/>
+            <rect x="40" y="160" width="400" height="70" rx="4" fill="#d4cec4"/>
+            <rect x="60" y="100" width="140" height="65" rx="3" fill="#ccc7bc"/>
+            <rect x="220" y="90" width="160" height="75" rx="3" fill="#ccc7bc"/>
+            <rect x="180" y="175" width="80" height="55" rx="2" fill="#c0bab0"/>
+            <circle cx="390" cy="50" r="34" fill="#b89a6a" opacity="0.18"/>
+            <circle cx="390" cy="50" r="10" fill="#b89a6a" opacity="0.45"/>
+            <text x="240" y="48" font-family="Georgia" font-size="13" fill="#b89a6a" text-anchor="middle" letter-spacing="3">거실 리모델링</text>
+          </svg>
+        </div>
+      </div>
+      <div class="hero-img-cell">
+        <div class="hero-img-placeholder">
+          <svg width="240" height="130" viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="240" height="130" fill="#dedad3"/>
+            <rect x="0" y="75" width="240" height="55" fill="#ccc7bc"/>
+            <rect x="10" y="42" width="95" height="38" rx="2" fill="#c0bab0"/>
+            <rect x="115" y="42" width="115" height="38" rx="2" fill="#c0bab0"/>
+            <text x="120" y="24" font-family="Georgia" font-size="10" fill="#b89a6a" text-anchor="middle" letter-spacing="2">주방 인테리어</text>
+          </svg>
+        </div>
+      </div>
+      <div class="hero-img-cell">
+        <div class="hero-img-placeholder">
+          <svg width="240" height="130" viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="240" height="130" fill="#e4e0d8"/>
+            <rect x="20" y="72" width="200" height="45" rx="4" fill="#ccc7bc"/>
+            <rect x="40" y="44" width="140" height="32" rx="3" fill="#c8c3b8"/>
+            <rect x="8" y="50" width="28" height="48" rx="2" fill="#ccc7bc"/>
+            <rect x="204" y="50" width="28" height="48" rx="2" fill="#ccc7bc"/>
+            <text x="120" y="26" font-family="Georgia" font-size="10" fill="#b89a6a" text-anchor="middle" letter-spacing="2">침실 스타일링</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY LINE ─── -->
+<section id="why" class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">WHY LINE INTERIOR</div>
+    <h2 class="section-title">왜 <em>라인 인테리어</em>인가</h2>
+    <p class="section-desc">12년의 경험으로 쌓아온 노하우와 고객 중심의 철학으로 공간을 완성합니다. 수백 개의 현장이 우리를 선택하는 이유를 알려드립니다.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-num">01</div>
+      <div class="why-icon">
+        <svg width="20" height="20" fill="none" stroke="#b89a6a" stroke-width="1.2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="why-card-title">고객 맞춤 설계</div>
+      <div class="why-card-desc">천편일률적인 템플릿이 아닌, 고객의 라이프스타일과 취향을 깊이 파악하여 오직 한 분을 위한 공간을 설계합니다. 첫 상담부터 완공까지 전담 디자이너가 함께합니다.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-num">02</div>
+      <div class="why-icon">
+        <svg width="20" height="20" fill="none" stroke="#b89a6a" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="why-card-title">일정·예산 엄수</div>
+      <div class="why-card-desc">계약 시 확정된 준공일과 예산을 반드시 지킵니다. 투명한 견적서와 단계별 공정 보고로 고객이 항상 현황을 파악할 수 있도록 합니다.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-num">03</div>
+      <div class="why-icon">
+        <svg width="20" height="20" fill="none" stroke="#b89a6a" stroke-width="1.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="why-card-title">검증된 시공 품질</div>
+      <div class="why-card-desc">12년 경력의 숙련 장인들이 직접 시공합니다. 자재 선정부터 마감 처리까지 현장 소장이 전 공정을 책임 감리하여 완성도를 보장합니다.</div>
+    </div>
+  </div>
+  <div class="why-bottom">
+    <div class="why-bottom-card">
+      <div class="why-bottom-num">480<sub>+</sub></div>
+      <div class="why-bottom-text">
+        <strong>누적 완공 프로젝트</strong>
+        주거·상업 공간 480여 개 현장을 완성하며 쌓은 실전 노하우
+      </div>
+    </div>
+    <div class="why-bottom-card">
+      <div class="why-bottom-num">98<sub>%</sub></div>
+      <div class="why-bottom-text">
+        <strong>재의뢰·지인 소개율</strong>
+        고객의 98%가 재의뢰하거나 주변에 라인 인테리어를 소개합니다
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CASES ─── -->
+<section id="cases" class="section reveal" style="background: var(--bg);">
+  <div class="section-header">
+    <div class="section-tag">PORTFOLIO</div>
+    <h2 class="section-title" style="color:var(--black);">시공 <em>사례</em></h2>
+    <p class="section-desc" style="color:var(--gray);">라인 인테리어가 완성한 공간들을 만나보세요. 사진을 클릭하면 더 많은 이미지를 확인하실 수 있습니다.</p>
+  </div>
+  <div class="cases-grid" id="casesGrid"></div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact" class="section reveal">
+  <div class="section-header">
+    <div class="section-tag">CONTACT</div>
+    <h2 class="section-title">견적 및 <em>문의하기</em></h2>
+    <p class="section-desc">어떤 공간이든 무료 상담을 통해 최적의 방향을 제안해드립니다.</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-detail">
+        <div class="contact-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6.09 6.09l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div>
+          <div class="contact-detail-label">PHONE</div>
+          <div class="contact-detail-value">010-0000-0000</div>
+          <div class="contact-detail-sub">평일 09:00 – 18:00</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <div class="contact-detail-label">LOCATION</div>
+          <div class="contact-detail-value">서울시 강남구 테헤란로 123</div>
+          <div class="contact-detail-sub">전국 출장 상담 가능</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div>
+          <div class="contact-detail-label">EMAIL</div>
+          <div class="contact-detail-value">hello@line-interior.kr</div>
+          <div class="contact-detail-sub">24시간 접수, 평일 내 회신</div>
+        </div>
+      </div>
+      <button class="kakao-row" onclick="window.open('https://pf.kakao.com/_YOUR_ID')">
+        <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="18" rx="18" ry="14" fill="#3A1D1D" opacity="0.15"/><path d="M20 6C11.163 6 4 11.373 4 18c0 4.243 2.794 7.974 7 10.172L9.5 32l5.2-2.6C15.7 29.8 17.82 30 20 30c8.837 0 16-5.373 16-12S28.837 6 20 6z" fill="#3A1D1D"/></svg>
+        <span>카카오톡으로 빠르게 상담하기</span>
+      </button>
+    </div>
+    <div class="form-wrap">
+      <h3>무료 견적 문의</h3>
+      <p class="form-sub">평일 24시간 내 전문 상담사가 연락드립니다</p>
+      <div class="form-row">
+        <div class="fg"><label>성함</label><input type="text" placeholder="홍길동"></div>
+        <div class="fg"><label>연락처</label><input type="tel" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>공간 유형</label>
+          <select><option value="">선택해주세요</option><option>아파트</option><option>빌라/다세대</option><option>단독주택</option><option>사무실</option><option>카페/상가</option><option>기타</option></select>
+        </div>
+        <div class="fg"><label>평수</label>
+          <select><option value="">선택해주세요</option><option>20평 미만</option><option>20~30평</option><option>30~40평</option><option>40~50평</option><option>50평 이상</option></select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>예산 범위</label>
+        <div class="budget-row">
+          <button type="button" class="budget-pill" onclick="selectBudget(this)">1천만원 미만</button>
+          <button type="button" class="budget-pill" onclick="selectBudget(this)">1~3천만원</button>
+          <button type="button" class="budget-pill" onclick="selectBudget(this)">3~5천만원</button>
+          <button type="button" class="budget-pill" onclick="selectBudget(this)">5천만원 이상</button>
+        </div>
+      </div>
+      <div class="fg"><label>희망 스타일</label>
+        <select><option value="">선택해주세요</option><option>모던/미니멀</option><option>내추럴/우드</option><option>클래식/고급</option><option>인더스트리얼</option><option>북유럽/스칸디나비안</option><option>기타 (요청사항 입력)</option></select>
+      </div>
+      <div class="fg"><label>요청사항</label><textarea placeholder="참고하고 싶은 스타일, 특별히 신경 써 주셨으면 하는 부분 등 자유롭게 입력해주세요"></textarea></div>
+      <button class="form-submit">문의 보내기</button>
+      <p class="form-notice">개인정보는 상담 목적 외 사용되지 않습니다</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-logo">LINE. INTERIOR</div>
+  <div class="footer-info">
+    상호: 라인 인테리어 &nbsp;|&nbsp; 대표: 홍길동 &nbsp;|&nbsp; 사업자번호: 000-00-00000<br>
+    주소: 서울시 강남구 테헤란로 123 &nbsp;|&nbsp; 대표번호: 010-0000-0000
+  </div>
+  <div class="footer-copy">© 2026 LINE INTERIOR. All rights reserved.</div>
+</footer>
+
+<!-- ─── CASE MODAL ─── -->
+<div class="modal-backdrop" id="caseModal" onclick="closeModal(event)">
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeCaseModal()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      닫기
+    </button>
+    <div class="modal-title-bar">
+      <div>
+        <div class="modal-case-name" id="modalCaseName"></div>
+        <div class="modal-case-meta" id="modalCaseMeta"></div>
+      </div>
+    </div>
+    <div class="modal-gallery" id="modalGallery"></div>
+  </div>
+</div>
+
+<!-- ─── ZOOM MODAL ─── -->
+<div class="zoom-backdrop" id="zoomModal" onclick="closeZoom()">
+  <div class="zoom-inner" onclick="event.stopPropagation()">
+    <button class="zoom-close" onclick="closeZoom()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      닫기
+    </button>
+    <button class="zoom-nav zoom-prev" onclick="zoomNav(-1)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="zoom-img-wrap" id="zoomImgWrap"></div>
+    <button class="zoom-nav zoom-next" onclick="zoomNav(1)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="zoom-counter" id="zoomCounter"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA: 시공 사례 6개 ───
+// 실제 사용 시 images 배열에 실제 이미지 URL로 교체하세요
+const CASES = [
+  {
+    id: 1, type: "아파트 전체", name: "한남동 46평 리모델링",
+    meta: "서울 한남동 · 46평 · 모던 미니멀",
+    color1: "#2a2520", color2: "#3d3228", color3: "#4a3e35", accent: "#b89a6a",
+    images: [
+      {label:"거실 전경", c1:"#2a2520", c2:"#3d3228"},
+      {label:"주방 & 다이닝", c1:"#1e2820", c2:"#2a3828"},
+      {label:"안방", c1:"#201e28", c2:"#2e2a38"},
+      {label:"드레스룸", c1:"#28221e", c2:"#382e28"},
+      {label:"욕실", c1:"#1c2428", c2:"#283038"},
+      {label:"현관", c1:"#222018", c2:"#302e22"},
+    ]
+  },
+  {
+    id: 2, type: "아파트 부분", name: "마포구 32평 거실·주방",
+    meta: "서울 마포구 · 32평 · 내추럴 우드",
+    color1: "#1e2a20", color2: "#2c3c2c", color3: "#3a4e38", accent: "#5a8a5a",
+    images: [
+      {label:"거실 Before/After", c1:"#1e2a20", c2:"#2c3c2c"},
+      {label:"주방 리모델링", c1:"#1a2e1e", c2:"#263826"},
+      {label:"거실 상세", c1:"#223226", c2:"#2e4030"},
+      {label:"조명 디테일", c1:"#1c2820", c2:"#28362a"},
+    ]
+  },
+  {
+    id: 3, type: "카페 상업공간", name: "성수동 카페 인테리어",
+    meta: "서울 성수동 · 50㎡ · 인더스트리얼",
+    color1: "#20181a", color2: "#2e2224", color3: "#3c2c2e", accent: "#c05050",
+    images: [
+      {label:"전체 내부 전경", c1:"#20181a", c2:"#2e2224"},
+      {label:"카운터 & 바", c1:"#1e1416", c2:"#2c1e20"},
+      {label:"좌석 공간", c1:"#221a1c", c2:"#302428"},
+      {label:"외관 파사드", c1:"#1a1618", c2:"#28202a"},
+      {label:"조명 연출", c1:"#241c1e", c2:"#34282a"},
+    ]
+  },
+  {
+    id: 4, type: "단독주택", name: "분당 단독주택 전체",
+    meta: "경기 성남 분당 · 55평 · 클래식 모던",
+    color1: "#1e1c14", color2: "#2c2a1c", color3: "#3a3826", accent: "#c8b46a",
+    images: [
+      {label:"1층 거실", c1:"#1e1c14", c2:"#2c2a1c"},
+      {label:"2층 복도", c1:"#1a1810", c2:"#282616"},
+      {label:"마스터베드룸", c1:"#201e16", c2:"#2e2c1e"},
+      {label:"키친 & 아일랜드", c1:"#1c1a12", c2:"#2a2818"},
+      {label:"욕실 대리석", c1:"#22201a", c2:"#302e22"},
+      {label:"외관 & 정원", c1:"#181e14", c2:"#242a1e"},
+    ]
+  },
+  {
+    id: 5, type: "오피스", name: "여의도 사무실 리노베이션",
+    meta: "서울 여의도 · 100㎡ · 모던 오피스",
+    color1: "#141820", color2: "#1e222c", color3: "#282e3a", accent: "#5a7ab8",
+    images: [
+      {label:"오픈 오피스 공간", c1:"#141820", c2:"#1e222c"},
+      {label:"회의실", c1:"#12161e", c2:"#1c2028"},
+      {label:"대표실", c1:"#161a22", c2:"#20242e"},
+      {label:"리셉션 데스크", c1:"#141c24", c2:"#1e2630"},
+    ]
+  },
+  {
+    id: 6, type: "빌라 전체", name: "용산구 빌라 28평",
+    meta: "서울 용산구 · 28평 · 북유럽 스타일",
+    color1: "#1e1e20", color2: "#2a2a2e", color3: "#363640", accent: "#8a8ab8",
+    images: [
+      {label:"거실 & 다이닝", c1:"#1e1e20", c2:"#2a2a2e"},
+      {label:"침실", c1:"#1a1a1e", c2:"#26262c"},
+      {label:"욕실 타일", c1:"#1c1c22", c2:"#28282e"},
+      {label:"주방", c1:"#20201e", c2:"#2c2c28"},
+      {label:"현관 & 수납", c1:"#1e1e1c", c2:"#2a2a26"},
+    ]
+  }
+];
+
+// ─── SVG ROOM GENERATORS ───
+function makeRoomSVG(c1, c2, accent, label, w=400, h=300) {
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${w}" height="${h}" fill="${c1}"/>
+    <rect x="0" y="${h*0.65}" width="${w}" height="${h*0.35}" fill="${c2}"/>
+    <rect x="${w*0.08}" y="${h*0.38}" width="${w*0.4}" height="${h*0.3}" rx="3" fill="${c2}" opacity="0.8"/>
+    <rect x="${w*0.52}" y="${h*0.32}" width="${w*0.4}" height="${h*0.36}" rx="3" fill="${c2}" opacity="0.8"/>
+    <rect x="${w*0.3}" y="${h*0.68}" width="${w*0.4}" height="${h*0.2}" rx="2" fill="${c1}" opacity="0.6"/>
+    <circle cx="${w*0.78}" cy="${h*0.18}" r="${w*0.07}" fill="${accent}" opacity="0.12"/>
+    <circle cx="${w*0.78}" cy="${h*0.18}" r="${w*0.025}" fill="${accent}" opacity="0.4"/>
+    <text x="${w/2}" y="${h*0.15}" font-family="Georgia,serif" font-size="${w*0.028}" fill="${accent}" text-anchor="middle" letter-spacing="2" opacity="0.7">${label}</text>
+  </svg>`;
+}
+
+function makeThumbnailSVG(caseItem) {
+  return makeRoomSVG(caseItem.color1, caseItem.color2, caseItem.accent, caseItem.type, 400, 300);
+}
+
+// ─── RENDER CASES ───
+function renderCases() {
+  const grid = document.getElementById('casesGrid');
+  grid.innerHTML = CASES.map(c => `
+    <div class="case-card" onclick="openCaseModal(${c.id})">
+      <div class="case-thumb">
+        <div class="case-thumb-inner">${makeThumbnailSVG(c)}</div>
+        <div class="case-overlay">
+          <div class="case-overlay-text">
+            <svg width="22" height="22" fill="none" stroke="#f5f2ed" stroke-width="1.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+            사진 ${c.images.length}장 보기
+          </div>
+        </div>
+      </div>
+      <div class="case-body">
+        <div class="case-type">${c.type}</div>
+        <div class="case-name">${c.name}</div>
+        <div class="case-meta">${c.meta}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── CASE MODAL ───
+let currentCaseId = null;
+let currentZoomImages = [];
+let currentZoomIdx = 0;
+
+function openCaseModal(caseId) {
+  const c = CASES.find(x => x.id === caseId);
+  if (!c) return;
+  currentCaseId = caseId;
+  document.getElementById('modalCaseName').textContent = c.name;
+  document.getElementById('modalCaseMeta').textContent = c.meta;
+  currentZoomImages = c.images;
+  const gallery = document.getElementById('modalGallery');
+  gallery.innerHTML = c.images.map((img, i) => `
+    <div class="modal-img-wrap" onclick="openZoom(${i})">
+      <div class="modal-img-inner">
+        ${makeRoomSVG(img.c1, img.c2, c.accent, img.label, 360, 270)}
+      </div>
+      <div class="modal-img-overlay">
+        <svg width="24" height="24" fill="none" stroke="white" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('caseModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('caseModal')) closeCaseModal();
+}
+function closeCaseModal() {
+  document.getElementById('caseModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ─── ZOOM ───
+function openZoom(idx) {
+  const c = CASES.find(x => x.id === currentCaseId);
+  if (!c) return;
+  currentZoomIdx = idx;
+  renderZoomImage(c);
+  document.getElementById('zoomModal').classList.add('open');
+}
+
+function renderZoomImage(c) {
+  const img = c.images[currentZoomIdx];
+  document.getElementById('zoomImgWrap').innerHTML =
+    makeRoomSVG(img.c1, img.c2, c.accent, img.label, 760, 520);
+  document.getElementById('zoomCounter').textContent =
+    `${currentZoomIdx + 1} / ${c.images.length}`;
+}
+
+function zoomNav(dir) {
+  const c = CASES.find(x => x.id === currentCaseId);
+  if (!c) return;
+  currentZoomIdx = (currentZoomIdx + dir + c.images.length) % c.images.length;
+  renderZoomImage(c);
+}
+
+function closeZoom() {
+  document.getElementById('zoomModal').classList.remove('open');
+}
+
+// keyboard nav
+document.addEventListener('keydown', e => {
+  if (document.getElementById('zoomModal').classList.contains('open')) {
+    if (e.key === 'ArrowLeft') zoomNav(-1);
+    if (e.key === 'ArrowRight') zoomNav(1);
+    if (e.key === 'Escape') closeZoom();
+  } else if (document.getElementById('caseModal').classList.contains('open')) {
+    if (e.key === 'Escape') closeCaseModal();
+  }
+});
+
+// ─── BUDGET PILL ───
+function selectBudget(el) {
+  document.querySelectorAll('.budget-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ─── INIT ───
+renderCases();
+</script>
+</body>
+</html>
