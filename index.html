@@ -854,16 +854,24 @@ footer {
 // ════════════════════════════════════════════════════════
 const SHEET_URL = 'YOUR_GOOGLE_SHEET_CSV_URL';
 
-// ─── 구글 시트에서 데이터 불러오기 ───
+// ─── 구글 시트에서 데이터 불러오기 (CORS 우회 포함) ───
 async function loadFromSheet() {
-  try {
-    const res = await fetch(SHEET_URL);
-    const csv = await res.text();
-    return parseCSV(csv);
-  } catch(e) {
-    console.warn('구글 시트 로드 실패, 샘플 데이터 사용:', e);
-    return null;
+  // 직접 fetch 시도
+  const attempts = [
+    () => fetch(SHEET_URL, { signal: AbortSignal.timeout(8000) }),
+    () => fetch('https://corsproxy.io/?' + encodeURIComponent(SHEET_URL), { signal: AbortSignal.timeout(8000) }),
+  ];
+  for (const attempt of attempts) {
+    try {
+      const res = await attempt();
+      if (!res.ok) continue;
+      const csv = await res.text();
+      const parsed = parseCSV(csv);
+      if (parsed && parsed.length > 0) return parsed;
+    } catch(e) { /* 다음 시도 */ }
   }
+  console.warn('구글 시트 로드 실패, 샘플 데이터 사용');
+  return null;
 }
 
 // ─── CSV 파싱 ───
@@ -1043,15 +1051,20 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ─── INIT: 시트 데이터 로드 후 렌더 ───
+// ─── INIT: 샘플 먼저 렌더 → 시트 로드되면 교체 (페이지 깨짐 방지) ───
 async function init() {
-  if (SHEET_URL !== 'https://docs.google.com/spreadsheets/d/1CzlKk0Zx341h3y3z-mT7d4m0Gj6BQ17m/edit?gid=1566078536#gid=1566078536') {
-    const sheetData = await loadFromSheet();
-    if (sheetData && sheetData.length > 0) {
-      CASES = sheetData;
+  renderCases(); // 샘플 데이터로 즉시 렌더 (페이지 정상 표시 보장)
+  if (SHEET_URL !== 'YOUR_GOOGLE_SHEET_CSV_URL') {
+    try {
+      const sheetData = await loadFromSheet();
+      if (sheetData && sheetData.length > 0) {
+        CASES = sheetData;
+        renderCases(); // 시트 데이터 로드 성공시 교체
+      }
+    } catch(e) {
+      console.warn('init 오류, 샘플 유지:', e);
     }
   }
-  renderCases();
 }
 init();
 </script>
