@@ -1045,7 +1045,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 // ─── INIT: 시트 데이터 로드 후 렌더 ───
 async function init() {
-  if (SHEET_URL !== 'YOUR_GOOGLE_SHEET_CSV_URL') {
+  if (SHEET_URL !== 'https://docs.google.com/spreadsheets/d/1CzlKk0Zx341h3y3z-mT7d4m0Gj6BQ17m/edit?gid=1566078536#gid=1566078536') {
     const sheetData = await loadFromSheet();
     if (sheetData && sheetData.length > 0) {
       CASES = sheetData;
