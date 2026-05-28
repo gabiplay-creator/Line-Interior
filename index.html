@@ -890,13 +890,22 @@ function toDirectUrl(url) {
 // 시트 컬럼 순서: 프로젝트명 | 유형 | 설명 | 썸네일URL | 이미지1~10
 function parseCSV(csv) {
   const allLines = csv.trim().split('\n');
-  // 헤더/안내 행 스킵: 프로젝트명이 실제 데이터인 행만 사용
-  // "프로젝트명", "필수", "LINE INTERIOR", "※" 등으로 시작하는 행 제외
-  const skipPatterns = /^("?)(프로젝트명|유형|설명|썸네일|이미지|LINE|※|\(필수\)|#)/i;
+  // 실제 데이터 행 조건:
+  // - 첫 번째 셀이 비어있지 않고
+  // - 헤더/안내 키워드가 아니며
+  // - URL로 시작하지 않고
+  // - 괄호로 시작하지 않는 행
   const lines = allLines.filter(l => {
     const t = l.trim();
     if (!t) return false;
-    if (skipPatterns.test(t)) return false;
+    const firstCell = t.split(',')[0].replace(/"/g,'').trim();
+    if (!firstCell) return false;
+    if (firstCell.startsWith('http')) return false;
+    if (firstCell.startsWith('(')) return false;
+    if (firstCell.startsWith('※')) return false;
+    if (firstCell.startsWith('LINE')) return false;
+    if (firstCell === '프로젝트명') return false;
+    if (firstCell.includes('필수')) return false;
     return true;
   });
   return lines
