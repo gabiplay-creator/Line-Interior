@@ -874,29 +874,46 @@ async function loadFromSheet() {
   return null;
 }
 
+// ─── 구글 드라이브 URL 자동 변환 ───
+// /view?usp=sharing → uc?id= 형태로 변환해서 이미지 직접 표시
+function toDirectUrl(url) {
+  if (!url || !url.startsWith('http')) return '';
+  // https://drive.google.com/file/d/FILE_ID/view... → uc?id=FILE_ID
+  const match = url.match(/\/file\/d\/([^/]+)/);
+  if (match) return `https://drive.google.com/uc?id=${match[1]}`;
+  // 이미 uc?id= 형태면 그대로
+  if (url.includes('uc?id=') || url.includes('uc&id=')) return url;
+  return url;
+}
+
 // ─── CSV 파싱 ───
-// 시트 컬럼 순서: 프로젝트명 | 유형 | 설명(위치·평수·스타일) | 썸네일URL | 이미지1 | 이미지2 | ... | 이미지10
+// 시트 컬럼 순서: 프로젝트명 | 유형 | 설명 | 썸네일URL | 이미지1~10
 function parseCSV(csv) {
-  const lines = csv.trim().split('\n').slice(3); // 1행(타이틀)+2행(안내)+3행(컬럼헤더) 제외, 4행부터 실제 데이터
+  const allLines = csv.trim().split('\n');
+  // 헤더/안내 행 스킵: 프로젝트명이 실제 데이터인 행만 사용
+  // "프로젝트명", "필수", "LINE INTERIOR", "※" 등으로 시작하는 행 제외
+  const skipPatterns = /^("?)(프로젝트명|유형|설명|썸네일|이미지|LINE|※|\(필수\)|#)/i;
+  const lines = allLines.filter(l => {
+    const t = l.trim();
+    if (!t) return false;
+    if (skipPatterns.test(t)) return false;
+    return true;
+  });
   return lines
-    .filter(l => l.trim())
     .map((line, i) => {
-      // 쉼표 포함된 셀 처리 (따옴표 감싸진 경우)
-      const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+      const cols = line.match(/(".*?"|[^,\r\n]+)(?=,|$)/g) || [];
       const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
-      const name      = clean[0] || `프로젝트 ${i+1}`;
+      const name      = clean[0] || '';
       const type      = clean[1] || '인테리어';
       const meta      = clean[2] || '';
-      const thumbnail = clean[3] || '';
-      // 이미지 URL들 (4번 컬럼부터 끝까지, 비어있지 않은 것만)
-      const imgUrls = clean.slice(4).filter(u => u && u.startsWith('http'));
-      return {
-        id: i + 1,
-        name, type, meta, thumbnail,
-        images: imgUrls.map(url => ({ url }))
-      };
+      const thumbnail = toDirectUrl(clean[3] || '');
+      const imgUrls   = clean.slice(4)
+        .map(toDirectUrl)
+        .filter(u => u && u.startsWith('http'));
+      return { id: i+1, name, type, meta, thumbnail,
+               images: imgUrls.map(url => ({ url })) };
     })
-    .filter(c => c.name);
+    .filter(c => c.name && c.name.length > 0);
 }
 
 // ─── 샘플 데이터 (시트 연결 전까지 표시) ───
