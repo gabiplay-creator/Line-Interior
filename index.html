@@ -169,6 +169,60 @@ nav {
 }
 .hero-img-placeholder svg { opacity: 0.25; }
 
+/* ─── 히어로 이미지 텍스트 오버레이 ─── */
+.hero-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(13,12,10,0.72) 0%,
+    rgba(13,12,10,0.38) 50%,
+    rgba(13,12,10,0.05) 100%
+  );
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: clamp(16px, 4%, 52px);
+  pointer-events: none;
+}
+.hero-img-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: clamp(9px, 1vw, 11px);
+  letter-spacing: 0.18em; color: var(--gold);
+  margin-bottom: clamp(8px, 1.5%, 16px);
+}
+.hero-img-tag::before {
+  content: ''; display: block;
+  width: clamp(14px, 2vw, 28px); height: 0.5px;
+  background: var(--gold);
+}
+.hero-img-title {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 3vw, 48px);
+  font-weight: 300; line-height: 1.25;
+  color: var(--white); margin-bottom: clamp(6px, 1%, 12px);
+  letter-spacing: 0.02em;
+}
+.hero-img-title em { font-style: italic; color: var(--gold-light); }
+.hero-img-desc {
+  font-size: clamp(10px, 1vw, 13px);
+  color: rgba(200,196,188,0.9);
+  line-height: 1.8; margin-bottom: clamp(8px, 1.5%, 18px);
+  max-width: 28ch;
+}
+.hero-img-brand {
+  display: flex; flex-direction: column; gap: 3px;
+  padding-top: clamp(8px, 1.2%, 14px);
+  border-top: 0.5px solid rgba(184,154,106,0.4);
+}
+.hero-img-brand-name {
+  font-size: clamp(10px, 1vw, 13px);
+  letter-spacing: 0.12em; color: var(--gold);
+  font-family: var(--font-display);
+}
+.hero-img-brand-tel {
+  font-size: clamp(9px, 0.85vw, 12px);
+  color: rgba(190,184,175,0.8); letter-spacing: 0.06em;
+}
+
 /* ─── SECTION BASE ─── */
 .section { padding: 100px 80px; }
 .section-header { margin-bottom: 60px; }
@@ -514,9 +568,13 @@ footer {
   .hero { grid-template-columns: 1fr; min-height: auto; }
   .hero-left { padding: 60px 32px 48px; }
   .hero-left::before { display: none; }
-  .hero-right { height: 320px; }
+  .hero-right { height: 380px; }
   .hero-img-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
   .hero-img-cell:first-child { grid-column: 1 / 3; }
+  .hero-img-overlay { padding: 20px 22px; }
+  .hero-img-title { font-size: clamp(16px, 4vw, 28px); }
+  .hero-img-desc { display: none; }
+  .hero-img-brand-tel { display: none; }
   .section { padding: 64px 32px; }
   .why-grid { grid-template-columns: 1fr; gap: 2px; }
   .why-bottom { grid-template-columns: 1fr; }
@@ -529,6 +587,11 @@ footer {
   .cases-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
   .modal-gallery { grid-template-columns: 1fr 1fr; }
+  .hero-right { height: 300px; }
+  .hero-img-overlay { padding: 14px 16px; }
+  .hero-img-tag { display: none; }
+  .hero-img-title { font-size: clamp(14px, 5vw, 22px); }
+  .hero-img-brand-name { font-size: 11px; }
 }
 </style>
 </head>
@@ -577,6 +640,15 @@ footer {
       <div class="hero-img-cell">
         <img src="hero1.jpg" alt="라인 인테리어 메인 시공사례"
           style="width:100%;height:100%;object-fit:cover;display:block;">
+        <div class="hero-img-overlay">
+          <div class="hero-img-tag">PREMIUM INTERIOR DESIGN</div>
+          <div class="hero-img-title">공간이 말하는<br><em>당신의 이야기</em></div>
+          <div class="hero-img-desc">모던 미니멀의 정수 —<br>깔끔한 라인과 여백의 미학으로<br>완성한 프리미엄 공간</div>
+          <div class="hero-img-brand">
+            <div class="hero-img-brand-name">LINE INTERIOR</div>
+            <div class="hero-img-brand-tel">032-246-3155</div>
+          </div>
+        </div>
       </div>
       <div class="hero-img-cell">
         <img src="hero2.jpg" alt="라인 인테리어 주방 시공사례"
