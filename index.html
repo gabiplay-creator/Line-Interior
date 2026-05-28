@@ -877,7 +877,7 @@ async function loadFromSheet() {
 // ─── CSV 파싱 ───
 // 시트 컬럼 순서: 프로젝트명 | 유형 | 설명(위치·평수·스타일) | 썸네일URL | 이미지1 | 이미지2 | ... | 이미지10
 function parseCSV(csv) {
-  const lines = csv.trim().split('\n').slice(1); // 첫 줄(헤더) 제외
+  const lines = csv.trim().split('\n').slice(3); // 1행(타이틀)+2행(안내)+3행(컬럼헤더) 제외, 4행부터 실제 데이터
   return lines
     .filter(l => l.trim())
     .map((line, i) => {
