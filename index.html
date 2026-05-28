@@ -575,41 +575,16 @@ footer {
   <div class="hero-right">
     <div class="hero-img-grid">
       <div class="hero-img-cell">
-        <div class="hero-img-placeholder">
-          <svg width="480" height="260" viewBox="0 0 480 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="480" height="260" fill="#e8e3da"/>
-            <rect x="40" y="160" width="400" height="70" rx="4" fill="#d4cec4"/>
-            <rect x="60" y="100" width="140" height="65" rx="3" fill="#ccc7bc"/>
-            <rect x="220" y="90" width="160" height="75" rx="3" fill="#ccc7bc"/>
-            <rect x="180" y="175" width="80" height="55" rx="2" fill="#c0bab0"/>
-            <circle cx="390" cy="50" r="34" fill="#b89a6a" opacity="0.18"/>
-            <circle cx="390" cy="50" r="10" fill="#b89a6a" opacity="0.45"/>
-            <text x="240" y="48" font-family="Georgia" font-size="13" fill="#b89a6a" text-anchor="middle" letter-spacing="3">거실 리모델링</text>
-          </svg>
-        </div>
+        <img src="hero1.jpg" alt="라인 인테리어 메인 시공사례"
+          style="width:100%;height:100%;object-fit:cover;display:block;">
       </div>
       <div class="hero-img-cell">
-        <div class="hero-img-placeholder">
-          <svg width="240" height="130" viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="240" height="130" fill="#dedad3"/>
-            <rect x="0" y="75" width="240" height="55" fill="#ccc7bc"/>
-            <rect x="10" y="42" width="95" height="38" rx="2" fill="#c0bab0"/>
-            <rect x="115" y="42" width="115" height="38" rx="2" fill="#c0bab0"/>
-            <text x="120" y="24" font-family="Georgia" font-size="10" fill="#b89a6a" text-anchor="middle" letter-spacing="2">주방 인테리어</text>
-          </svg>
-        </div>
+        <img src="hero2.jpg" alt="라인 인테리어 주방 시공사례"
+          style="width:100%;height:100%;object-fit:cover;display:block;">
       </div>
       <div class="hero-img-cell">
-        <div class="hero-img-placeholder">
-          <svg width="240" height="130" viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="240" height="130" fill="#e4e0d8"/>
-            <rect x="20" y="72" width="200" height="45" rx="4" fill="#ccc7bc"/>
-            <rect x="40" y="44" width="140" height="32" rx="3" fill="#c8c3b8"/>
-            <rect x="8" y="50" width="28" height="48" rx="2" fill="#ccc7bc"/>
-            <rect x="204" y="50" width="28" height="48" rx="2" fill="#ccc7bc"/>
-            <text x="120" y="26" font-family="Georgia" font-size="10" fill="#b89a6a" text-anchor="middle" letter-spacing="2">침실 스타일링</text>
-          </svg>
-        </div>
+        <img src="hero3.jpg" alt="라인 인테리어 거실 시공사례"
+          style="width:100%;height:100%;object-fit:cover;display:block;">
       </div>
     </div>
   </div>
@@ -800,108 +775,98 @@ footer {
 </div>
 
 <script>
-// ─── DATA: 시공 사례 6개 ───
-// 실제 사용 시 images 배열에 실제 이미지 URL로 교체하세요
-const CASES = [
-  {
-    id: 1, type: "아파트 전체", name: "한남동 46평 리모델링",
-    meta: "서울 한남동 · 46평 · 모던 미니멀",
-    color1: "#2a2520", color2: "#3d3228", color3: "#4a3e35", accent: "#b89a6a",
-    images: [
-      {label:"거실 전경", c1:"#2a2520", c2:"#3d3228"},
-      {label:"주방 & 다이닝", c1:"#1e2820", c2:"#2a3828"},
-      {label:"안방", c1:"#201e28", c2:"#2e2a38"},
-      {label:"드레스룸", c1:"#28221e", c2:"#382e28"},
-      {label:"욕실", c1:"#1c2428", c2:"#283038"},
-      {label:"현관", c1:"#222018", c2:"#302e22"},
-    ]
-  },
-  {
-    id: 2, type: "아파트 부분", name: "마포구 32평 거실·주방",
-    meta: "서울 마포구 · 32평 · 내추럴 우드",
-    color1: "#1e2a20", color2: "#2c3c2c", color3: "#3a4e38", accent: "#5a8a5a",
-    images: [
-      {label:"거실 Before/After", c1:"#1e2a20", c2:"#2c3c2c"},
-      {label:"주방 리모델링", c1:"#1a2e1e", c2:"#263826"},
-      {label:"거실 상세", c1:"#223226", c2:"#2e4030"},
-      {label:"조명 디테일", c1:"#1c2820", c2:"#28362a"},
-    ]
-  },
-  {
-    id: 3, type: "카페 상업공간", name: "성수동 카페 인테리어",
-    meta: "서울 성수동 · 50㎡ · 인더스트리얼",
-    color1: "#20181a", color2: "#2e2224", color3: "#3c2c2e", accent: "#c05050",
-    images: [
-      {label:"전체 내부 전경", c1:"#20181a", c2:"#2e2224"},
-      {label:"카운터 & 바", c1:"#1e1416", c2:"#2c1e20"},
-      {label:"좌석 공간", c1:"#221a1c", c2:"#302428"},
-      {label:"외관 파사드", c1:"#1a1618", c2:"#28202a"},
-      {label:"조명 연출", c1:"#241c1e", c2:"#34282a"},
-    ]
-  },
-  {
-    id: 4, type: "단독주택", name: "분당 단독주택 전체",
-    meta: "경기 성남 분당 · 55평 · 클래식 모던",
-    color1: "#1e1c14", color2: "#2c2a1c", color3: "#3a3826", accent: "#c8b46a",
-    images: [
-      {label:"1층 거실", c1:"#1e1c14", c2:"#2c2a1c"},
-      {label:"2층 복도", c1:"#1a1810", c2:"#282616"},
-      {label:"마스터베드룸", c1:"#201e16", c2:"#2e2c1e"},
-      {label:"키친 & 아일랜드", c1:"#1c1a12", c2:"#2a2818"},
-      {label:"욕실 대리석", c1:"#22201a", c2:"#302e22"},
-      {label:"외관 & 정원", c1:"#181e14", c2:"#242a1e"},
-    ]
-  },
-  {
-    id: 5, type: "오피스", name: "여의도 사무실 리노베이션",
-    meta: "서울 여의도 · 100㎡ · 모던 오피스",
-    color1: "#141820", color2: "#1e222c", color3: "#282e3a", accent: "#5a7ab8",
-    images: [
-      {label:"오픈 오피스 공간", c1:"#141820", c2:"#1e222c"},
-      {label:"회의실", c1:"#12161e", c2:"#1c2028"},
-      {label:"대표실", c1:"#161a22", c2:"#20242e"},
-      {label:"리셉션 데스크", c1:"#141c24", c2:"#1e2630"},
-    ]
-  },
-  {
-    id: 6, type: "빌라 전체", name: "용산구 빌라 28평",
-    meta: "서울 용산구 · 28평 · 북유럽 스타일",
-    color1: "#1e1e20", color2: "#2a2a2e", color3: "#363640", accent: "#8a8ab8",
-    images: [
-      {label:"거실 & 다이닝", c1:"#1e1e20", c2:"#2a2a2e"},
-      {label:"침실", c1:"#1a1a1e", c2:"#26262c"},
-      {label:"욕실 타일", c1:"#1c1c22", c2:"#28282e"},
-      {label:"주방", c1:"#20201e", c2:"#2c2c28"},
-      {label:"현관 & 수납", c1:"#1e1e1c", c2:"#2a2a26"},
-    ]
+// ════════════════════════════════════════════════════════
+//  ★ 구글 시트 연동 설정 ★
+//  아래 SHEET_URL 에 본인 구글 시트 게시 URL을 붙여넣으세요
+//  (설정 방법은 홈페이지 하단 안내 참고)
+// ════════════════════════════════════════════════════════
+const SHEET_URL = 'YOUR_GOOGLE_SHEET_CSV_URL';
+
+// ─── 구글 시트에서 데이터 불러오기 ───
+async function loadFromSheet() {
+  try {
+    const res = await fetch(SHEET_URL);
+    const csv = await res.text();
+    return parseCSV(csv);
+  } catch(e) {
+    console.warn('구글 시트 로드 실패, 샘플 데이터 사용:', e);
+    return null;
   }
+}
+
+// ─── CSV 파싱 ───
+// 시트 컬럼 순서: 프로젝트명 | 유형 | 설명(위치·평수·스타일) | 썸네일URL | 이미지1 | 이미지2 | ... | 이미지10
+function parseCSV(csv) {
+  const lines = csv.trim().split('\n').slice(1); // 첫 줄(헤더) 제외
+  return lines
+    .filter(l => l.trim())
+    .map((line, i) => {
+      // 쉼표 포함된 셀 처리 (따옴표 감싸진 경우)
+      const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+      const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
+      const name      = clean[0] || `프로젝트 ${i+1}`;
+      const type      = clean[1] || '인테리어';
+      const meta      = clean[2] || '';
+      const thumbnail = clean[3] || '';
+      // 이미지 URL들 (4번 컬럼부터 끝까지, 비어있지 않은 것만)
+      const imgUrls = clean.slice(4).filter(u => u && u.startsWith('http'));
+      return {
+        id: i + 1,
+        name, type, meta, thumbnail,
+        images: imgUrls.map(url => ({ url }))
+      };
+    })
+    .filter(c => c.name);
+}
+
+// ─── 샘플 데이터 (시트 연결 전까지 표시) ───
+const SAMPLE_CASES = [
+  { id:1, type:"아파트 전체", name:"한남동 46평 리모델링", meta:"서울 한남동 · 46평 · 모던 미니멀",
+    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''},{url:''}] },
+  { id:2, type:"아파트 부분", name:"마포구 32평 거실·주방", meta:"서울 마포구 · 32평 · 내추럴 우드",
+    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''}] },
+  { id:3, type:"카페 상업공간", name:"성수동 카페 인테리어", meta:"서울 성수동 · 50㎡ · 인더스트리얼",
+    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''}] },
+  { id:4, type:"단독주택", name:"분당 단독주택 전체", meta:"경기 성남 분당 · 55평 · 클래식 모던",
+    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''},{url:''}] },
+  { id:5, type:"오피스", name:"여의도 사무실 리노베이션", meta:"서울 여의도 · 100㎡ · 모던 오피스",
+    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''}] },
+  { id:6, type:"빌라 전체", name:"용산구 빌라 28평", meta:"서울 용산구 · 28평 · 북유럽 스타일",
+    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''}] },
 ];
 
-// ─── SVG ROOM GENERATORS ───
-function makeRoomSVG(c1, c2, accent, label, w=400, h=300) {
-  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${w}" height="${h}" fill="${c1}"/>
-    <rect x="0" y="${h*0.65}" width="${w}" height="${h*0.35}" fill="${c2}"/>
-    <rect x="${w*0.08}" y="${h*0.38}" width="${w*0.4}" height="${h*0.3}" rx="3" fill="${c2}" opacity="0.8"/>
-    <rect x="${w*0.52}" y="${h*0.32}" width="${w*0.4}" height="${h*0.36}" rx="3" fill="${c2}" opacity="0.8"/>
-    <rect x="${w*0.3}" y="${h*0.68}" width="${w*0.4}" height="${h*0.2}" rx="2" fill="${c1}" opacity="0.6"/>
-    <circle cx="${w*0.78}" cy="${h*0.18}" r="${w*0.07}" fill="${accent}" opacity="0.12"/>
-    <circle cx="${w*0.78}" cy="${h*0.18}" r="${w*0.025}" fill="${accent}" opacity="0.4"/>
-    <text x="${w/2}" y="${h*0.15}" font-family="Georgia,serif" font-size="${w*0.028}" fill="${accent}" text-anchor="middle" letter-spacing="2" opacity="0.7">${label}</text>
-  </svg>`;
+let CASES = SAMPLE_CASES;
+
+// ─── 이미지 렌더 (실제 URL 있으면 img태그, 없으면 플레이스홀더) ───
+function renderImg(url, alt='', cls='') {
+  if (url && url.startsWith('http')) {
+    return `<img src="${url}" alt="${alt}" class="${cls}"
+      style="width:100%;height:100%;object-fit:cover;display:block;"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="img-placeholder" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:#ede9e2;">
+        <svg width="32" height="32" fill="none" stroke="#c8c4bc" stroke-width="1.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>`;
+  }
+  // 플레이스홀더 SVG
+  return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ede9e2;">
+    <svg width="36" height="36" fill="none" stroke="#c8c4bc" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+  </div>`;
 }
 
-function makeThumbnailSVG(caseItem) {
-  return makeRoomSVG(caseItem.color1, caseItem.color2, caseItem.accent, caseItem.type, 400, 300);
-}
-
-// ─── RENDER CASES ───
+// ─── 카드 렌더 ───
 function renderCases() {
   const grid = document.getElementById('casesGrid');
+  if (!CASES.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray);font-size:14px;">
+      구글 시트에서 데이터를 불러오는 중이거나, 시트 URL을 아직 설정하지 않았습니다.</div>`;
+    return;
+  }
   grid.innerHTML = CASES.map(c => `
     <div class="case-card" onclick="openCaseModal(${c.id})">
       <div class="case-thumb">
-        <div class="case-thumb-inner">${makeThumbnailSVG(c)}</div>
+        <div class="case-thumb-inner" style="width:100%;height:100%;position:relative;">
+          ${renderImg(c.thumbnail, c.name)}
+        </div>
         <div class="case-overlay">
           <div class="case-overlay-text">
             <svg width="22" height="22" fill="none" stroke="#f5f2ed" stroke-width="1.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
@@ -927,14 +892,14 @@ function openCaseModal(caseId) {
   const c = CASES.find(x => x.id === caseId);
   if (!c) return;
   currentCaseId = caseId;
+  currentZoomImages = c.images;
   document.getElementById('modalCaseName').textContent = c.name;
   document.getElementById('modalCaseMeta').textContent = c.meta;
-  currentZoomImages = c.images;
   const gallery = document.getElementById('modalGallery');
   gallery.innerHTML = c.images.map((img, i) => `
     <div class="modal-img-wrap" onclick="openZoom(${i})">
-      <div class="modal-img-inner">
-        ${makeRoomSVG(img.c1, img.c2, c.accent, img.label, 360, 270)}
+      <div class="modal-img-inner" style="width:100%;height:100%;position:relative;">
+        ${renderImg(img.url, `사진 ${i+1}`)}
       </div>
       <div class="modal-img-overlay">
         <svg width="24" height="24" fill="none" stroke="white" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
@@ -955,33 +920,35 @@ function closeCaseModal() {
 
 // ─── ZOOM ───
 function openZoom(idx) {
-  const c = CASES.find(x => x.id === currentCaseId);
-  if (!c) return;
   currentZoomIdx = idx;
-  renderZoomImage(c);
+  renderZoomImage();
   document.getElementById('zoomModal').classList.add('open');
 }
 
-function renderZoomImage(c) {
-  const img = c.images[currentZoomIdx];
-  document.getElementById('zoomImgWrap').innerHTML =
-    makeRoomSVG(img.c1, img.c2, c.accent, img.label, 760, 520);
+function renderZoomImage() {
+  const img = currentZoomImages[currentZoomIdx];
+  const wrap = document.getElementById('zoomImgWrap');
+  if (img && img.url && img.url.startsWith('http')) {
+    wrap.innerHTML = `<img src="${img.url}" alt="확대 이미지"
+      style="max-width:88vw;max-height:82vh;object-fit:contain;display:block;">`;
+  } else {
+    wrap.innerHTML = `<div style="width:600px;max-width:88vw;height:400px;display:flex;align-items:center;justify-content:center;background:#161512;">
+      <svg width="48" height="48" fill="none" stroke="#3a3730" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </div>`;
+  }
   document.getElementById('zoomCounter').textContent =
-    `${currentZoomIdx + 1} / ${c.images.length}`;
+    `${currentZoomIdx + 1} / ${currentZoomImages.length}`;
 }
 
 function zoomNav(dir) {
-  const c = CASES.find(x => x.id === currentCaseId);
-  if (!c) return;
-  currentZoomIdx = (currentZoomIdx + dir + c.images.length) % c.images.length;
-  renderZoomImage(c);
+  currentZoomIdx = (currentZoomIdx + dir + currentZoomImages.length) % currentZoomImages.length;
+  renderZoomImage();
 }
 
 function closeZoom() {
   document.getElementById('zoomModal').classList.remove('open');
 }
 
-// keyboard nav
 document.addEventListener('keydown', e => {
   if (document.getElementById('zoomModal').classList.contains('open')) {
     if (e.key === 'ArrowLeft') zoomNav(-1);
@@ -1004,8 +971,17 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ─── INIT ───
-renderCases();
+// ─── INIT: 시트 데이터 로드 후 렌더 ───
+async function init() {
+  if (SHEET_URL !== 'YOUR_GOOGLE_SHEET_CSV_URL') {
+    const sheetData = await loadFromSheet();
+    if (sheetData && sheetData.length > 0) {
+      CASES = sheetData;
+    }
+  }
+  renderCases();
+}
+init();
 </script>
 </body>
 </html>
