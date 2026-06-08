@@ -793,7 +793,7 @@ footer {
           <div class="contact-detail-sub">24시간 접수, 평일 내 회신</div>
         </div>
       </div>
-      <button class="kakao-row" onclick="window.open('https://pf.kakao.com/_YOUR_ID')">
+      <button class="kakao-row" style="display:none;" onclick="window.open('https://pf.kakao.com/_YOUR_ID')">
         <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="18" rx="18" ry="14" fill="#3A1D1D" opacity="0.15"/><path d="M20 6C11.163 6 4 11.373 4 18c0 4.243 2.794 7.974 7 10.172L9.5 32l5.2-2.6C15.7 29.8 17.82 30 20 30c8.837 0 16-5.373 16-12S28.837 6 20 6z" fill="#3A1D1D"/></svg>
         <span>카카오톡으로 빠르게 상담하기</span>
       </button>
@@ -1168,5 +1168,13 @@ async function init() {
 }
 init();
 </script>
+<!-- ─── 채널톡 ─── -->
+<script>
+(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(s,x);}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+ChannelIO('boot', {
+  pluginKey: '32389073-c30f-4c5d-ba11-ffc74b5c60cc'
+});
+</script>
+
 </body>
 </html>
