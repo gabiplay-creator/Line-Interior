@@ -582,6 +582,9 @@ footer {
 }
 .reveal.visible { opacity: 1; transform: none; }
 
+/* ─── 로딩 스피너 ─── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
   nav { padding: 0 24px; }
@@ -965,25 +968,11 @@ function parseCSV(csv) {
     .filter(c => c.name && c.name.length > 0);
 }
 
-// ─── 샘플 데이터 (시트 연결 전까지 표시) ───
-const SAMPLE_CASES = [
-  { id:1, type:"아파트 전체", name:"한남동 46평 리모델링", meta:"서울 한남동 · 46평 · 모던 미니멀",
-    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''},{url:''}] },
-  { id:2, type:"아파트 부분", name:"마포구 32평 거실·주방", meta:"서울 마포구 · 32평 · 내추럴 우드",
-    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''}] },
-  { id:3, type:"카페 상업공간", name:"성수동 카페 인테리어", meta:"서울 성수동 · 50㎡ · 인더스트리얼",
-    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''}] },
-  { id:4, type:"단독주택", name:"분당 단독주택 전체", meta:"경기 성남 분당 · 55평 · 클래식 모던",
-    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''},{url:''}] },
-  { id:5, type:"오피스", name:"여의도 사무실 리노베이션", meta:"서울 여의도 · 100㎡ · 모던 오피스",
-    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''}] },
-  { id:6, type:"빌라 전체", name:"용산구 빌라 28평", meta:"서울 용산구 · 28평 · 북유럽 스타일",
-    thumbnail:'', images:[{url:''},{url:''},{url:''},{url:''},{url:''}] },
-];
+// ─── 샘플 데이터 제거 (구글 시트 연동 완료) ───
+const SAMPLE_CASES = [];
+let CASES = [];
 
-let CASES = SAMPLE_CASES;
-
-// ─── 이미지 렌더 (실제 URL 있으면 img태그, 없으면 플레이스홀더) ───
+// ─── 이미지 렌더 ───
 function renderImg(url, alt='', cls='') {
   if (url && url.startsWith('http')) {
     return `<img src="${url}" alt="${alt}" class="${cls}"
@@ -993,7 +982,6 @@ function renderImg(url, alt='', cls='') {
         <svg width="32" height="32" fill="none" stroke="#c8c4bc" stroke-width="1.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       </div>`;
   }
-  // 플레이스홀더 SVG
   return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ede9e2;">
     <svg width="36" height="36" fill="none" stroke="#c8c4bc" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
   </div>`;
@@ -1003,8 +991,11 @@ function renderImg(url, alt='', cls='') {
 function renderCases() {
   const grid = document.getElementById('casesGrid');
   if (!CASES.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray);font-size:14px;">
-      구글 시트에서 데이터를 불러오는 중이거나, 시트 URL을 아직 설정하지 않았습니다.</div>`;
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
+        <div style="display:inline-block;width:36px;height:36px;border:2px solid #d8d3ca;border-top-color:#b89a6a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>
+        <div style="font-size:13px;color:#7a7670;letter-spacing:0.08em;">시공사례를 불러오는 중입니다...</div>
+      </div>`;
     return;
   }
   grid.innerHTML = CASES.map(c => `
