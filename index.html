@@ -763,10 +763,9 @@ footer {
         <div style="flex:1">
           <div class="contact-detail-label">친절상담</div>
           <a href="tel:032-246-3155" style="text-decoration:none;">
-            <div class="contact-detail-value" style="transition:color .2s;">032-246-3155</div>
+            <div class="contact-detail-value" style="font-size:28px;font-weight:500;letter-spacing:0.04em;transition:color .2s;">032-246-3155</div>
           </a>
           <div class="contact-detail-sub">평일 09:00 – 18:00</div>
-          <!-- 모바일에서만 표시되는 전화걸기 버튼 -->
           <a href="tel:032-246-3155" class="call-btn">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6.09 6.09l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             지금 바로 전화하기
@@ -779,18 +778,22 @@ footer {
         </div>
         <div>
           <div class="contact-detail-label">LOCATION</div>
-          <div class="contact-detail-value">경기도 부천시 소사로126번길 7</div>
+          <a href="https://map.naver.com/v5/search/경기도 부천시 소사로126번길 7" target="_blank" style="text-decoration:none;">
+            <div class="contact-detail-value" style="transition:color .2s;">경기도 부천시 소사로126번길 7</div>
+          </a>
           <div class="contact-detail-sub">전국 상담 가능</div>
-        </div>
-      </div>
-      <div class="contact-detail">
-        <div class="contact-icon">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </div>
-        <div>
-          <div class="contact-detail-label">EMAIL</div>
-          <div class="contact-detail-value">dongjun4944@naver.com</div>
-          <div class="contact-detail-sub">24시간 접수, 평일 내 회신</div>
+          <a href="https://map.naver.com/v5/search/경기도 부천시 소사로126번길 7" target="_blank" style="
+            display:inline-flex;align-items:center;gap:6px;
+            margin-top:10px;padding:8px 16px;
+            background:#03C75A;color:#fff;
+            font-size:12px;font-weight:500;
+            border-radius:4px;text-decoration:none;
+            letter-spacing:0.04em;transition:filter .2s;"
+            onmouseover="this.style.filter='brightness(0.9)'"
+            onmouseout="this.style.filter='brightness(1)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            네이버 지도로 보기
+          </a>
         </div>
       </div>
       <button class="kakao-row" style="display:none;" onclick="window.open('https://pf.kakao.com/_YOUR_ID')">
@@ -849,7 +852,8 @@ footer {
   <div class="footer-logo">LINE. INTERIOR</div>
   <div class="footer-info">
     상호: 라인 인테리어 &nbsp;|&nbsp; 대표: 박지희 &nbsp;|&nbsp; 사업자번호: 296-24-02323<br>
-    주소: 경기도 부천시 소사로126번길 7 &nbsp;|&nbsp; 대표번호: 032-246-3155
+    주소: 경기도 부천시 소사로126번길 7 &nbsp;|&nbsp; 대표번호: 032-246-3155<br>
+    이메일: dongjun4944@naver.com
   </div>
   <div class="footer-copy">© 2026 LINE INTERIOR. All rights reserved.</div>
 </footer>
