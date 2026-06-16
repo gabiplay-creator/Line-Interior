@@ -1163,11 +1163,13 @@ async function init() {
 init();
 </script>
 <!-- ─── 네이버 지도 API ─── -->
-<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=bzu5cm351y&submodules=geocoder" crossorigin="anonymous"></script>
 <script>
-window.addEventListener('load', function() {
-  if (typeof naver === 'undefined') return;
-  // 주소로 좌표 검색 후 지도 표시
+// 네이버 지도 로드 시도, 실패 시 구글맵으로 대체
+function initNaverMap() {
+  if (typeof naver === 'undefined' || typeof naver.maps === 'undefined') {
+    showGoogleMap();
+    return;
+  }
   naver.maps.Service.geocode({
     query: '경기도 부천시 소사로126번길 7'
   }, function(status, response) {
@@ -1176,46 +1178,45 @@ window.addEventListener('load', function() {
       lat = parseFloat(response.v2.addresses[0].y);
       lng = parseFloat(response.v2.addresses[0].x);
     } else {
-      // 주소 검색 실패 시 부천시 소사구 기본 좌표
-      lat = 37.4796;
-      lng = 126.7834;
+      lat = 37.4796; lng = 126.7834;
     }
     var location = new naver.maps.LatLng(lat, lng);
     var map = new naver.maps.Map('naverMap', {
-      center: location,
-      zoom: 17,
-      mapTypeControl: false,
-      scaleControl: false,
-      logoControl: true,
-      mapDataControl: false,
+      center: location, zoom: 17,
+      mapTypeControl: false, scaleControl: false,
+      logoControl: true, mapDataControl: false,
     });
-    var marker = new naver.maps.Marker({
-      position: location,
-      map: map,
-      title: '라인 인테리어',
-    });
+    var marker = new naver.maps.Marker({ position: location, map: map, title: '라인 인테리어' });
     var infoWindow = new naver.maps.InfoWindow({
-      content: [
-        '<div style="padding:10px 14px;font-family:\'Noto Sans KR\',sans-serif;min-width:160px;">',
-          '<div style="font-size:13px;font-weight:600;color:#0e0d0b;margin-bottom:4px;">라인 인테리어</div>',
-          '<div style="font-size:11px;color:#7a7670;line-height:1.6;">경기도 부천시 소사로126번길 7</div>',
-          '<div style="font-size:11px;color:#7a7670;">032-246-3155</div>',
-        '</div>'
-      ].join(''),
-      borderWidth: 1,
-      borderColor: '#d8d3ca',
-      backgroundColor: '#fff',
+      content: '<div style="padding:10px 14px;font-family:\'Noto Sans KR\',sans-serif;min-width:160px;"><div style="font-size:13px;font-weight:600;color:#0e0d0b;margin-bottom:4px;">라인 인테리어</div><div style="font-size:11px;color:#7a7670;line-height:1.6;">경기도 부천시 소사로126번길 7</div><div style="font-size:11px;color:#7a7670;">032-246-3155</div></div>',
+      borderWidth: 1, borderColor: '#d8d3ca', backgroundColor: '#fff',
     });
     naver.maps.Event.addListener(marker, 'click', function() {
-      if (infoWindow.getMap()) {
-        infoWindow.close();
-      } else {
-        infoWindow.open(map, marker);
-      }
+      if (infoWindow.getMap()) infoWindow.close();
+      else infoWindow.open(map, marker);
     });
     infoWindow.open(map, marker);
   });
-});
+}
+
+function showGoogleMap() {
+  var el = document.getElementById('naverMap');
+  if (!el) return;
+  el.innerHTML = '<iframe src="https://maps.google.com/maps?q=경기도+부천시+소사로126번길+7&t=m&z=17&ie=UTF8&iwloc=&output=embed&hl=ko" width="100%" height="220" style="border:none;display:block;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>';
+}
+
+// 네이버 지도 스크립트 동적 로드
+var naverScript = document.createElement('script');
+naverScript.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=bzu5cm351y&submodules=geocoder';
+naverScript.onload = function() { initNaverMap(); };
+naverScript.onerror = function() { showGoogleMap(); };
+document.head.appendChild(naverScript);
+
+// 3초 후에도 지도가 안 뜨면 구글맵으로 대체
+setTimeout(function() {
+  var el = document.getElementById('naverMap');
+  if (el && el.children.length === 0) showGoogleMap();
+}, 3000);
 </script>
 
 <!-- ─── 채널톡 ─── -->
