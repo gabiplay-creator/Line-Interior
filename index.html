@@ -784,8 +784,8 @@ footer {
           </div>
         </div>
         <!-- 구글맵 임베드 -->
-        <div id="naverMap" style="width:100%;flex:1;min-height:320px;border-radius:8px;overflow:hidden;border:0.5px solid var(--border);line-height:0;">
-          <iframe src="https://maps.google.com/maps?q=경기도+부천시+소사로126번길+7&t=m&z=17&ie=UTF8&iwloc=&output=embed&hl=ko" width="100%" height="100%" style="border:none;display:block;min-height:320px;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div id="naverMap" style="width:100%;border-radius:8px;overflow:hidden;border:0.5px solid var(--border);line-height:0;">
+          <iframe src="https://maps.google.com/maps?q=경기도+부천시+소사로126번길+7&t=m&z=17&ie=UTF8&iwloc=&output=embed&hl=ko" width="100%" height="100%" style="border:none;display:block;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
       <button class="kakao-row" style="display:none;" onclick="window.open('https://pf.kakao.com/_YOUR_ID')">
@@ -1164,6 +1164,32 @@ async function init() {
 }
 init();
 </script>
+<!-- ─── 지도 높이 맞춤 ─── -->
+<script>
+function fitMapHeight() {
+  var map = document.getElementById('naverMap');
+  var form = document.querySelector('.form-wrap');
+  var contactInfo = document.querySelector('.contact-info');
+  if (!map || !form || !contactInfo) return;
+  // 전체 contact-info 높이 = form 높이
+  var formH = form.offsetHeight;
+  // 지도 위 다른 요소들 높이 계산
+  var otherH = 0;
+  var children = contactInfo.children;
+  for (var i = 0; i < children.length; i++) {
+    if (!children[i].contains(map)) {
+      otherH += children[i].offsetHeight;
+    }
+  }
+  var mapH = Math.max(220, formH - otherH - 20);
+  map.style.height = mapH + 'px';
+  var iframe = map.querySelector('iframe');
+  if (iframe) iframe.style.height = mapH + 'px';
+}
+window.addEventListener('load', fitMapHeight);
+window.addEventListener('resize', fitMapHeight);
+</script>
+
 <!-- ─── 채널톡 ─── -->
 <script>
 (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(s,x);}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
