@@ -664,8 +664,9 @@ footer {
 
   <!-- 슬라이드 0: 영상 -->
   <div class="slide active" data-type="video">
-    <video id="heroVideo" src="0803.mp4" muted loop playsinline preload="auto"
-      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>
+    <video id="heroVideo" src="0803.mp4" muted autoplay loop playsinline preload="auto"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+      webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
     <!-- 모바일 재생 버튼 -->
     <button class="video-play-btn" id="videoPlayBtn" onclick="playHeroVideo()">
       <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
@@ -1262,17 +1263,51 @@ document.addEventListener('keydown', e => {
   window.addEventListener('load', function() {
     var video = document.getElementById('heroVideo');
     var isMobile = window.innerWidth <= 768;
-    if (video && !isMobile) {
-      video.play().catch(function(){});
+
+    if (video) {
+      // 영상 속성 강제 설정
+      video.muted = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.volume = 0;
+
+      if (!isMobile) {
+        // PC: 여러 방법으로 자동재생 시도
+        var playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.then(function() {
+            // 재생 성공
+          }).catch(function() {
+            // 실패 시 재시도
+            video.muted = true;
+            video.load();
+            setTimeout(function() { video.play().catch(function(){}); }, 500);
+          });
+        }
+      }
     }
+
     // 첫 슬라이드 진행 바 시작
-    var dur = 8000; // 영상
+    var dur = 8000;
     setTimeout(function() {
       progressEl.style.transition = 'width ' + dur + 'ms linear';
       progressEl.style.width = '100%';
     }, 100);
     timer = setTimeout(function() { goTo(1); }, dur);
   });
+
+  // 페이지 클릭/스크롤 시 영상 재생 시도 (브라우저 정책 우회)
+  var videoStarted = false;
+  function tryPlayVideo() {
+    if (videoStarted) return;
+    var video = document.getElementById('heroVideo');
+    if (video && current === 0) {
+      video.play().then(function() { videoStarted = true; }).catch(function(){});
+    }
+  }
+  document.addEventListener('mousemove', tryPlayVideo, {once: true});
+  document.addEventListener('scroll', tryPlayVideo, {once: true});
+  document.addEventListener('touchstart', tryPlayVideo, {once: true, passive: true});
 
   // 호버 일시정지
   var hero = document.getElementById('heroSlider');
