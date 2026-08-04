@@ -608,6 +608,103 @@ footer {
 /* ─── 로딩 스피너 ─── */
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ─── WHY LINE NEW ─── */
+.why-new {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0;
+}
+.why-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+}
+.why-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(10,8,6,0.88) 0%,
+    rgba(10,8,6,0.75) 45%,
+    rgba(10,8,6,0.15) 75%,
+    rgba(10,8,6,0.0) 100%
+  );
+}
+.why-content {
+  position: relative; z-index: 2;
+  max-width: 620px;
+  padding: 100px 80px;
+  color: #f0ebe4;
+}
+.why-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.why-eyebrow::before {
+  content: ''; width: 28px; height: 0.5px;
+  background: var(--gold); display: block;
+}
+.why-main-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 54px);
+  font-weight: 300;
+  color: #f0ebe4;
+  line-height: 1.2;
+  margin-bottom: 32px;
+  letter-spacing: 0.02em;
+}
+.why-quote {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gold-light);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  padding-left: 16px;
+  border-left: 2px solid var(--gold);
+}
+.why-body {
+  font-size: clamp(13px, 1.1vw, 15px);
+  color: rgba(220, 214, 204, 0.88);
+  line-height: 1.95;
+  margin-bottom: 18px;
+}
+.why-emphasis {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 500;
+  color: #f0ebe4;
+  margin: 24px 0;
+  letter-spacing: 0.02em;
+}
+.why-btns {
+  display: flex; gap: 12px;
+  margin-top: 36px;
+}
+@media (max-width: 900px) {
+  .why-content { padding: 80px 32px; max-width: 100%; }
+  .why-bg { background-position: center; }
+  .why-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(10,8,6,0.7) 0%,
+      rgba(10,8,6,0.85) 60%,
+      rgba(10,8,6,0.92) 100%
+    );
+  }
+}
+@media (max-width: 560px) {
+  .why-content { padding: 60px 24px; }
+  .why-btns { flex-direction: column; }
+}
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 900px) {
   nav { padding: 0 24px; }
@@ -772,52 +869,44 @@ footer {
 </section>
 
 <!-- ─── WHY LINE ─── -->
-<section id="why" class="section reveal">
-  <div class="section-header">
-    <div class="section-tag">WHY LINE INTERIOR</div>
-    <h2 class="section-title">왜 <em>라인 인테리어</em>인가</h2>
-    <p class="section-desc">12년의 경험으로 쌓아온 노하우와 고객 중심의 철학으로 공간을 완성합니다. 수백 개의 현장이 우리를 선택하는 이유를 알려드립니다.</p>
-  </div>
-  <div class="why-grid">
-    <div class="why-card">
-      <div class="why-num">01</div>
-      <div class="why-icon">
-        <svg width="20" height="20" fill="none" stroke="#b89a6a" stroke-width="1.2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </div>
-      <div class="why-card-title">고객 맞춤 설계</div>
-      <div class="why-card-desc">천편일률적인 템플릿이 아닌, 고객의 라이프스타일과 취향을 깊이 파악하여 오직 한 분을 위한 공간을 설계합니다. 첫 상담부터 완공까지 전담 디자이너가 함께합니다.</div>
+<section id="why" class="why-new reveal">
+  <!-- 배경 이미지 -->
+  <div class="why-bg" style="background-image:url('why_bg.jpg');"></div>
+  <!-- 좌측 어두운 오버레이 -->
+  <div class="why-overlay"></div>
+  <!-- 텍스트 콘텐츠 -->
+  <div class="why-content">
+    <div class="why-eyebrow">WHY LINE INTERIOR</div>
+    <h2 class="why-main-title">왜 라인 인테리어인가</h2>
+
+    <div class="why-quote">
+      "인테리어, 시작하기도 전에<br>감정 소모부터 걱정되시나요?"
     </div>
-    <div class="why-card">
-      <div class="why-num">02</div>
-      <div class="why-icon">
-        <svg width="20" height="20" fill="none" stroke="#b89a6a" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div class="why-card-title">일정·예산 엄수</div>
-      <div class="why-card-desc">계약 시 확정된 준공일과 예산을 반드시 지킵니다. 투명한 견적서와 단계별 공정 보고로 고객이 항상 현황을 파악할 수 있도록 합니다.</div>
-    </div>
-    <div class="why-card">
-      <div class="why-num">03</div>
-      <div class="why-icon">
-        <svg width="20" height="20" fill="none" stroke="#b89a6a" stroke-width="1.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <div class="why-card-title">검증된 시공 품질</div>
-      <div class="why-card-desc">12년 경력의 숙련 장인들이 직접 시공합니다. 자재 선정부터 마감 처리까지 현장 소장이 전 공정을 책임 감리하여 완성도를 보장합니다.</div>
-    </div>
-  </div>
-  <div class="why-bottom">
-    <div class="why-bottom-card">
-      <div class="why-bottom-num">480<sub>+</sub></div>
-      <div class="why-bottom-text">
-        <strong>누적 완공 프로젝트</strong>
-        주거·상업 공간 480여 개 현장을 완성하며 쌓은 실전 노하우
-      </div>
-    </div>
-    <div class="why-bottom-card">
-      <div class="why-bottom-num">98<sub>%</sub></div>
-      <div class="why-bottom-text">
-        <strong>재의뢰·지인 소개율</strong>
-        고객의 98%가 재의뢰하거나 주변에 라인 인테리어를 소개합니다
-      </div>
+
+    <p class="why-body">
+      "이 업체는 믿을 수 있을까?" 하는 불안함과 조율 과정의 스트레스까지,
+      고객님의 마음을 누구보다 잘 알고 있습니다.<br>
+      라인 인테리어는 단순히 시공만 하는 것이 아니라,
+      늘 고객의 입장에서 함께 고민합니다.
+    </p>
+
+    <div class="why-emphasis">"과정은 편안하게, 결과는 완벽하게."</div>
+
+    <p class="why-body">
+      "공사가 다 끝났는데, 실장님과 매일 나누던 대화가 그리워 아쉽다"고
+      말씀해 주시는 고객님들의 따뜻한 마음을 저희는 항상 기억합니다.<br>
+      공사가 끝난 뒤에도 부담 없이 언제든 들러 맛있는 커피 한잔 나누실 수 있는 곳.
+    </p>
+
+    <p class="why-body">
+      편안한 소통과 뛰어난 시공 퀄리티 덕분에
+      수많은 분들이 지인에게 선뜻 추천해 주시는 곳.<br>
+      이것이 라인 인테리어에 소개 공사가 끊이지 않는 이유입니다.
+    </p>
+
+    <div class="why-btns">
+      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청하기</button>
+      <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
     </div>
   </div>
 </section>
