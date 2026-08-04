@@ -373,7 +373,7 @@ function renderPage(c) {
 
   // 우측 정보
   const infoEl = document.getElementById('caseInfo');
-  const thumbsHtml = c.images.slice(0, 8).map((url, i) => `
+  const thumbsHtml = c.images.map((url, i) => `
     <div class="case-thumb-item ${i===0?'active':''}" id="thumb-${i}" onclick="scrollToImg(${i})">
       <img src="${url}" alt="썸네일 ${i+1}" loading="lazy"
         onerror="this.parentElement.innerHTML='<div class=thumb-placeholder><svg width=18 height=18 fill=none stroke=#c8c4bc stroke-width=1 viewBox=0_0_24_24><rect x=3 y=3 width=18 height=18 rx=2/></svg></div>'">
