@@ -297,8 +297,8 @@ function parseCSV(csv) {
     return {
       id: i+1, name: c[0]||'', type: c[1]||'인테리어', meta: c[2]||'',
       thumbnail: toDirectUrl(c[3]||''),
-      images: c.slice(4, 14).map(toDirectUrl).filter(u => u && u.startsWith('http')),
-      desc: c[14]||''  // O열: 상세설명
+      images: c.slice(4, 19).map(toDirectUrl).filter(u => u && u.startsWith('http')),
+      desc: c[20]||''  // U열: 상세설명 (T열=비고 건너뜀)
     };
   }).filter(x => x.name);
 }
