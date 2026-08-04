@@ -41,9 +41,9 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 48px;
   height: 68px;
-  background: rgba(245,242,237,0.92);
+  background: rgba(10,9,8,0.3);
   backdrop-filter: blur(12px);
-  border-bottom: 0.5px solid var(--border);
+  border-bottom: 0.5px solid rgba(255,255,255,0.08);
   transition: all .3s;
 }
 .nav-logo {
@@ -51,176 +51,197 @@ nav {
   font-size: 22px;
   font-weight: 400;
   letter-spacing: 0.18em;
-  color: var(--black);
+  color: #f5f2ed;
 }
 .nav-logo span { color: var(--gold); }
 .nav-links { display: flex; gap: 32px; }
 .nav-links a {
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--gray);
+  color: rgba(245,242,237,0.75);
   transition: color .2s;
+  text-decoration: none;
 }
-.nav-links a:hover { color: var(--black); }
+.nav-links a:hover { color: var(--gold); }
 .nav-cta {
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--white);
-  background: var(--black);
+  color: var(--black);
+  background: var(--gold);
   padding: 9px 22px;
   border: none;
   cursor: pointer;
   transition: background .2s;
 }
-.nav-cta:hover { background: var(--gold); }
+.nav-cta:hover { background: var(--gold-light); }
 
 /* ─── HERO ─── */
+/* ─── FULLSCREEN HERO SLIDER ─── */
 .hero {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding-top: 68px;
-  overflow: hidden;
-}
-.hero-left {
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 80px 64px 80px 80px;
   position: relative;
+  width: 100%; height: 100vh;
+  overflow: hidden;
+  padding-top: 0;
 }
-.hero-left::before {
-  content: 'LINE';
-  position: absolute;
-  top: 50%; left: 40px;
-  transform: translateY(-50%) rotate(-90deg);
+.slider-track {
+  display: flex;
+  width: 100%; height: 100%;
+  transition: none;
+}
+.slide {
+  position: relative;
+  min-width: 100%; height: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.slide video, .slide img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.slide-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(10,9,8,0.65) 0%,
+    rgba(10,9,8,0.3) 55%,
+    rgba(10,9,8,0.05) 100%
+  );
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 0 0 0 clamp(32px, 8vw, 120px);
+  pointer-events: none;
+}
+.slide-tag {
+  font-size: 11px; letter-spacing: 0.22em;
+  color: var(--gold); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .7s .1s, transform .7s .1s;
+}
+.slide-tag::before { content:''; width:28px; height:0.5px; background:var(--gold); display:block; }
+.slide-title {
   font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 0.3em;
-  color: var(--gray-light);
+  font-size: clamp(36px, 5.5vw, 76px);
+  font-weight: 300; line-height: 1.18;
+  color: #f5f2ed; letter-spacing: 0.01em;
+  margin-bottom: 20px; max-width: 640px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .8s .25s, transform .8s .25s;
 }
-.hero-tag {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-size: 11px; letter-spacing: 0.2em;
-  color: var(--gold); margin-bottom: 28px;
+.slide-title em { font-style: italic; color: var(--gold-light); }
+.slide-sub {
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: rgba(200,196,188,0.9);
+  line-height: 1.9; max-width: 400px;
+  margin-bottom: 36px;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .7s .4s, transform .7s .4s;
 }
-.hero-tag::before { content: ''; display: block; width: 32px; height: 0.5px; background: var(--gold); }
-.hero h1 {
-  font-family: var(--font-display);
-  font-size: clamp(42px, 5vw, 64px);
-  font-weight: 300;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  color: var(--black);
-  margin-bottom: 8px;
+.slide-btns {
+  display: flex; gap: 12px;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .6s .55s, transform .6s .55s;
+  pointer-events: all;
 }
-.hero h1 em { font-style: italic; color: var(--gold); }
-.hero-sub {
-  font-size: 14px; color: var(--gray);
-  line-height: 1.9; max-width: 380px;
-  margin-bottom: 48px; margin-top: 20px;
+.slide.active .slide-tag,
+.slide.active .slide-title,
+.slide.active .slide-sub,
+.slide.active .slide-btns {
+  opacity: 1; transform: none;
 }
-.hero-stats {
-  display: flex; gap: 40px; margin-bottom: 48px;
-  padding-top: 32px; border-top: 0.5px solid var(--border);
-}
-.stat-item { display: flex; flex-direction: column; gap: 4px; }
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 32px; font-weight: 300;
-  color: var(--black); letter-spacing: -0.01em;
-}
-.stat-num span { font-size: 16px; color: var(--gold); margin-left: 2px; }
-.stat-label { font-size: 11px; letter-spacing: 0.1em; color: var(--gray); }
-.hero-btns { display: flex; gap: 12px; }
 .btn-primary {
-  background: var(--black); color: var(--white);
+  background: var(--gold); color: var(--black);
   border: none; padding: 14px 32px;
   font-family: var(--font-body);
   font-size: 13px; letter-spacing: 0.08em;
   cursor: pointer; transition: all .25s;
 }
-.btn-primary:hover { background: var(--gold); }
+.btn-primary:hover { background: var(--gold-light); }
 .btn-ghost {
-  background: transparent; color: var(--black);
-  border: 0.5px solid var(--black); padding: 14px 32px;
+  background: transparent; color: #f5f2ed;
+  border: 0.5px solid rgba(245,242,237,0.5); padding: 14px 32px;
   font-family: var(--font-body);
   font-size: 13px; letter-spacing: 0.08em;
   cursor: pointer; transition: all .25s;
 }
 .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-.hero-right {
-  position: relative; overflow: hidden;
-  background: var(--surface);
-}
-.hero-img-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  height: 100%; gap: 3px;
-}
-.hero-img-cell {
-  overflow: hidden; position: relative;
-}
-.hero-img-cell:first-child {
-  grid-column: 1 / 3;
-}
-.hero-img-placeholder {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-}
-.hero-img-placeholder svg { opacity: 0.25; }
 
-/* ─── 히어로 이미지 텍스트 오버레이 ─── */
-.hero-img-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(13,12,10,0.72) 0%,
-    rgba(13,12,10,0.38) 50%,
-    rgba(13,12,10,0.05) 100%
-  );
-  display: flex; flex-direction: column;
-  justify-content: center;
-  padding: clamp(16px, 4%, 52px);
-  pointer-events: none;
+/* 재생 버튼 (모바일) */
+.video-play-btn {
+  display: none;
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px; height: 72px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.4);
+  align-items: center; justify-content: center;
+  cursor: pointer; z-index: 10;
+  transition: background .2s;
 }
-.hero-img-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: clamp(9px, 1vw, 11px);
-  letter-spacing: 0.18em; color: var(--gold);
-  margin-bottom: clamp(8px, 1.5%, 16px);
+.video-play-btn:hover { background: rgba(255,255,255,0.25); }
+.video-play-btn svg { margin-left: 4px; }
+@media (max-width: 768px) {
+  .video-play-btn { display: flex; }
+  .video-play-btn.hidden { display: none; }
 }
-.hero-img-tag::before {
-  content: ''; display: block;
-  width: clamp(14px, 2vw, 28px); height: 0.5px;
-  background: var(--gold);
+
+/* 슬라이더 컨트롤 */
+.slider-dots {
+  position: absolute; bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 20;
 }
-.hero-img-title {
+.slider-dot {
+  width: 6px; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.4);
+  cursor: pointer; transition: all .4s;
+  border: none;
+}
+.slider-dot.active {
+  width: 28px; background: var(--gold);
+}
+.slider-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(4px);
+  border: 0.5px solid rgba(255,255,255,0.2);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; z-index: 20; transition: background .2s;
+}
+.slider-arrow:hover { background: rgba(255,255,255,0.2); }
+.slider-prev { left: 24px; }
+.slider-next { right: 24px; }
+
+/* 진행 바 */
+.slider-progress {
+  position: absolute; bottom: 0; left: 0;
+  height: 2px; background: var(--gold);
+  width: 0%; z-index: 20;
+  transition: width linear;
+}
+
+/* 슬라이드 카운터 */
+.slider-counter {
+  position: absolute; bottom: 28px; right: 32px;
+  font-size: 12px; letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.6); z-index: 20;
   font-family: var(--font-display);
-  font-size: clamp(18px, 3vw, 48px);
-  font-weight: 300; line-height: 1.25;
-  color: var(--white); margin-bottom: clamp(6px, 1%, 12px);
-  letter-spacing: 0.02em;
 }
-.hero-img-title em { font-style: italic; color: var(--gold-light); }
-.hero-img-desc {
-  font-size: clamp(10px, 1vw, 13px);
-  color: rgba(200,196,188,0.9);
-  line-height: 1.8; margin-bottom: clamp(8px, 1.5%, 18px);
-  max-width: 28ch;
+.slider-counter span { color: var(--gold); }
+
+@media (max-width: 900px) {
+  .slide-overlay { padding: 0 0 0 32px; }
+  .slider-arrow { display: none; }
 }
-.hero-img-brand {
-  display: flex; flex-direction: column; gap: 3px;
-  padding-top: clamp(8px, 1.2%, 14px);
-  border-top: 0.5px solid rgba(184,154,106,0.4);
-}
-.hero-img-brand-name {
-  font-size: clamp(10px, 1vw, 13px);
-  letter-spacing: 0.12em; color: var(--gold);
-  font-family: var(--font-display);
-}
-.hero-img-brand-tel {
-  font-size: clamp(9px, 0.85vw, 12px);
-  color: rgba(190,184,175,0.8); letter-spacing: 0.06em;
+@media (max-width: 560px) {
+  .slide-overlay { padding: 0 24px; }
+  .slide-sub { display: none; }
+  .hero { height: 100svh; }
 }
 
 /* ─── SECTION BASE ─── */
@@ -636,58 +657,118 @@ footer {
   <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 문의</button>
 </nav>
 
-<!-- ─── HERO ─── -->
-<section class="hero">
-  <div class="hero-left">
-    <div class="hero-tag">PREMIUM INTERIOR DESIGN</div>
-    <h1>공간이 말하는<br><em>당신만의 이야기</em></h1>
-    <p class="hero-sub">라인 인테리어는 단순히 공간을 꾸미는 것이 아니라,<br>
-    그 안에서 살아갈 사람의 이야기를 담습니다.<br>
-    첫 상담부터 준공까지, 세심하게 함께합니다.</p>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-num">480<span>+</span></div>
-        <div class="stat-label">완공 프로젝트</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">12<span>년</span></div>
-        <div class="stat-label">업계 경력</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">4.9<span>★</span></div>
-        <div class="stat-label">고객 만족도</div>
-      </div>
-    </div>
-    <div class="hero-btns">
-      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-      <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-    </div>
-  </div>
-  <div class="hero-right">
-    <div class="hero-img-grid">
-      <div class="hero-img-cell">
-        <img src="hero1.jpg" alt="라인 인테리어 메인 시공사례"
-          style="width:100%;height:100%;object-fit:cover;display:block;">
-        <div class="hero-img-overlay">
-          <div class="hero-img-tag">PREMIUM INTERIOR DESIGN</div>
-          <div class="hero-img-title">공간이 말하는<br><em>당신의 이야기</em></div>
-          <div class="hero-img-desc">모던 미니멀의 정수 —<br>깔끔한 라인과 여백의 미학으로<br>완성한 프리미엄 공간</div>
-          <div class="hero-img-brand">
-            <div class="hero-img-brand-name">LINE INTERIOR</div>
-            <div class="hero-img-brand-tel">032-246-3155</div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-img-cell">
-        <img src="hero2.jpg" alt="라인 인테리어 주방 시공사례"
-          style="width:100%;height:100%;object-fit:cover;display:block;">
-      </div>
-      <div class="hero-img-cell">
-        <img src="hero3.jpg" alt="라인 인테리어 거실 시공사례"
-          style="width:100%;height:100%;object-fit:cover;display:block;">
+<!-- ─── HERO SLIDER ─── -->
+<section class="hero" id="heroSlider">
+
+  <!-- 슬라이드 0: 영상 -->
+  <div class="slide active" data-type="video">
+    <video id="heroVideo" src="0803.mp4" muted loop playsinline preload="auto"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>
+    <!-- 모바일 재생 버튼 -->
+    <button class="video-play-btn" id="videoPlayBtn" onclick="playHeroVideo()">
+      <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+    </button>
+    <div class="slide-overlay">
+      <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
+      <div class="slide-title">공간이 말하는<br><em>당신만의 이야기</em></div>
+      <div class="slide-sub">라인 인테리어는 단순히 공간을 꾸미는 것이 아니라,<br>그 안에서 살아갈 사람의 이야기를 담습니다.</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
       </div>
     </div>
   </div>
+
+  <!-- 슬라이드 1~6: 이미지 -->
+  <div class="slide" data-type="image">
+    <img src="case4_01.jpg" alt="라인 인테리어 시공사례 1" loading="eager">
+    <div class="slide-overlay">
+      <div class="slide-tag">KITCHEN</div>
+      <div class="slide-title">세심한 디테일이<br><em>완성하는 주방</em></div>
+      <div class="slide-sub">기능과 미학이 완벽하게 조화를 이루는<br>라인 인테리어만의 주방 설계</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-type="image">
+    <img src="case4_02.jpg" alt="라인 인테리어 시공사례 2" loading="eager">
+    <div class="slide-overlay">
+      <div class="slide-tag">LIVING ROOM</div>
+      <div class="slide-title">여백이 만드는<br><em>프리미엄 거실</em></div>
+      <div class="slide-sub">모던 미니멀의 정수,<br>깔끔한 라인과 여백의 미학</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-type="image">
+    <img src="case4_03.jpg" alt="라인 인테리어 시공사례 3" loading="lazy">
+    <div class="slide-overlay">
+      <div class="slide-tag">BEDROOM</div>
+      <div class="slide-title">편안함을 담은<br><em>침실 공간</em></div>
+      <div class="slide-sub">하루의 시작과 끝을 책임지는<br>완벽한 휴식 공간 설계</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-type="image">
+    <img src="case4_04.jpg" alt="라인 인테리어 시공사례 4" loading="lazy">
+    <div class="slide-overlay">
+      <div class="slide-tag">DINING</div>
+      <div class="slide-title">감성을 담은<br><em>다이닝 공간</em></div>
+      <div class="slide-sub">소중한 사람들과 함께하는<br>특별한 순간을 위한 공간</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-type="image">
+    <img src="case4_05.jpg" alt="라인 인테리어 시공사례 5" loading="lazy">
+    <div class="slide-overlay">
+      <div class="slide-tag">TOTAL INTERIOR</div>
+      <div class="slide-title">공간 전체를<br><em>새롭게 설계</em></div>
+      <div class="slide-sub">전체 리모델링부터 부분 시공까지<br>라인 인테리어가 함께합니다</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-type="image">
+    <img src="case4_06.jpg" alt="라인 인테리어 시공사례 6" loading="lazy">
+    <div class="slide-overlay">
+      <div class="slide-tag">MODERN MINIMAL</div>
+      <div class="slide-title">라인이 만드는<br><em>모던 공간</em></div>
+      <div class="slide-sub">12년 경력의 전문가가 완성하는<br>당신만을 위한 인테리어</div>
+      <div class="slide-btns">
+        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
+        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 컨트롤 -->
+  <button class="slider-arrow slider-prev" onclick="heroSlide(-1)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="slider-arrow slider-next" onclick="heroSlide(1)">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="slider-dots" id="sliderDots"></div>
+  <div class="slider-counter"><span id="sliderCurrent">1</span> / <span id="sliderTotal">7</span></div>
+  <div class="slider-progress" id="sliderProgress"></div>
+
 </section>
 
 <!-- ─── WHY LINE ─── -->
@@ -1110,7 +1191,114 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ─── BUDGET PILL ───
+// ─── HERO SLIDER ───
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('sliderDots');
+  const progressEl = document.getElementById('sliderProgress');
+  const currentEl = document.getElementById('sliderCurrent');
+  const totalEl = document.getElementById('sliderTotal');
+  const TOTAL = slides.length;
+  const DURATION = 3000; // 3초
+  let current = 0;
+  let timer = null;
+  let progressTimer = null;
+  let isPaused = false;
+
+  // 도트 생성
+  totalEl.textContent = TOTAL;
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `슬라이드 ${i+1}`);
+    dot.onclick = () => goTo(i);
+    dotsEl.appendChild(dot);
+  }
+
+  function updateDots(idx) {
+    document.querySelectorAll('.slider-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+
+  function goTo(idx) {
+    slides[current].classList.remove('active');
+    current = (idx + TOTAL) % TOTAL;
+    slides[current].classList.add('active');
+    currentEl.textContent = current + 1;
+    updateDots(current);
+    startProgress();
+    // 비디오 처리
+    const video = document.getElementById('heroVideo');
+    if (current === 0 && video) {
+      const isMobile = window.innerWidth <= 768;
+      if (!isMobile) video.play();
+    }
+  }
+
+  function startProgress() {
+    clearInterval(timer);
+    clearInterval(progressTimer);
+    progressEl.style.transition = 'none';
+    progressEl.style.width = '0%';
+    // 현재 슬라이드가 비디오면 영상 길이만큼 대기
+    const isVideo = slides[current].dataset.type === 'video';
+    const dur = isVideo ? 8000 : DURATION;
+    setTimeout(() => {
+      progressEl.style.transition = `width ${dur}ms linear`;
+      progressEl.style.width = '100%';
+    }, 30);
+    timer = setTimeout(() => {
+      if (!isPaused) goTo(current + 1);
+    }, dur);
+  }
+
+  // 외부에서 호출 가능하도록
+  window.heroSlide = function(dir) { goTo(current + dir); };
+
+  // 영상 자동재생 (PC)
+  window.playHeroVideo = function() {
+    const video = document.getElementById('heroVideo');
+    const btn = document.getElementById('videoPlayBtn');
+    if (video) {
+      video.play();
+      if (btn) btn.classList.add('hidden');
+    }
+  };
+
+  // PC 자동재생 시도
+  window.addEventListener('load', function() {
+    const video = document.getElementById('heroVideo');
+    const isMobile = window.innerWidth <= 768;
+    if (video && !isMobile) {
+      video.play().catch(() => {});
+    }
+    startProgress();
+    slides[0].classList.add('active');
+  });
+
+  // 호버 시 일시정지
+  const hero = document.getElementById('heroSlider');
+  if (hero) {
+    hero.addEventListener('mouseenter', () => {
+      isPaused = true;
+      clearTimeout(timer);
+      progressEl.style.animationPlayState = 'paused';
+    });
+    hero.addEventListener('mouseleave', () => {
+      isPaused = false;
+      goTo(current);
+    });
+  }
+
+  // 터치 스와이프
+  let touchX = 0;
+  document.querySelector('.hero').addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
+  document.querySelector('.hero').addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) heroSlide(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
 function selectBudget(el) {
   document.querySelectorAll('.budget-pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
