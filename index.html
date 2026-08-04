@@ -1221,7 +1221,7 @@ function renderCases() {
     return;
   }
   grid.innerHTML = CASES.map(c => `
-    <div class="case-card" onclick="openCaseModal(${c.id})">
+    <div class="case-card" onclick="location.href='case.html?id=${c.id}'">
       <div class="case-thumb">
         <div class="case-thumb-inner" style="width:100%;height:100%;position:relative;">
           ${renderImg(c.thumbnail, c.name)}
@@ -1486,6 +1486,20 @@ function selectBudget(el) {
   el.classList.add('active');
   document.getElementById('f_budget').value = el.textContent;
 }
+
+// 시공사례 상세에서 넘어온 경우 자동입력
+(function() {
+  const consultCase = sessionStorage.getItem('consultCase');
+  if (consultCase) {
+    const memo = document.getElementById('f_memo');
+    if (memo) memo.value = `[시공사례 참고] ${consultCase} 스타일로 상담 요청드립니다.`;
+    sessionStorage.removeItem('consultCase');
+    setTimeout(() => {
+      const contact = document.getElementById('contact');
+      if (contact) contact.scrollIntoView({ behavior: 'smooth' });
+    }, 500);
+  }
+})();
 
 // ─── FORMSPREE 전송 ───
 async function submitForm() {

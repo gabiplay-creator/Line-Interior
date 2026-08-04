@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시공사례 — LINE INTERIOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #0e0d0b; --white: #f5f2ed; --gold: #b89a6a; --gold-light: #d4b88a;
+  --gray: #7a7670; --gray-light: #c8c4bc; --bg: #f5f2ed; --surface: #ede9e2;
+  --border: #d8d3ca; --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Noto Sans KR', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--black); min-height: 100vh; }
+
+/* ─── NAV ─── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 64px;
+  background: rgba(245,242,237,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display); font-size: 20px;
+  font-weight: 400; letter-spacing: 0.18em; color: var(--black);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--gold); }
+.nav-back {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--gray); text-decoration: none;
+  transition: color .2s; letter-spacing: 0.04em;
+}
+.nav-back:hover { color: var(--black); }
+.nav-consult {
+  background: var(--black); color: var(--white);
+  border: none; padding: 9px 22px; font-family: var(--font-body);
+  font-size: 12px; letter-spacing: 0.08em; cursor: pointer;
+  transition: background .2s; text-decoration: none;
+  display: inline-flex; align-items: center;
+}
+.nav-consult:hover { background: var(--gold); }
+
+/* ─── 메인 레이아웃 ─── */
+.case-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 64px);
+  align-items: start;
+}
+
+/* ─── 좌측: 이미지 스크롤 ─── */
+.case-images {
+  padding: 40px 48px 80px 48px;
+  border-right: 0.5px solid var(--border);
+}
+.case-img-item {
+  margin-bottom: 4px; overflow: hidden; position: relative;
+  cursor: zoom-in; line-height: 0;
+  background: var(--surface);
+}
+.case-img-item img {
+  width: 100%; display: block;
+  transition: transform .5s ease;
+}
+.case-img-item:hover img { transform: scale(1.02); }
+.case-img-item .zoom-hint {
+  position: absolute; bottom: 12px; right: 12px;
+  background: rgba(14,13,11,0.55); color: #fff;
+  font-size: 11px; padding: 5px 10px; border-radius: 2px;
+  letter-spacing: 0.06em; opacity: 0; transition: opacity .2s;
+}
+.case-img-item:hover .zoom-hint { opacity: 1; }
+.img-placeholder {
+  width: 100%; aspect-ratio: 4/3;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+}
+
+/* ─── 우측: 정보 패널 (sticky) ─── */
+.case-info {
+  position: sticky; top: 64px;
+  padding: 40px 32px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 0;
+}
+.case-info::-webkit-scrollbar { width: 3px; }
+.case-info::-webkit-scrollbar-thumb { background: var(--border); }
+
+.case-tag {
+  font-size: 10px; letter-spacing: 0.2em; color: var(--gold);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.case-tag::before { content:''; width:20px; height:0.5px; background:var(--gold); display:block; }
+.case-title {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 300; line-height: 1.3;
+  color: var(--black); margin-bottom: 8px; letter-spacing: 0.02em;
+}
+.case-meta-text { font-size: 13px; color: var(--gray); line-height: 1.8; margin-bottom: 28px; }
+
+.case-divider { height: 0.5px; background: var(--border); margin: 20px 0; }
+
+/* 이미지 썸네일 네비 */
+.case-thumb-nav {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+  margin-bottom: 24px;
+}
+.case-thumb-item {
+  aspect-ratio: 1; overflow: hidden; cursor: pointer;
+  border: 2px solid transparent; transition: border-color .2s;
+  background: var(--surface);
+}
+.case-thumb-item.active { border-color: var(--gold); }
+.case-thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+}
+
+.case-img-count { font-size: 12px; color: var(--gray); margin-bottom: 24px; letter-spacing: 0.06em; }
+
+/* 상담 버튼 */
+.consult-btn {
+  width: 100%; background: var(--black); color: var(--white);
+  border: none; padding: 15px;
+  font-family: var(--font-body); font-size: 14px; font-weight: 500;
+  cursor: pointer; letter-spacing: 0.06em;
+  margin-bottom: 10px; border-radius: 3px; transition: background .25s;
+}
+.consult-btn:hover { background: var(--gold); }
+.share-btn {
+  width: 100%; background: transparent; color: var(--gray);
+  border: 0.5px solid var(--border); padding: 12px;
+  font-family: var(--font-body); font-size: 13px;
+  cursor: pointer; letter-spacing: 0.04em;
+  border-radius: 3px; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.share-btn:hover { border-color: var(--black); color: var(--black); }
+
+/* ─── ZOOM 라이트박스 ─── */
+.zoom-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 1100;
+  background: rgba(0,0,0,0.97);
+  align-items: center; justify-content: center;
+}
+.zoom-backdrop.open { display: flex; }
+.zoom-close {
+  position: fixed; top: 20px; right: 24px;
+  background: none; border: none; cursor: pointer;
+  color: #fff; font-size: 13px; letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 8px; z-index: 10;
+}
+.zoom-img { max-width: 92vw; max-height: 90vh; object-fit: contain; display: block; }
+.zoom-nav {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.1); border: none;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #fff; z-index: 10;
+  transition: background .2s;
+}
+.zoom-nav:hover { background: rgba(255,255,255,0.22); }
+.zoom-prev { left: 20px; }
+.zoom-next { right: 20px; }
+.zoom-counter {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 0.1em;
+}
+
+/* ─── 빈 상태 ─── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 24px; text-align: center;
+}
+.empty-state p { font-size: 14px; color: var(--gray); margin-bottom: 20px; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .case-layout { grid-template-columns: 1fr; }
+  .case-info {
+    position: static; height: auto;
+    padding: 28px 24px; border-top: 0.5px solid var(--border);
+    order: -1;
+  }
+  .case-images { padding: 24px 20px 60px; border-right: none; }
+}
+@media (max-width: 560px) {
+  .case-thumb-nav { grid-template-columns: repeat(5, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">LINE<span>.</span> INTERIOR</a>
+  <a href="index.html#cases" class="nav-back">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    시공사례 목록
+  </a>
+  <a href="index.html#contact" class="nav-consult">무료 견적 문의</a>
+</nav>
+
+<div class="case-layout">
+  <!-- 좌측: 이미지 -->
+  <div class="case-images" id="caseImages">
+    <div class="empty-state">
+      <div style="width:40px;height:40px;border:2px solid #d8d3ca;border-top-color:#b89a6a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>
+      <p>시공사례를 불러오는 중...</p>
+    </div>
+  </div>
+
+  <!-- 우측: 정보 패널 -->
+  <div class="case-info" id="caseInfo">
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<!-- ZOOM 라이트박스 -->
+<div class="zoom-backdrop" id="zoomBackdrop" onclick="closeZoom(event)">
+  <button class="zoom-close" onclick="closeZoomBtn()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    닫기
+  </button>
+  <button class="zoom-nav zoom-prev" onclick="zoomNav(-1)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <img class="zoom-img" id="zoomImg" src="" alt="">
+  <button class="zoom-nav zoom-next" onclick="zoomNav(1)">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="zoom-counter" id="zoomCounter"></div>
+</div>
+
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+<script>
+// ─── 구글 시트 CSV URL ───
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTJqltJid6HPBZS18xiJslcf9YpbWOnnvAbEWAB1S8t9pkQ39kQx9ABWJfy-lpPR1MIsjAUxyX7G3gU/pub?output=csv';
+
+// URL에서 케이스 ID 읽기
+const params = new URLSearchParams(location.search);
+const CASE_ID = parseInt(params.get('id') || '1');
+
+let IMAGES = [];
+let zoomIdx = 0;
+
+// ─── URL 변환 ───
+function toDirectUrl(url) {
+  if (!url || !url.startsWith('http')) return '';
+  const match = url.match(/\/file\/d\/([^/?]+)/);
+  if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  const match2 = url.match(/uc\?id=([^&]+)/);
+  if (match2) return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
+  return url;
+}
+
+// ─── CSV 파싱 ───
+function parseCSV(csv) {
+  const allLines = csv.trim().split('\n');
+  const skipPatterns = /^("?)\s*(프로젝트명|유형|설명|썸네일|이미지|LINE|※|\(필수\)|#)/i;
+  return allLines.filter(l => {
+    const t = l.trim();
+    if (!t) return false;
+    const first = t.split(',')[0].replace(/"/g,'').trim();
+    if (!first || first.startsWith('(') || first.startsWith('http') || first.startsWith('※') || first.startsWith('LINE') || first === '프로젝트명' || first.includes('필수')) return false;
+    return true;
+  }).map((line, i) => {
+    const cols = line.match(/(".*?"|[^,\r\n]+)(?=,|$)/g) || [];
+    const c = cols.map(x => x.replace(/^"|"$/g,'').trim());
+    return {
+      id: i+1, name: c[0]||'', type: c[1]||'인테리어', meta: c[2]||'',
+      thumbnail: toDirectUrl(c[3]||''),
+      images: c.slice(4).map(toDirectUrl).filter(u => u && u.startsWith('http'))
+    };
+  }).filter(x => x.name);
+}
+
+// ─── 케이스 데이터 로드 ───
+async function loadCase() {
+  let cases = [];
+  try {
+    const res = await fetch(SHEET_URL, { signal: AbortSignal.timeout(8000) });
+    const csv = await res.text();
+    cases = parseCSV(csv);
+  } catch(e) {
+    try {
+      const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(SHEET_URL), { signal: AbortSignal.timeout(8000) });
+      const csv = await res.text();
+      cases = parseCSV(csv);
+    } catch(e2) { console.warn('시트 로드 실패'); }
+  }
+
+  const caseData = cases.find(x => x.id === CASE_ID);
+  if (!caseData) {
+    document.getElementById('caseImages').innerHTML = `
+      <div class="empty-state">
+        <p>시공사례를 찾을 수 없습니다.</p>
+        <a href="index.html#cases" style="font-size:13px;color:var(--gold);">← 목록으로 돌아가기</a>
+      </div>`;
+    return;
+  }
+
+  document.title = `${caseData.name} — LINE INTERIOR`;
+  IMAGES = caseData.images;
+  renderPage(caseData);
+}
+
+// ─── 페이지 렌더 ───
+function renderPage(c) {
+  // 좌측 이미지
+  const imagesEl = document.getElementById('caseImages');
+  if (!c.images.length) {
+    imagesEl.innerHTML = `<div class="empty-state"><p>등록된 이미지가 없습니다.</p></div>`;
+  } else {
+    imagesEl.innerHTML = c.images.map((url, i) => `
+      <div class="case-img-item" onclick="openZoom(${i})">
+        <img src="${url}" alt="${c.name} ${i+1}번째 사진" loading="${i < 2 ? 'eager' : 'lazy'}"
+          onerror="this.parentElement.innerHTML='<div class=img-placeholder><svg width=36 height=36 fill=none stroke=#c8c4bc stroke-width=1 viewBox=0_0_24_24><rect x=3 y=3 width=18 height=18 rx=2/><circle cx=8.5 cy=8.5 r=1.5/><polyline points=21_15_16_10_5_21/></svg></div>'">
+        <div class="zoom-hint">🔍 확대 보기</div>
+      </div>
+    `).join('');
+  }
+
+  // 우측 정보
+  const infoEl = document.getElementById('caseInfo');
+  const thumbsHtml = c.images.slice(0, 8).map((url, i) => `
+    <div class="case-thumb-item ${i===0?'active':''}" id="thumb-${i}" onclick="scrollToImg(${i})">
+      <img src="${url}" alt="썸네일 ${i+1}" loading="lazy"
+        onerror="this.parentElement.innerHTML='<div class=thumb-placeholder><svg width=18 height=18 fill=none stroke=#c8c4bc stroke-width=1 viewBox=0_0_24_24><rect x=3 y=3 width=18 height=18 rx=2/></svg></div>'">
+    </div>
+  `).join('');
+
+  infoEl.innerHTML = `
+    <div class="case-tag">${c.type}</div>
+    <h1 class="case-title">${c.name}</h1>
+    <p class="case-meta-text">${c.meta.replace(/·/g, '<br>')}</p>
+    <div class="case-divider"></div>
+    ${c.images.length > 0 ? `
+      <p class="case-img-count">사진 ${c.images.length}장</p>
+      <div class="case-thumb-nav">${thumbsHtml}</div>
+      <div class="case-divider"></div>
+    ` : ''}
+    <button class="consult-btn" onclick="goConsult()">이 시공사례로 상담하기</button>
+    <button class="share-btn" onclick="shareCase()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      공유하기
+    </button>
+  `;
+
+  // 스크롤 위치에 따라 썸네일 활성화
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(imagesEl.children).indexOf(entry.target);
+        document.querySelectorAll('.case-thumb-item').forEach((t,i) => t.classList.toggle('active', i===idx));
+      }
+    });
+  }, { threshold: 0.5 });
+  imagesEl.querySelectorAll('.case-img-item').forEach(el => observer.observe(el));
+}
+
+// ─── 썸네일 클릭 시 이미지 스크롤 ───
+function scrollToImg(idx) {
+  const items = document.querySelectorAll('.case-img-item');
+  if (items[idx]) items[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── 상담 이동 ───
+function goConsult() {
+  const name = document.querySelector('.case-title')?.textContent || '';
+  sessionStorage.setItem('consultCase', name);
+  location.href = 'index.html#contact';
+}
+
+// ─── 공유 ───
+function shareCase() {
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: location.href });
+  } else {
+    navigator.clipboard.writeText(location.href).then(() => alert('링크가 복사되었습니다.'));
+  }
+}
+
+// ─── ZOOM ───
+function openZoom(idx) {
+  zoomIdx = idx;
+  renderZoom();
+  document.getElementById('zoomBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function renderZoom() {
+  document.getElementById('zoomImg').src = IMAGES[zoomIdx] || '';
+  document.getElementById('zoomCounter').textContent = `${zoomIdx+1} / ${IMAGES.length}`;
+}
+function zoomNav(dir) {
+  zoomIdx = (zoomIdx + dir + IMAGES.length) % IMAGES.length;
+  renderZoom();
+}
+function closeZoom(e) {
+  if (e.target === document.getElementById('zoomBackdrop')) closeZoomBtn();
+}
+function closeZoomBtn() {
+  document.getElementById('zoomBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('zoomBackdrop').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') zoomNav(-1);
+  if (e.key === 'ArrowRight') zoomNav(1);
+  if (e.key === 'Escape') closeZoomBtn();
+});
+
+// ─── 상담 폼 자동입력 ───
+window.addEventListener('load', () => {
+  loadCase();
+});
+</script>
+</body>
+</html>
