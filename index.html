@@ -810,7 +810,7 @@ footer {
     <img src="hero_01.jpg" alt="주방 인테리어" loading="eager">
     <div class="slide-overlay">
       <div class="slide-tag">KITCHEN</div>
-      <div class="slide-title">화이트 톤이 돋보이는<br><em>모던 주방</em></div>
+      <div class="slide-title">화이트로 완성한<br><em>모던 주방</em></div>
       <div class="slide-btns">
         <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
         <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
@@ -1502,6 +1502,39 @@ document.addEventListener('keydown', e => {
     var dx = e.changedTouches[0].clientX - touchX;
     if (Math.abs(dx) > 50) heroSlide(dx < 0 ? 1 : -1);
   }, {passive:true});
+
+  // 새 탭/창 전환 후 복귀 시 이미지·텍스트 어긋남 방지
+  // (백그라운드 탭에서는 CSS opacity 전환 레이어가 재도색되지 않는
+  //  브라우저 렌더링 버그가 있어, 복귀 시 현재 슬라이드를 강제로 다시 그려준다)
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      // 탭이 백그라운드로 가면 타이머를 멈춰 어긋난 시점에 넘어가는 것을 방지
+      clearTimeout(timer);
+      progressEl.style.transition = 'none';
+    } else {
+      // 복귀 시: 현재 슬라이드를 제외한 모든 슬라이드의 active를 강제로 정리하고
+      var idx = current;
+      slides.forEach(function(s, i) { s.classList.toggle('active', i === idx); });
+      updateDots(idx);
+      currentEl.textContent = idx + 1;
+
+      // 강제 리페인트 (레이아웃을 한 번 읽어 리플로우 유발)
+      void hero.offsetHeight;
+
+      // 진행 바 및 타이머 재시작
+      var isVideo = slides[idx].dataset.type === 'video';
+      var dur = isVideo ? 8000 : DURATION;
+      progressEl.style.transition = 'none';
+      progressEl.style.width = '0%';
+      setTimeout(function() {
+        progressEl.style.transition = 'width ' + dur + 'ms linear';
+        progressEl.style.width = '100%';
+      }, 30);
+      if (!isPaused) {
+        timer = setTimeout(function() { goTo(idx + 1); }, dur);
+      }
+    }
+  });
 })()
 function selectBudget(el) {
   document.querySelectorAll('.budget-pill').forEach(p => p.classList.remove('active'));
