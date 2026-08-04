@@ -1370,6 +1370,7 @@ document.addEventListener('keydown', e => {
   const totalEl = document.getElementById('sliderTotal');
   const TOTAL = slides.length;
   const DURATION = 3000;
+  const hero = document.getElementById('heroSlider');
   let current = 0;
   let timer = null;
   let isPaused = false;
@@ -1397,6 +1398,10 @@ document.addEventListener('keydown', e => {
     slides[current].classList.add('active');
     currentEl.textContent = current + 1;
     updateDots(current);
+
+    // 강제 리페인트: GPU 레이어가 오래 유휴 상태였다가 전환될 때
+    // 이전 화면 잔상이 남는 브라우저 버그를 방지
+    void hero.offsetHeight;
 
     // 진행 바 리셋
     progressEl.style.transition = 'none';
@@ -1475,24 +1480,27 @@ document.addEventListener('keydown', e => {
   document.addEventListener('mousemove', tryPlayVideo, {once: true});
   document.addEventListener('click', tryPlayVideo, {once: true});
 
-  // 호버 일시정지
-  var hero = document.getElementById('heroSlider');
-  if (hero) {
-    hero.addEventListener('mouseenter', function() {
+  // 호버 일시정지 (풀스크린 배경 전체가 아니라, 글자를 읽는 텍스트 영역에
+  // 마우스가 있을 때만 멈춘다. 히어로 전체(100vh)를 기준으로 하면 페이지
+  // 진입 직후부터 항상 마우스가 그 안에 있어 영상이 영원히 안 넘어가는
+  // 문제가 있었다)
+  var overlays = document.querySelectorAll('.slide-overlay');
+  overlays.forEach(function(ov) {
+    ov.style.pointerEvents = 'auto';
+    ov.addEventListener('mouseenter', function() {
       isPaused = true;
       clearTimeout(timer);
       progressEl.style.transition = 'none';
     });
-    hero.addEventListener('mouseleave', function() {
+    ov.addEventListener('mouseleave', function() {
       isPaused = false;
-      // 남은 시간 계산 없이 현재 슬라이드에서 재시작
       var isVideo = slides[current].dataset.type === 'video';
       var dur = isVideo ? 8000 : DURATION;
       progressEl.style.transition = 'width ' + dur + 'ms linear';
       progressEl.style.width = '100%';
       timer = setTimeout(function() { goTo(current + 1); }, dur);
     });
-  }
+  });
 
   // 터치 스와이프
   var touchX = 0;
