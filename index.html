@@ -1201,10 +1201,9 @@ document.addEventListener('keydown', e => {
   const currentEl = document.getElementById('sliderCurrent');
   const totalEl = document.getElementById('sliderTotal');
   const TOTAL = slides.length;
-  const DURATION = 3000; // 3초
+  const DURATION = 3000;
   let current = 0;
   let timer = null;
-  let progressTimer = null;
   let isPaused = false;
 
   // 도트 생성
@@ -1212,95 +1211,97 @@ document.addEventListener('keydown', e => {
   for (let i = 0; i < TOTAL; i++) {
     const dot = document.createElement('button');
     dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', `슬라이드 ${i+1}`);
-    dot.onclick = () => goTo(i);
+    dot.setAttribute('aria-label', '슬라이드 ' + (i+1));
+    dot.onclick = (function(idx){ return function(){ goTo(idx); }; })(i);
     dotsEl.appendChild(dot);
   }
 
   function updateDots(idx) {
-    document.querySelectorAll('.slider-dot').forEach((d, i) => {
+    document.querySelectorAll('.slider-dot').forEach(function(d, i) {
       d.classList.toggle('active', i === idx);
     });
   }
 
   function goTo(idx) {
+    clearTimeout(timer);
     slides[current].classList.remove('active');
     current = (idx + TOTAL) % TOTAL;
     slides[current].classList.add('active');
     currentEl.textContent = current + 1;
     updateDots(current);
-    startProgress();
-    // 비디오 처리
-    const video = document.getElementById('heroVideo');
-    if (current === 0 && video) {
-      const isMobile = window.innerWidth <= 768;
-      if (!isMobile) video.play();
+
+    // 진행 바 리셋
+    progressEl.style.transition = 'none';
+    progressEl.style.width = '0%';
+
+    var isVideo = slides[current].dataset.type === 'video';
+    var dur = isVideo ? 8000 : DURATION;
+
+    setTimeout(function() {
+      progressEl.style.transition = 'width ' + dur + 'ms linear';
+      progressEl.style.width = '100%';
+    }, 30);
+
+    if (!isPaused) {
+      timer = setTimeout(function() { goTo(current + 1); }, dur);
     }
   }
 
-  function startProgress() {
-    clearInterval(timer);
-    clearInterval(progressTimer);
-    progressEl.style.transition = 'none';
-    progressEl.style.width = '0%';
-    // 현재 슬라이드가 비디오면 영상 길이만큼 대기
-    const isVideo = slides[current].dataset.type === 'video';
-    const dur = isVideo ? 8000 : DURATION;
-    setTimeout(() => {
-      progressEl.style.transition = `width ${dur}ms linear`;
-      progressEl.style.width = '100%';
-    }, 30);
-    timer = setTimeout(() => {
-      if (!isPaused) goTo(current + 1);
-    }, dur);
-  }
-
-  // 외부에서 호출 가능하도록
   window.heroSlide = function(dir) { goTo(current + dir); };
 
-  // 영상 자동재생 (PC)
   window.playHeroVideo = function() {
-    const video = document.getElementById('heroVideo');
-    const btn = document.getElementById('videoPlayBtn');
+    var video = document.getElementById('heroVideo');
+    var btn = document.getElementById('videoPlayBtn');
     if (video) {
       video.play();
       if (btn) btn.classList.add('hidden');
     }
   };
 
-  // PC 자동재생 시도
+  // 초기화
   window.addEventListener('load', function() {
-    const video = document.getElementById('heroVideo');
-    const isMobile = window.innerWidth <= 768;
+    var video = document.getElementById('heroVideo');
+    var isMobile = window.innerWidth <= 768;
     if (video && !isMobile) {
-      video.play().catch(() => {});
+      video.play().catch(function(){});
     }
-    startProgress();
-    slides[0].classList.add('active');
+    // 첫 슬라이드 진행 바 시작
+    var dur = 8000; // 영상
+    setTimeout(function() {
+      progressEl.style.transition = 'width ' + dur + 'ms linear';
+      progressEl.style.width = '100%';
+    }, 100);
+    timer = setTimeout(function() { goTo(1); }, dur);
   });
 
-  // 호버 시 일시정지
-  const hero = document.getElementById('heroSlider');
+  // 호버 일시정지
+  var hero = document.getElementById('heroSlider');
   if (hero) {
-    hero.addEventListener('mouseenter', () => {
+    hero.addEventListener('mouseenter', function() {
       isPaused = true;
       clearTimeout(timer);
-      progressEl.style.animationPlayState = 'paused';
+      progressEl.style.transition = 'none';
     });
-    hero.addEventListener('mouseleave', () => {
+    hero.addEventListener('mouseleave', function() {
       isPaused = false;
-      goTo(current);
+      // 남은 시간 계산 없이 현재 슬라이드에서 재시작
+      var isVideo = slides[current].dataset.type === 'video';
+      var dur = isVideo ? 8000 : DURATION;
+      progressEl.style.transition = 'width ' + dur + 'ms linear';
+      progressEl.style.width = '100%';
+      timer = setTimeout(function() { goTo(current + 1); }, dur);
     });
   }
 
   // 터치 스와이프
-  let touchX = 0;
-  document.querySelector('.hero').addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
-  document.querySelector('.hero').addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchX;
+  var touchX = 0;
+  var heroEl = document.querySelector('.hero');
+  heroEl.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+  heroEl.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - touchX;
     if (Math.abs(dx) > 50) heroSlide(dx < 0 ? 1 : -1);
   }, {passive:true});
-})();
+})()
 function selectBudget(el) {
   document.querySelectorAll('.budget-pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
