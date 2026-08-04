@@ -24,6 +24,15 @@
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Noto Sans KR', sans-serif;
 }
+/* Cormorant Garamond는 숫자를 올드스타일(들쭉날쭉한 높이)로 그려서
+   한글과 섞이면 어색해 보인다 → 라이닝(표준 높이) 숫자로 강제 */
+.case-name, .modal-case-name, .footer-logo, .nav-logo,
+.section-title, .slide-title, .slider-counter,
+.why-bottom-num, .why-emphasis, .why-main-title, .why-num, .why-quote,
+.form-wrap {
+  font-variant-numeric: lining-nums proportional-nums;
+  font-feature-settings: 'lnum' 1, 'pnum' 1;
+}
 html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
