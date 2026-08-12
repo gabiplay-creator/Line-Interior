@@ -1609,7 +1609,7 @@ function wizRender() {
         const selected = step.type === 'single'
           ? wizAnswers[step.key] === opt
           : wizAnswers[step.key].includes(opt);
-        return `<div class="wiz-option${selected ? ' selected' : ''}" onclick="wizSelect('${step.key}', ${JSON.stringify(opt)}, '${step.type}')">${opt}</div>`;
+        return `<div class="wiz-option${selected ? ' selected' : ''}" onclick='wizSelect(${JSON.stringify(step.key)}, ${JSON.stringify(opt)}, ${JSON.stringify(step.type)})'>${opt}</div>`;
       }).join('') + `</div>`;
     nextBtn.textContent = '다음';
     nextBtn.disabled = step.type === 'single' ? !wizAnswers[step.key] : wizAnswers[step.key].length === 0;
