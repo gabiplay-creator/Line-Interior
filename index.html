@@ -621,6 +621,44 @@ nav {
   letter-spacing: 0.04em;
 }
 
+/* ─── 단계별 견적 위저드 ─── */
+.wiz-progress { height: 3px; background: var(--border); margin-bottom: 22px; position: relative; }
+.wiz-progress-bar { height: 100%; background: var(--gold); transition: width .35s ease; }
+.wiz-step-label { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 10px; font-weight: 600; }
+.wiz-question {
+  font-family: var(--font-display); font-size: 21px; font-weight: 300;
+  line-height: 1.45; margin-bottom: 22px;
+}
+.wiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+.wiz-options.wiz-options-wide { grid-template-columns: 1fr; }
+.wiz-option {
+  padding: 15px 14px; text-align: center; background: var(--bg);
+  border: 0.5px solid var(--border); font-size: 13.5px; color: var(--black);
+  cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
+}
+.wiz-option:hover { border-color: var(--gold); }
+.wiz-option.selected { background: var(--black); color: var(--white); border-color: var(--black); }
+.wiz-nav { display: flex; gap: 10px; margin-top: 20px; }
+.wiz-btn-prev {
+  flex: 0 0 auto; padding: 14px 22px; background: var(--bg);
+  border: 0.5px solid var(--border); color: var(--gray);
+  font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; cursor: pointer;
+  transition: border-color .2s;
+}
+.wiz-btn-prev:hover { border-color: var(--gold); }
+.wiz-btn-next {
+  flex: 1; background: var(--black); color: var(--white);
+  border: none; padding: 14px; font-family: var(--font-body);
+  font-size: 13px; letter-spacing: 0.08em; cursor: pointer; transition: background .25s;
+}
+.wiz-btn-next:hover:not(:disabled) { background: var(--gold); }
+.wiz-btn-next:disabled { background: var(--border); color: var(--gray-light); cursor: not-allowed; }
+.wiz-consent {
+  display: flex; align-items: flex-start; gap: 8px; font-size: 12px;
+  color: var(--gray); margin-top: 6px; line-height: 1.5;
+}
+.wiz-consent input { width: auto; margin-top: 2px; }
+
 /* ─── FOOTER ─── */
 footer {
   background: var(--black); color: #6a6660;
@@ -1006,44 +1044,23 @@ footer {
     </div>
     <div class="form-wrap">
       <h3>무료 견적 문의</h3>
-      <p class="form-sub">평일 24시간 내 전문 상담사가 연락드립니다</p>
+      <p class="form-sub">몇 가지만 답해주시면 딱 맞는 상담을 도와드려요</p>
       <!-- 전송 완료 메시지 -->
       <div id="formSuccess" style="display:none;text-align:center;padding:40px 20px;">
         <div style="font-size:32px;margin-bottom:16px;">✅</div>
         <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;">문의가 접수되었습니다</div>
         <div style="font-size:13px;color:var(--gray);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
       </div>
-      <!-- 폼 -->
-      <div id="formBody">
-        <div class="form-row">
-          <div class="fg"><label>성함 <span style="color:#c0392b">*</span></label><input type="text" id="f_name" placeholder="홍길동" required></div>
-          <div class="fg"><label>연락처 <span style="color:#c0392b">*</span></label><input type="tel" id="f_tel" placeholder="010-0000-0000" required></div>
+      <!-- 단계별 위저드 -->
+      <div id="wizardBody">
+        <div class="wiz-progress"><div class="wiz-progress-bar" id="wizProgressBar"></div></div>
+        <div id="wizStepLabel" class="wiz-step-label"></div>
+        <div id="wizQuestion" class="wiz-question"></div>
+        <div id="wizContent"></div>
+        <div class="wiz-nav">
+          <button type="button" class="wiz-btn-prev" id="wizPrevBtn" onclick="wizPrev()" style="display:none;">이전</button>
+          <button type="button" class="wiz-btn-next" id="wizNextBtn" onclick="wizNext()" disabled>다음</button>
         </div>
-        <div class="form-row">
-          <div class="fg"><label>공간 유형</label>
-            <select id="f_space"><option value="">선택해주세요</option><option>아파트</option><option>빌라/다세대</option><option>단독주택</option><option>사무실</option><option>카페/상가</option><option>기타</option></select>
-          </div>
-          <div class="fg"><label>평수</label>
-            <select id="f_size"><option value="">선택해주세요</option><option>20평 미만</option><option>20~30평</option><option>30~40평</option><option>40~50평</option><option>50평 이상</option></select>
-          </div>
-        </div>
-        <div class="fg">
-          <label>예산 범위</label>
-          <div class="budget-row">
-            <button type="button" class="budget-pill" onclick="selectBudget(this)">1천만원 미만</button>
-            <button type="button" class="budget-pill" onclick="selectBudget(this)">1~3천만원</button>
-            <button type="button" class="budget-pill" onclick="selectBudget(this)">3~5천만원</button>
-            <button type="button" class="budget-pill" onclick="selectBudget(this)">5천만원 이상</button>
-          </div>
-          <input type="hidden" id="f_budget" value="">
-        </div>
-        <div class="fg"><label>희망 스타일</label>
-          <select id="f_style"><option value="">선택해주세요</option><option>모던/미니멀</option><option>내추럴/우드</option><option>클래식/고급</option><option>인더스트리얼</option><option>북유럽/스칸디나비안</option><option>기타</option></select>
-        </div>
-        <div class="fg"><label>요청사항</label>
-          <textarea id="f_memo" placeholder="참고하고 싶은 스타일, 특별히 신경 써 주셨으면 하는 부분 등 자유롭게 입력해주세요"></textarea>
-        </div>
-        <button class="form-submit" onclick="submitForm()">문의 보내기</button>
         <p class="form-notice">개인정보는 상담 목적 외 사용되지 않습니다</p>
       </div>
     </div>
@@ -1553,18 +1570,88 @@ document.addEventListener('keydown', e => {
     }
   });
 })()
-function selectBudget(el) {
-  document.querySelectorAll('.budget-pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('f_budget').value = el.textContent;
+// ─── 견적 위저드 ───
+const WIZ_STEPS = [
+  { key: 'space', q: '인테리어가 필요한 공간은 어디인가요?', type: 'single',
+    options: ['아파트', '빌라/다세대', '단독주택', '오피스텔'] },
+  { key: 'size', q: '인테리어 공간의 평수를 선택해주세요.', type: 'single',
+    options: ['10~20평대', '30평대', '40평대', '50평대 이상'] },
+  { key: 'condition', q: '인테리어 할 집은 어떤 상태인가요?', type: 'single',
+    options: ['거주하며 공사 예정', '현재 공실', '시공 시 공실 예정', '신축 입주', '기타'] },
+  { key: 'reason', q: '인테리어를 고려하시게 된 주요 이유를 선택해주세요.', type: 'single',
+    options: ['집을 구매하여 리모델링 계획 중', '사는 집을 새롭게 바꾸기 위해', '매매나 임대를 위한 리모델링', '기타'] },
+  { key: 'areas', q: '인테리어가 필요한 공간을 모두 골라주세요.', type: 'multi',
+    options: ['키친', '바스', '수납', '마루', '중문', '도어', '창호', '필름', '벽지', '조명', '타일', '전체'] },
+  { key: 'budget', q: '인테리어 예산은 총 얼마를 생각하시나요?', type: 'single',
+    options: ['1천만원 미만', '1~3천만원', '3~5천만원', '5~7천만원', '7천만원~1억원', '1억원 이상', '아직 미정이에요'] },
+  { key: 'timeline', q: '인테리어가 언제 시작되길 희망하시나요?', type: 'single',
+    options: ['1개월 이내', '2개월 이내', '3개월 이내', '3개월 이후', '6개월 이후'] },
+  { key: 'contact', q: '마지막으로, 연락처를 남겨주세요.', type: 'contact' },
+];
+let wizIdx = 0;
+const wizAnswers = { space:'', size:'', condition:'', reason:'', areas:[], budget:'', timeline:'', memo:'' };
+
+function wizRender() {
+  const step = WIZ_STEPS[wizIdx];
+  document.getElementById('wizProgressBar').style.width = (wizIdx / (WIZ_STEPS.length - 1) * 100) + '%';
+  document.getElementById('wizStepLabel').textContent = `STEP ${wizIdx + 1} / ${WIZ_STEPS.length}`;
+  document.getElementById('wizQuestion').textContent = step.q;
+  const contentEl = document.getElementById('wizContent');
+  const prevBtn = document.getElementById('wizPrevBtn');
+  const nextBtn = document.getElementById('wizNextBtn');
+  prevBtn.style.display = wizIdx === 0 ? 'none' : 'inline-block';
+  nextBtn.disabled = false;
+
+  if (step.type === 'single' || step.type === 'multi') {
+    const wide = step.options.some(o => o.length > 7);
+    contentEl.innerHTML = `<div class="wiz-options${wide ? ' wiz-options-wide' : ''}">` +
+      step.options.map(opt => {
+        const selected = step.type === 'single'
+          ? wizAnswers[step.key] === opt
+          : wizAnswers[step.key].includes(opt);
+        return `<div class="wiz-option${selected ? ' selected' : ''}" onclick="wizSelect('${step.key}', ${JSON.stringify(opt)}, '${step.type}')">${opt}</div>`;
+      }).join('') + `</div>`;
+    nextBtn.textContent = '다음';
+    nextBtn.disabled = step.type === 'single' ? !wizAnswers[step.key] : wizAnswers[step.key].length === 0;
+  } else if (step.type === 'contact') {
+    contentEl.innerHTML = `
+      <div class="fg"><label>성함 <span style="color:#c0392b">*</span></label><input type="text" id="f_name" placeholder="홍길동"></div>
+      <div class="fg"><label>연락처 <span style="color:#c0392b">*</span></label><input type="tel" id="f_tel" placeholder="010-0000-0000"></div>
+      <div class="fg"><label>요청사항</label><textarea id="f_memo" placeholder="참고하고 싶은 스타일, 특별히 신경 써 주셨으면 하는 부분 등 자유롭게 입력해주세요">${wizAnswers.memo}</textarea></div>
+      <label class="wiz-consent"><input type="checkbox" id="f_consent"> 개인정보 수집 및 이용에 동의합니다 (상담 목적, 필수)</label>
+    `;
+    nextBtn.textContent = '상담 신청하기';
+  }
+}
+
+function wizSelect(key, opt, type) {
+  if (type === 'single') {
+    wizAnswers[key] = opt;
+  } else {
+    const arr = wizAnswers[key];
+    const i = arr.indexOf(opt);
+    if (i > -1) arr.splice(i, 1); else arr.push(opt);
+  }
+  wizRender();
+}
+
+function wizPrev() {
+  if (wizIdx === 0) return;
+  wizIdx--;
+  wizRender();
+}
+
+function wizNext() {
+  const step = WIZ_STEPS[wizIdx];
+  if (step.type === 'contact') { wizSubmit(); return; }
+  if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
 }
 
 // 시공사례 상세에서 넘어온 경우 자동입력
 (function() {
   const consultCase = sessionStorage.getItem('consultCase');
   if (consultCase) {
-    const memo = document.getElementById('f_memo');
-    if (memo) memo.value = `[시공사례 참고] ${consultCase} 스타일로 상담 요청드립니다.`;
+    wizAnswers.memo = `[시공사례 참고] ${consultCase} 스타일로 상담 요청드립니다.`;
     sessionStorage.removeItem('consultCase');
     setTimeout(() => {
       const contact = document.getElementById('contact');
@@ -1574,24 +1661,30 @@ function selectBudget(el) {
 })();
 
 // ─── FORMSPREE 전송 ───
-async function submitForm() {
-  const name  = document.getElementById('f_name').value.trim();
-  const tel   = document.getElementById('f_tel').value.trim();
+async function wizSubmit() {
+  const name = document.getElementById('f_name').value.trim();
+  const tel = document.getElementById('f_tel').value.trim();
+  const memo = document.getElementById('f_memo').value.trim();
+  const consent = document.getElementById('f_consent').checked;
   if (!name) { alert('성함을 입력해주세요.'); return; }
-  if (!tel)  { alert('연락처를 입력해주세요.'); return; }
+  if (!tel) { alert('연락처를 입력해주세요.'); return; }
+  if (!consent) { alert('개인정보 수집 및 이용에 동의해주세요.'); return; }
 
-  const btn = document.querySelector('.form-submit');
+  const btn = document.getElementById('wizNextBtn');
   btn.textContent = '전송 중...';
   btn.disabled = true;
 
   const data = {
     성함: name,
     연락처: tel,
-    공간유형: document.getElementById('f_space').value,
-    평수: document.getElementById('f_size').value,
-    예산범위: document.getElementById('f_budget').value,
-    희망스타일: document.getElementById('f_style').value,
-    요청사항: document.getElementById('f_memo').value,
+    공간유형: wizAnswers.space,
+    평수: wizAnswers.size,
+    집상태: wizAnswers.condition,
+    고려이유: wizAnswers.reason,
+    필요한공간: wizAnswers.areas.join(', '),
+    예산범위: wizAnswers.budget,
+    희망시작시기: wizAnswers.timeline,
+    요청사항: memo,
   };
 
   try {
@@ -1601,19 +1694,21 @@ async function submitForm() {
       body: JSON.stringify(data)
     });
     if (res.ok) {
-      document.getElementById('formBody').style.display = 'none';
+      document.getElementById('wizardBody').style.display = 'none';
       document.getElementById('formSuccess').style.display = 'block';
     } else {
       alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      btn.textContent = '문의 보내기';
+      btn.textContent = '상담 신청하기';
       btn.disabled = false;
     }
   } catch(e) {
     alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    btn.textContent = '문의 보내기';
+    btn.textContent = '상담 신청하기';
     btn.disabled = false;
   }
 }
+
+wizRender();
 
 // ─── SCROLL REVEAL ───
 const observer = new IntersectionObserver(entries => {
