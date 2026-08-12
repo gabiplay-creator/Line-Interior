@@ -1624,24 +1624,33 @@ function wizRender() {
   }
 }
 
+let wizAutoTimer = null;
 function wizSelect(key, opt, type) {
   if (type === 'single') {
     wizAnswers[key] = opt;
+    wizRender();
+    if (wizAutoTimer) clearTimeout(wizAutoTimer);
+    // 단일 선택은 클릭 즉시 선택 표시를 보여준 뒤 자동으로 다음 단계로 이동
+    wizAutoTimer = setTimeout(() => {
+      if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
+    }, 320);
   } else {
     const arr = wizAnswers[key];
     const i = arr.indexOf(opt);
     if (i > -1) arr.splice(i, 1); else arr.push(opt);
+    wizRender();
   }
-  wizRender();
 }
 
 function wizPrev() {
+  if (wizAutoTimer) clearTimeout(wizAutoTimer);
   if (wizIdx === 0) return;
   wizIdx--;
   wizRender();
 }
 
 function wizNext() {
+  if (wizAutoTimer) clearTimeout(wizAutoTimer);
   const step = WIZ_STEPS[wizIdx];
   if (step.type === 'contact') { wizSubmit(); return; }
   if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
