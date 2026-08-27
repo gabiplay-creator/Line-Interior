@@ -1617,6 +1617,7 @@ function wizRender() {
     contentEl.innerHTML = `
       <div class="fg"><label>성함 <span style="color:#c0392b">*</span></label><input type="text" id="f_name" placeholder="홍길동"></div>
       <div class="fg"><label>연락처 <span style="color:#c0392b">*</span></label><input type="tel" id="f_tel" placeholder="010-0000-0000"></div>
+      <div class="fg"><label>건물명</label><input type="text" id="f_building" placeholder="예) 양우아파트"></div>
       <div class="fg"><label>요청사항</label><textarea id="f_memo" placeholder="참고하고 싶은 스타일, 특별히 신경 써 주셨으면 하는 부분 등 자유롭게 입력해주세요">${wizAnswers.memo}</textarea></div>
       <label class="wiz-consent"><input type="checkbox" id="f_consent"> 개인정보 수집 및 이용에 동의합니다 (상담 목적, 필수)</label>
     `;
@@ -1673,6 +1674,7 @@ function wizNext() {
 async function wizSubmit() {
   const name = document.getElementById('f_name').value.trim();
   const tel = document.getElementById('f_tel').value.trim();
+  const building = document.getElementById('f_building').value.trim();
   const memo = document.getElementById('f_memo').value.trim();
   const consent = document.getElementById('f_consent').checked;
   if (!name) { alert('성함을 입력해주세요.'); return; }
@@ -1686,6 +1688,7 @@ async function wizSubmit() {
   const data = {
     성함: name,
     연락처: tel,
+    건물명: building,
     공간유형: wizAnswers.space,
     평수: wizAnswers.size,
     집상태: wizAnswers.condition,
