@@ -1,1774 +1,2642 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>라인 인테리어 — LINE INTERIOR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>공정표 — 인테리어 공사 스케줄러</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <style>
-/* ─── RESET & BASE ─── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --black: #0e0d0b;
-  --white: #f5f2ed;
-  --gold: #b89a6a;
-  --gold-light: #d4b88a;
-  --gray: #7a7670;
-  --gray-light: #c8c4bc;
-  --bg: #f5f2ed;
-  --surface: #ede9e2;
-  --border: #d8d3ca;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Noto Sans KR', sans-serif;
-}
-/* Cormorant Garamond는 숫자를 올드스타일(들쭉날쭉한 높이)로 그려서
-   한글과 섞이면 어색해 보인다 → 라이닝(표준 높이) 숫자로 강제 */
-.case-name, .modal-case-name, .footer-logo, .nav-logo,
-.section-title, .slide-title, .slider-counter,
-.why-bottom-num, .why-emphasis, .why-main-title, .why-num, .why-quote,
-.form-wrap {
-  font-variant-numeric: lining-nums proportional-nums;
-  font-feature-settings: 'lnum' 1, 'pnum' 1;
-}
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--black);
-  overflow-x: hidden;
-  line-height: 1.7;
-}
-img { display: block; width: 100%; }
-a { text-decoration: none; color: inherit; }
-
-/* ─── NAV ─── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 48px;
-  height: 68px;
-  background: rgba(10,9,8,0.3);
-  backdrop-filter: blur(12px);
-  border-bottom: 0.5px solid rgba(255,255,255,0.08);
-  transition: all .3s;
-}
-.nav-logo {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  color: #f5f2ed;
-}
-.nav-logo span { color: var(--gold); }
-.nav-links { display: flex; gap: 32px; }
-.nav-links a {
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: rgba(245,242,237,0.75);
-  transition: color .2s;
-  text-decoration: none;
-}
-.nav-links a:hover { color: var(--gold); }
-.nav-cta {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--black);
-  background: var(--gold);
-  padding: 9px 22px;
-  border: none;
-  cursor: pointer;
-  transition: background .2s;
-}
-.nav-cta:hover { background: var(--gold-light); }
-
-/* ─── HERO ─── */
-/* ─── FULLSCREEN HERO SLIDER ─── */
-.hero {
-  position: relative;
-  width: 100%; height: 100vh;
-  overflow: hidden;
-  padding-top: 0;
-  background: #0e0d0b;
-}
-.slide {
-  position: absolute; inset: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 1s ease;
-  pointer-events: none;
-}
-.slide.active {
-  opacity: 1;
-  pointer-events: all;
-  z-index: 2;
-}
-.slide video, .slide img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.slide-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(10,9,8,0.65) 0%,
-    rgba(10,9,8,0.3) 55%,
-    rgba(10,9,8,0.05) 100%
-  );
-  display: flex; flex-direction: column;
-  justify-content: center;
-  padding: 0 0 0 clamp(32px, 8vw, 120px);
-  pointer-events: none;
-}
-.slide-tag {
-  font-size: 11px; letter-spacing: 0.22em;
-  color: var(--gold); margin-bottom: 20px;
-  display: flex; align-items: center; gap: 12px;
-  opacity: 0; transform: translateY(16px);
-  transition: opacity .7s .1s, transform .7s .1s;
-}
-.slide-tag::before { content:''; width:28px; height:0.5px; background:var(--gold); display:block; }
-.slide-title {
-  font-family: var(--font-display);
-  font-size: clamp(36px, 5.5vw, 76px);
-  font-weight: 300; line-height: 1.18;
-  color: #f5f2ed; letter-spacing: 0.01em;
-  margin-bottom: 20px; max-width: 640px;
-  opacity: 0; transform: translateY(20px);
-  transition: opacity .8s .25s, transform .8s .25s;
-}
-.slide-title em { font-style: italic; color: var(--gold-light); }
-.slide-sub {
-  font-size: clamp(13px, 1.2vw, 15px);
-  color: rgba(200,196,188,0.9);
-  line-height: 1.9; max-width: 400px;
-  margin-bottom: 36px;
-  opacity: 0; transform: translateY(16px);
-  transition: opacity .7s .4s, transform .7s .4s;
-}
-.slide-btns {
-  display: flex; gap: 12px;
-  opacity: 0; transform: translateY(12px);
-  transition: opacity .6s .55s, transform .6s .55s;
-  pointer-events: all;
-}
-.slide.active .slide-tag,
-.slide.active .slide-title,
-.slide.active .slide-sub,
-.slide.active .slide-btns {
-  opacity: 1; transform: none;
-}
-.btn-primary {
-  background: var(--gold); color: var(--black);
-  border: none; padding: 14px 32px;
-  font-family: var(--font-body);
-  font-size: 13px; letter-spacing: 0.08em;
-  cursor: pointer; transition: all .25s;
-}
-.btn-primary:hover { background: var(--gold-light); }
-.btn-ghost {
-  background: transparent; color: #f5f2ed;
-  border: 0.5px solid rgba(245,242,237,0.5); padding: 14px 32px;
-  font-family: var(--font-body);
-  font-size: 13px; letter-spacing: 0.08em;
-  cursor: pointer; transition: all .25s;
-}
-.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-
-/* 재생 버튼 (모바일) */
-.video-play-btn {
-  display: none;
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 72px; height: 72px;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-  border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.4);
-  align-items: center; justify-content: center;
-  cursor: pointer; z-index: 10;
-  transition: background .2s;
-}
-.video-play-btn:hover { background: rgba(255,255,255,0.25); }
-.video-play-btn svg { margin-left: 4px; }
-@media (max-width: 768px) {
-  .video-play-btn { display: flex; }
-  .video-play-btn.hidden { display: none; }
-}
-
-/* 슬라이더 컨트롤 */
-.slider-dots {
-  position: absolute; bottom: 32px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; gap: 8px; z-index: 20;
-}
-.slider-dot {
-  width: 6px; height: 6px; border-radius: 3px;
-  background: rgba(255,255,255,0.4);
-  cursor: pointer; transition: all .4s;
-  border: none;
-}
-.slider-dot.active {
-  width: 28px; background: var(--gold);
-}
-.slider-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 48px; height: 48px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(4px);
-  border: 0.5px solid rgba(255,255,255,0.2);
-  border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; z-index: 20; transition: background .2s;
-}
-.slider-arrow:hover { background: rgba(255,255,255,0.2); }
-.slider-prev { left: 24px; }
-.slider-next { right: 24px; }
-
-/* 진행 바 */
-.slider-progress {
-  position: absolute; bottom: 0; left: 0;
-  height: 2px; background: var(--gold);
-  width: 0%; z-index: 20;
-  transition: width linear;
-}
-
-/* 슬라이드 카운터 */
-.slider-counter {
-  position: absolute; bottom: 28px; right: 32px;
-  font-size: 12px; letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.6); z-index: 20;
-  font-family: var(--font-display);
-}
-.slider-counter span { color: var(--gold); }
-
-@media (max-width: 900px) {
-  .slide-overlay { padding: 0 0 0 32px; }
-  .slider-arrow { display: none; }
-}
-@media (max-width: 560px) {
-  .slide-overlay { padding: 0 24px; }
-  .slide-sub { display: none; }
-  .hero { height: 100svh; }
-}
-
-/* ─── SECTION BASE ─── */
-.section { padding: 100px 80px; }
-.section-header { margin-bottom: 60px; }
-.section-tag {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-size: 11px; letter-spacing: 0.2em;
-  color: var(--gold); margin-bottom: 16px;
-}
-.section-tag::before { content: ''; display: block; width: 24px; height: 0.5px; background: var(--gold); }
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 3.5vw, 48px);
-  font-weight: 300; letter-spacing: 0.02em;
-  line-height: 1.25;
-}
-.section-title em { font-style: italic; color: var(--gold); }
-.section-desc {
-  font-size: 14px; color: var(--gray);
-  line-height: 1.9; max-width: 520px;
-  margin-top: 16px;
-}
-
-/* ─── WHY LINE ─── */
-#why { background: var(--black); color: var(--white); }
-#why .section-tag { color: var(--gold); }
-#why .section-title { color: var(--white); }
-#why .section-desc { color: var(--gray-light); }
-.why-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px; margin-top: 60px;
-}
-.why-card {
-  padding: 44px 36px;
-  background: #161512;
-  border-top: 1.5px solid transparent;
-  transition: border-color .3s, background .3s;
-  cursor: default;
-}
-.why-card:hover {
-  border-top-color: var(--gold);
-  background: #1c1a16;
-}
-.why-num {
-  font-family: var(--font-display);
-  font-size: 48px; font-weight: 300;
-  color: #2a2720; margin-bottom: 24px;
-  line-height: 1;
-}
-.why-icon {
-  width: 44px; height: 44px;
-  border: 0.5px solid #3a3730;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
-}
-.why-card-title {
-  font-size: 16px; font-weight: 500;
-  color: var(--white); margin-bottom: 12px;
-  letter-spacing: 0.03em;
-}
-.why-card-desc {
-  font-size: 13px; color: #8a8680;
-  line-height: 1.85;
-}
-.why-bottom {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 2px; margin-top: 2px;
-}
-.why-bottom-card {
-  padding: 36px; background: #161512;
-  display: flex; align-items: center; gap: 24px;
-  border-left: 1.5px solid transparent;
-  transition: border-color .3s;
-}
-.why-bottom-card:hover { border-left-color: var(--gold); }
-.why-bottom-num {
-  font-family: var(--font-display);
-  font-size: 40px; font-weight: 300;
-  color: var(--gold); white-space: nowrap;
-}
-.why-bottom-num sub { font-size: 16px; color: var(--gray); margin-left: 2px; }
-.why-bottom-text { font-size: 13px; color: #8a8680; line-height: 1.7; }
-.why-bottom-text strong { color: var(--white); display: block; margin-bottom: 4px; font-weight: 500; }
-
-/* ─── CASES (시공 사례) ─── */
-#cases { background: var(--bg); }
-.cases-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-.case-card {
-  position: relative; overflow: hidden;
-  cursor: pointer;
-  background: var(--surface);
-}
-.case-card:hover .case-thumb-inner { transform: scale(1.04); }
-.case-card:hover .case-overlay { opacity: 1; }
-.case-thumb {
-  aspect-ratio: 4/3; overflow: hidden; position: relative;
-}
-.case-thumb-inner {
-  width: 100%; height: 100%;
-  transition: transform .5s ease;
-  display: flex; align-items: center; justify-content: center;
-}
-.case-overlay {
-  position: absolute; inset: 0;
-  background: rgba(14,13,11,0.55);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity .3s;
-}
-.case-overlay-text {
-  font-size: 12px; letter-spacing: 0.15em;
-  color: var(--white); text-align: center;
-}
-.case-overlay-text svg { margin: 0 auto 8px; }
-.case-body { padding: 20px 22px 24px; }
-.case-type {
-  font-size: 10px; letter-spacing: 0.15em;
-  color: var(--gold); margin-bottom: 6px;
-}
-.case-name {
-  font-family: var(--font-display);
-  font-size: 18px; font-weight: 400;
-  color: var(--black); margin-bottom: 6px;
-}
-.case-meta { font-size: 12px; color: var(--gray); }
-
-/* SVG placeholders in case cards */
-.case-svg-bg {
-  width: 100%; height: 100%;
-  position: absolute; top: 0; left: 0;
-}
-
-/* ─── CASE MODAL (한샘몰 스타일 사이드 패널) ─── */
-.modal-backdrop {
-  display: none;
-  position: fixed; inset: 0; z-index: 999;
-  background: rgba(14,13,11,0.5);
-  backdrop-filter: blur(3px);
-  align-items: flex-start; justify-content: flex-end;
-}
-.modal-backdrop.open { display: flex; }
-.modal-inner {
-  position: relative;
-  width: 100%; max-width: 520px;
-  height: 100vh;
-  background: var(--bg);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.2);
-  animation: slideInRight .3s ease;
-}
-@keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-.modal-close {
-  background: none; border: none; cursor: pointer;
-  color: var(--gray); font-size: 12px;
-  display: flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; border-radius: 50%;
-  transition: background .2s; flex-shrink: 0;
-}
-.modal-close:hover { background: var(--surface); color: var(--black); }
-.modal-header {
-  display: flex; align-items: flex-start;
-  justify-content: space-between;
-  padding: 20px 24px 16px;
-  border-bottom: 0.5px solid var(--border);
-  background: var(--bg); flex-shrink: 0;
-}
-.modal-header-info { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.modal-case-name {
-  font-family: var(--font-display);
-  font-size: 20px; font-weight: 400;
-  color: var(--black); letter-spacing: 0.02em;
-  line-height: 1.3;
-}
-.modal-case-meta { font-size: 12px; color: var(--gray); }
-.modal-scroll {
-  flex: 1; overflow-y: auto; padding: 0;
-}
-.modal-scroll::-webkit-scrollbar { width: 3px; }
-.modal-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.modal-img-stack { display: flex; flex-direction: column; gap: 2px; }
-.modal-img-row {
-  width: 100%; overflow: hidden; position: relative;
-  cursor: zoom-in; background: var(--surface); line-height: 0;
-}
-.modal-img-row img { width: 100%; display: block; transition: transform .4s; }
-.modal-img-row:hover img { transform: scale(1.02); }
-.modal-img-overlay {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.12);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity .25s;
-}
-.modal-img-row:hover .modal-img-overlay { opacity: 1; }
-.modal-footer {
-  flex-shrink: 0; padding: 14px 20px;
-  border-top: 0.5px solid var(--border);
-  background: var(--bg);
-  display: flex; gap: 10px; align-items: center;
-}
-.modal-consult-btn {
-  flex: 1; background: var(--black); color: var(--white);
-  border: none; padding: 14px;
-  font-family: var(--font-body); font-size: 14px; font-weight: 500;
-  cursor: pointer; letter-spacing: 0.04em;
-  border-radius: 4px; transition: background .2s;
-}
-.modal-consult-btn:hover { background: var(--gold); }
-.modal-wish-btn {
-  width: 48px; height: 48px; border-radius: 4px;
-  border: 0.5px solid var(--border); background: var(--white);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--gray);
-  transition: all .2s; flex-shrink: 0;
-}
-.modal-wish-btn:hover { border-color: var(--gold); color: var(--gold); }
-/* 구 갤러리 스타일 (더 이상 사용 안 함) */
-.modal-title-bar, .modal-gallery, .modal-img-wrap, .modal-img-inner { display: none; }
-@media (max-width: 560px) { .modal-inner { max-width: 100%; } }
-
-/* ─── ZOOM LIGHTBOX ─── */
-.zoom-backdrop {
-  display: none;
-  position: fixed; inset: 0; z-index: 1100;
-  background: rgba(0,0,0,0.97);
-  align-items: center; justify-content: center;
-}
-.zoom-backdrop.open { display: flex; }
-.zoom-inner {
-  position: relative;
-  max-width: 90vw; max-height: 90vh;
-  display: flex; align-items: center; justify-content: center;
-}
-.zoom-img-wrap {
-  max-width: 88vw; max-height: 85vh;
-  overflow: hidden; border: 0.5px solid #2a2720;
-  display: flex; align-items: center; justify-content: center;
-}
-.zoom-img-wrap svg { max-width: 80vw; max-height: 80vh; }
-.zoom-close {
-  position: absolute; top: -48px; right: 0;
-  background: none; border: none; cursor: pointer;
-  color: var(--white); font-size: 13px; letter-spacing: 0.1em;
-  display: flex; align-items: center; gap: 8px;
-}
-/* 화살표 위치 화면 기준 고정 */
-.zoom-nav {
-  position: fixed; top: 50%; transform: translateY(-50%);
-  background: rgba(245,242,237,0.12); border: none;
-  width: 48px; height: 48px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--white);
-  transition: background .2s;
-  z-index: 1101;
-  border-radius: 50%;
-}
-.zoom-nav:hover { background: rgba(245,242,237,0.25); }
-.zoom-prev { left: 20px; }
-.zoom-next { right: 20px; }
-.zoom-counter {
-  position: fixed; bottom: 24px; left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px; color: var(--gray);
-  letter-spacing: 0.1em;
-  z-index: 1101;
-}
-
-/* ─── CONTACT ─── */
-#contact { background: var(--surface); }
-.contact-grid {
-  display: grid; grid-template-columns: 1fr 1.4fr;
-  gap: 80px; align-items: stretch;
-}
-.contact-info { padding-top: 8px; display: flex; flex-direction: column; }
-.contact-detail {
-  display: flex; align-items: flex-start; gap: 16px;
-  margin-bottom: 28px; padding-bottom: 28px;
-  border-bottom: 0.5px solid var(--border);
-}
-.contact-detail:last-of-type { border-bottom: none; }
-.contact-icon {
-  width: 38px; height: 38px; flex-shrink: 0;
-  border: 0.5px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--gold);
-}
-.contact-detail-label { font-size: 13px; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 6px; font-weight: 500; }
-.contact-detail-value { font-size: 14px; color: var(--black); font-weight: 400; }
-.contact-detail-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
-
-/* ─── 전화걸기 버튼 (모바일 전용) ─── */
-.call-btn {
-  display: none; /* 기본 숨김 */
-  align-items: center; gap: 7px;
-  margin-top: 10px;
-  background: var(--black); color: var(--white);
-  padding: 9px 18px; border-radius: 4px;
-  font-size: 13px; font-weight: 500;
-  text-decoration: none; letter-spacing: 0.04em;
-  transition: background .2s;
-  width: fit-content;
-}
-.call-btn:hover { background: var(--gold); }
-@media (max-width: 768px) {
-  .call-btn { display: flex; } /* 모바일에서만 표시 */
-}
-.kakao-row {
-  display: flex; align-items: center; gap: 10px;
-  background: #FEE500; padding: 14px 22px;
-  cursor: pointer; border: none; width: 100%;
-  margin-top: 8px; transition: filter .2s;
-}
-.kakao-row:hover { filter: brightness(0.93); }
-.kakao-row span { font-size: 13px; font-weight: 500; color: #3A1D1D; letter-spacing: 0.04em; }
-
-/* Form */
-.form-wrap {
-  background: var(--white);
-  padding: 40px; border: 0.5px solid var(--border);
-}
-.form-wrap h3 {
-  font-family: var(--font-display);
-  font-size: 24px; font-weight: 300;
-  margin-bottom: 6px; letter-spacing: 0.04em;
-}
-.form-sub { font-size: 12px; color: var(--gray); margin-bottom: 28px; letter-spacing: 0.05em; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.fg:last-child { margin-bottom: 0; }
-.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gray); }
-.fg input, .fg select, .fg textarea {
-  font-family: var(--font-body); font-size: 14px;
-  background: var(--bg); border: 0.5px solid var(--border);
-  padding: 11px 14px; color: var(--black);
-  outline: none; transition: border-color .2s;
-  width: 100%;
-}
-.fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--gold); }
-.fg textarea { min-height: 90px; resize: vertical; }
-.budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-.budget-pill {
-  font-size: 12px; padding: 6px 16px;
-  background: var(--bg); border: 0.5px solid var(--border);
-  color: var(--gray); cursor: pointer; letter-spacing: 0.04em;
-  transition: all .2s; font-family: var(--font-body);
-}
-.budget-pill.active { background: var(--black); color: var(--white); border-color: var(--black); }
-.form-submit {
-  width: 100%; background: var(--black); color: var(--white);
-  border: none; padding: 15px; margin-top: 20px;
-  font-family: var(--font-body); font-size: 13px;
-  letter-spacing: 0.1em; cursor: pointer; transition: background .25s;
-}
-.form-submit:hover { background: var(--gold); }
-.form-notice {
-  font-size: 11px; color: var(--gray-light);
-  text-align: center; margin-top: 12px;
-  letter-spacing: 0.04em;
-}
-
-/* ─── 단계별 견적 위저드 ─── */
-.wiz-progress { height: 3px; background: var(--border); margin-bottom: 22px; position: relative; }
-.wiz-progress-bar { height: 100%; background: var(--gold); transition: width .35s ease; }
-.wiz-step-label { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 10px; font-weight: 600; }
-.wiz-question {
-  font-family: var(--font-display); font-size: 21px; font-weight: 300;
-  line-height: 1.45; margin-bottom: 22px;
-}
-.wiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
-.wiz-options.wiz-options-wide { grid-template-columns: 1fr; }
-.wiz-option {
-  padding: 15px 14px; text-align: center; background: var(--bg);
-  border: 0.5px solid var(--border); font-size: 13.5px; color: var(--black);
-  cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
-}
-.wiz-option:hover { border-color: var(--gold); }
-.wiz-option.selected { background: var(--black); color: var(--white); border-color: var(--black); }
-.wiz-nav { display: flex; gap: 10px; margin-top: 20px; }
-.wiz-btn-prev {
-  flex: 0 0 auto; padding: 14px 22px; background: var(--bg);
-  border: 0.5px solid var(--border); color: var(--gray);
-  font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; cursor: pointer;
-  transition: border-color .2s;
-}
-.wiz-btn-prev:hover { border-color: var(--gold); }
-.wiz-btn-next {
-  flex: 1; background: var(--black); color: var(--white);
-  border: none; padding: 14px; font-family: var(--font-body);
-  font-size: 13px; letter-spacing: 0.08em; cursor: pointer; transition: background .25s;
-}
-.wiz-btn-next:hover:not(:disabled) { background: var(--gold); }
-.wiz-btn-next:disabled { background: var(--border); color: var(--gray-light); cursor: not-allowed; }
-.wiz-consent {
-  display: flex; align-items: flex-start; gap: 8px; font-size: 12px;
-  color: var(--gray); margin-top: 6px; line-height: 1.5;
-}
-.wiz-consent input { width: auto; margin-top: 2px; }
-
-/* ─── FOOTER ─── */
-footer {
-  background: var(--black); color: #6a6660;
-  padding: 40px 80px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-top: 0.5px solid #1e1c18;
-}
-.footer-logo {
-  font-family: var(--font-display);
-  font-size: 18px; letter-spacing: 0.18em; color: #4a4840;
-}
-.footer-info { font-size: 11px; line-height: 1.8; letter-spacing: 0.04em; }
-.footer-copy { font-size: 11px; letter-spacing: 0.06em; }
-
-/* ─── SCROLL ANIMATION ─── */
-.reveal {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity .7s ease, transform .7s ease;
-}
-.reveal.visible { opacity: 1; transform: none; }
-
-/* ─── 로딩 스피너 ─── */
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ─── WHY LINE NEW ─── */
-.why-new {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  padding: 0;
-}
-.why-bg {
-  position: absolute; inset: 0;
-  background-size: cover;
-  background-position: center right;
-  background-repeat: no-repeat;
-}
-.why-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(10,8,6,0.88) 0%,
-    rgba(10,8,6,0.75) 45%,
-    rgba(10,8,6,0.15) 75%,
-    rgba(10,8,6,0.0) 100%
-  );
-}
-.why-content {
-  position: relative; z-index: 2;
-  max-width: 620px;
-  padding: 100px 80px;
-  color: #f0ebe4;
-}
-.why-eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: var(--gold);
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 10px;
-}
-.why-eyebrow::before {
-  content: ''; width: 28px; height: 0.5px;
-  background: var(--gold); display: block;
-}
-.why-main-title {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 54px);
-  font-weight: 300;
-  color: #f0ebe4;
-  line-height: 1.2;
-  margin-bottom: 32px;
-  letter-spacing: 0.02em;
-}
-.why-quote {
-  font-family: var(--font-display);
-  font-size: clamp(18px, 2.2vw, 26px);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--gold-light);
-  line-height: 1.5;
-  margin-bottom: 20px;
-  padding-left: 16px;
-  border-left: 2px solid var(--gold);
-}
-.why-body {
-  font-size: clamp(13px, 1.1vw, 15px);
-  color: rgba(220, 214, 204, 0.88);
-  line-height: 1.95;
-  margin-bottom: 18px;
-}
-.why-emphasis {
-  font-family: var(--font-display);
-  font-size: clamp(16px, 1.8vw, 22px);
-  font-weight: 500;
-  color: #f0ebe4;
-  margin: 24px 0;
-  letter-spacing: 0.02em;
-}
-.why-btns {
-  display: flex; gap: 12px;
-  margin-top: 36px;
-}
-@media (max-width: 900px) {
-  .why-content { padding: 80px 32px; max-width: 100%; }
-  .why-bg { background-position: center; }
-  .why-overlay {
-    background: linear-gradient(
-      to bottom,
-      rgba(10,8,6,0.7) 0%,
-      rgba(10,8,6,0.85) 60%,
-      rgba(10,8,6,0.92) 100%
-    );
+  :root{
+    --navy-deep:#16233F;
+    --navy:#1E3A5F;
+    --steel:#3D6690;
+    --steel-light:#7C9CB8;
+    --paper:#F5F2EA;
+    --paper-line:#E1D9C4;
+    --card:#FFFFFF;
+    --ink:#23262B;
+    --ink-soft:#5B5F66;
+    --accent:#E2792F;
+    --accent-soft:#F6D9BE;
+    --green:#4A7C59;
+    --danger:#B23A48;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
   }
-}
-@media (max-width: 560px) {
-  .why-content { padding: 60px 24px; }
-  .why-btns { flex-direction: column; }
-}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:var(--sans);}
+  body{
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
+    min-height:100vh;
+  }
+  button{font-family:var(--sans);cursor:pointer;}
+  input,select,textarea{font-family:var(--sans);}
 
-/* ─── RESPONSIVE ─── */
-@media (max-width: 900px) {
-  nav { padding: 0 24px; }
-  .nav-links { display: none; }
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-left { padding: 60px 32px 48px; }
-  .hero-left::before { display: none; }
-  .hero-right { height: 380px; }
-  .hero-img-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-  .hero-img-cell:first-child { grid-column: 1 / 3; }
-  .hero-img-overlay { padding: 20px 22px; }
-  .hero-img-title { font-size: clamp(16px, 4vw, 28px); }
-  .hero-img-desc { display: none; }
-  .hero-img-brand-tel { display: none; }
-  .section { padding: 64px 32px; }
-  .why-grid { grid-template-columns: 1fr; gap: 2px; }
-  .why-bottom { grid-template-columns: 1fr; }
-  .cases-grid { grid-template-columns: 1fr 1fr; }
-  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
-  footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
-  .modal-gallery { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 560px) {
-  .cases-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
-  .modal-gallery { grid-template-columns: 1fr 1fr; }
-  .hero-right { height: 300px; }
-  .hero-img-overlay { padding: 14px 16px; }
-  .hero-img-tag { display: none; }
-  .hero-img-title { font-size: clamp(14px, 5vw, 22px); }
-  .hero-img-brand-name { font-size: 11px; }
-}
+  .app{width:1240px;max-width:none;margin:0 auto;padding:0 20px 80px;}
+
+  /* header */
+  .header{
+    background:var(--navy-deep);
+    color:#fff;
+    margin:0 -20px 0;
+    padding:28px 20px 0;
+  }
+  .header-inner{width:1240px;max-width:none;margin:0 auto;}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.18em;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin:0 0 6px;
+  }
+  .title{
+    font-size:28px;
+    font-weight:800;
+    margin:0 0 4px;
+    letter-spacing:-.01em;
+  }
+  .subtitle{color:var(--steel-light);font-size:13px;margin:0 0 18px;}
+  .ruler{
+    height:22px;
+    display:flex;
+    align-items:flex-end;
+    gap:0;
+    overflow:hidden;
+    border-top:1px solid rgba(255,255,255,.15);
+  }
+  .ruler span{
+    flex:1;
+    border-left:1px solid rgba(255,255,255,.25);
+    height:8px;
+  }
+  .ruler span:nth-child(5n+1){height:14px;border-left:1px solid rgba(255,255,255,.4);}
+
+  .tabs{display:flex;gap:4px;margin-top:16px;}
+  .tab{
+    background:transparent;border:none;
+    color:var(--steel-light);
+    font-size:14px;font-weight:700;
+    padding:10px 16px;border-radius:8px 8px 0 0;
+    border-bottom:3px solid transparent;
+  }
+  .tab.active{color:#fff;border-bottom:3px solid var(--accent);background:rgba(255,255,255,0.06);}
+  .tab:hover{color:#fff;}
+
+  .content{padding-top:24px;}
+
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+  .section-head h2{font-size:19px;margin:0 0 2px;}
+  .section-head .eyebrow{color:var(--steel);}
+
+  .btn{
+    border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-primary{background:var(--navy-deep);color:#fff;}
+  .btn-primary:hover{background:var(--navy);}
+  .btn-accent{background:var(--accent);color:#fff;}
+  .btn-accent:hover{background:#c9661f;}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--paper-line);}
+  .btn-ghost:hover{border-color:var(--steel);color:var(--navy);}
+  .btn-danger{background:transparent;color:var(--danger);border:1px solid #e3c2c6;}
+  .btn-danger:hover{background:#fbeff0;}
+  .btn-sm{padding:6px 10px;font-size:12px;border-radius:6px;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* cards */
+  .card{
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 1px 2px rgba(20,20,20,0.03);
+  }
+  .grid-sites{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .site-card{position:relative;cursor:grab;transition:box-shadow .15s, border-color .15s;}
+  .site-card:active{cursor:grabbing;}
+  .site-card.drag-over{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);}
+  .drag-handle{position:absolute;top:12px;right:22px;color:var(--paper-line);font-size:16px;letter-spacing:-2px;}
+  .site-card .corner{
+    position:absolute;top:0;right:0;width:0;height:0;
+    border-style:solid;border-width:0 18px 18px 0;
+    border-color:transparent var(--accent-soft) transparent transparent;
+    border-radius:0 12px 0 0;
+  }
+  .site-name{font-size:16px;font-weight:800;margin:0 0 2px;}
+  .site-addr{font-size:13px;color:var(--ink-soft);margin:0 0 12px;display:flex;gap:6px;align-items:flex-start;}
+  .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.03em;
+    background:var(--paper);border:1px dashed var(--paper-line);color:var(--ink-soft);
+    padding:3px 8px;border-radius:5px;display:inline-flex;align-items:center;gap:4px;
+  }
+  .tag.ok{color:var(--green);border-color:#bcd8c4;background:#eef6f0;}
+  .site-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+  .empty{
+    border:1.5px dashed var(--paper-line);border-radius:12px;padding:36px 20px;text-align:center;color:var(--ink-soft);
+  }
+  .empty b{color:var(--ink);}
+
+  /* modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(22,35,63,.45);
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:40px 16px;overflow-y:auto;z-index:50;
+  }
+  .modal{
+    background:var(--card);border-radius:14px;max-width:640px;width:100%;
+    padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25);
+  }
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .modal-head h3{margin:0;font-size:18px;}
+  .close-x{background:none;border:none;color:var(--ink-soft);font-size:18px;padding:4px;border-radius:6px;}
+  .close-x:hover{background:var(--paper);}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;letter-spacing:.02em;}
+  .field input[type=text],.field input[type=date],.field textarea,.field select{
+    width:100%;padding:9px 11px;border:1px solid var(--paper-line);border-radius:8px;font-size:14px;background:var(--paper);
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--steel);outline-offset:1px;}
+  .field textarea{resize:vertical;min-height:56px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .file-drop{
+    border:1.5px dashed var(--paper-line);border-radius:8px;padding:12px;
+    display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-soft);background:var(--paper);
+  }
+  .file-drop input{display:none;}
+  .file-drop label{cursor:pointer;background:var(--navy-deep);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700;flex-shrink:0;}
+  .file-thumb{width:44px;height:44px;border-radius:6px;object-fit:cover;border:1px solid var(--paper-line);flex-shrink:0;}
+  .file-badge{
+    width:44px;height:44px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.02em;color:#fff;
+  }
+  .excel-table-wrap{max-height:60vh;overflow:auto;border:1px solid var(--paper-line);border-radius:8px;}
+  .excel-table-wrap table{border-collapse:collapse;width:100%;font-size:12.5px;}
+  .excel-table-wrap td,.excel-table-wrap th{border:1px solid var(--paper-line);padding:5px 8px;white-space:nowrap;}
+  .excel-table-wrap tr:first-child td,.excel-table-wrap tr:first-child th{background:var(--paper);font-weight:700;}
+  .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+
+  /* trades / contacts */
+  .trade-list{display:flex;flex-direction:column;gap:10px;}
+  .trade-row{
+    display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--paper-line);border-radius:10px;background:var(--card);
+  }
+  .trade-swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+  .trade-info{flex:1;min-width:0;}
+  .trade-name{font-weight:800;font-size:14px;}
+  .trade-note{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .sched-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+  .chip{
+    font-size:11.5px;background:var(--paper);border:1px solid var(--paper-line);border-radius:6px;padding:4px 8px;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .chip .x{cursor:pointer;color:var(--ink-soft);font-weight:700;}
+  .chip .x:hover{color:var(--danger);}
+
+  /* contacts tab */
+  .contact-card{margin-bottom:12px;}
+  .contact-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .contact-head .trade-swatch{width:12px;height:12px;}
+  .contact-head h4{margin:0;font-size:15px;}
+  .contact-note{font-size:12px;color:var(--ink-soft);margin:0 0 10px;font-style:italic;}
+  .contact-item{
+    display:grid;grid-template-columns:1.2fr 1fr 0.7fr 1.1fr auto;gap:8px;align-items:center;
+    padding:8px 0;border-top:1px solid var(--paper-line);font-size:13px;
+  }
+  .contact-item:first-of-type{border-top:none;}
+  .contact-item input{padding:6px 8px;border:1px solid var(--paper-line);border-radius:6px;font-size:13px;width:100%;background:var(--paper);}
+  .default-badge{font-family:var(--mono);font-size:10px;background:var(--accent-soft);color:#8a4213;padding:2px 6px;border-radius:4px;letter-spacing:.03em;}
+
+  .vendor-item{
+    display:grid;grid-template-columns:1.1fr 0.9fr 1.4fr auto;gap:8px;align-items:center;
+    padding:10px 0;border-top:1px solid var(--paper-line);font-size:13px;
+  }
+  .vendor-item:first-of-type{border-top:none;}
+  .vendor-item input{padding:7px 9px;border:1px solid var(--paper-line);border-radius:6px;font-size:13px;width:100%;background:var(--paper);}
+
+  /* calendar */
+  .view-toggle{display:flex;border:1px solid var(--paper-line);border-radius:8px;overflow:hidden;}
+  .view-toggle button{background:var(--card);border:none;padding:8px 14px;font-size:13px;font-weight:700;color:var(--ink-soft);}
+  .view-toggle button.active{background:var(--navy-deep);color:#fff;}
+  .view-toggle button:not(:last-child){border-right:1px solid var(--paper-line);}
+
+  .agenda-group{margin-bottom:18px;}
+  .agenda-month{
+    font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--steel);
+    text-transform:uppercase;margin:0 0 8px;padding-bottom:6px;border-bottom:1px dashed var(--paper-line);
+  }
+  .agenda-item{
+    display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--paper-line);border-radius:10px;margin-bottom:6px;background:var(--card);
+  }
+  .agenda-item.past{opacity:.55;}
+  .agenda-date{
+    font-family:var(--mono);font-size:12px;font-weight:800;color:var(--navy);background:var(--paper);
+    border-radius:6px;padding:6px 8px;text-align:center;min-width:52px;line-height:1.15;flex-shrink:0;
+  }
+  .agenda-date .dow{display:block;font-size:9.5px;color:var(--ink-soft);font-weight:600;}
+  .agenda-swatch{width:4px;align-self:stretch;border-radius:3px;flex-shrink:0;}
+  .agenda-body{flex:1;min-width:0;}
+  .agenda-title{font-weight:800;font-size:13.5px;}
+  .agenda-sub{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+
+  .cal-nav{display:flex;align-items:center;gap:10px;}
+  .cal-nav button{background:var(--card);border:1px solid var(--paper-line);border-radius:8px;width:32px;height:32px;font-size:15px;}
+  .cal-month{font-size:16px;font-weight:800;font-family:var(--mono);min-width:110px;text-align:center;}
+  .cal-filter select{padding:8px 10px;border-radius:8px;border:1px solid var(--paper-line);font-size:13px;background:var(--card);}
+  .site-multiselect{position:relative;}
+  .site-multiselect-btn{
+    padding:8px 12px;border-radius:8px;border:1px solid var(--paper-line);font-size:13px;background:var(--card);
+    cursor:pointer;white-space:nowrap;font-weight:600;color:var(--ink);
+  }
+  .site-multiselect-btn:hover{border-color:var(--steel);}
+  .site-multiselect-panel{
+    position:absolute;top:calc(100% + 6px);left:0;z-index:20;background:var(--card);
+    border:1px solid var(--paper-line);border-radius:10px;box-shadow:0 8px 20px rgba(22,35,63,0.15);
+    padding:10px;min-width:220px;max-height:280px;overflow-y:auto;
+  }
+  .site-multiselect-actions{display:flex;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--paper-line);}
+  .site-multiselect-actions button{
+    flex:1;font-size:11.5px;padding:5px 6px;border-radius:6px;border:1px solid var(--paper-line);background:var(--paper);cursor:pointer;color:var(--ink-soft);
+  }
+  .site-multiselect-actions button:hover{border-color:var(--steel);color:var(--navy);}
+  .site-multiselect-item{
+    display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 4px;border-radius:6px;cursor:pointer;
+  }
+  .site-multiselect-item:hover{background:var(--paper);}
+  .site-multiselect-item input{cursor:pointer;}
+  .site-multiselect-empty{font-size:12.5px;color:var(--ink-soft);padding:6px 4px;}
+  .color-swatch-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .color-swatch{
+    width:28px;height:28px;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;
+    box-shadow:0 0 0 1px var(--paper-line);position:relative;
+  }
+  .color-swatch.selected{border-color:var(--ink);box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--ink);}
+  .color-swatch-custom{overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px dashed var(--paper-line);}
+  .color-swatch-custom input[type=color]{opacity:0;width:100%;height:100%;cursor:pointer;}
+  .worker-sched-table{border-collapse:collapse;width:auto;font-size:12.5px;}
+  .worker-sched-table th,.worker-sched-table td{border:1px solid var(--paper-line);padding:6px 14px;text-align:center;white-space:nowrap;min-width:64px;}
+  .worker-sched-table th:first-child,.worker-sched-table td:first-child,
+  .worker-sched-table th:nth-child(2),.worker-sched-table td:nth-child(2){min-width:auto;}
+  .worker-sched-table th{background:var(--paper);font-weight:800;color:var(--navy);font-family:var(--mono);font-size:11.5px;position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--paper-line);}
+  .worker-sched-table th:nth-child(n+3){cursor:grab;}
+  .worker-sched-table th:nth-child(n+3):active{cursor:grabbing;}
+  .worker-sched-table th.th-drag-over{background:var(--accent-soft);color:var(--accent);}
+  .worker-sched-table td:first-child,.worker-sched-table td:nth-child(2){font-family:var(--mono);color:var(--ink-soft);}
+  .worker-sched-table tr.row-sun td:first-child,.worker-sched-table tr.row-sun td:nth-child(2){color:#C0392B;font-weight:700;}
+  .worker-sched-table tr.row-sat td:first-child,.worker-sched-table tr.row-sat td:nth-child(2){color:#1B5E86;font-weight:700;}
+  .worker-sched-table tbody tr:hover{background:rgba(0,0,0,0.02);}
+  .cal-dow-row{display:grid;grid-template-columns:100px repeat(7,1fr);gap:4px;margin-top:14px;}
+  .cal-dow-spacer{}
+  .cal-dow{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-soft);text-align:center;padding-bottom:4px;letter-spacing:.05em;}
+  .by-site-list{display:flex;flex-direction:column;gap:22px;}
+  .by-site-section{border:1px solid var(--paper-line);border-radius:12px;overflow:hidden;background:var(--card);}
+  .by-site-header{
+    padding:10px 16px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.01em;
+  }
+  .by-site-section .cal-continuous{border:none;border-radius:0;box-shadow:none;padding:16px;}
+  .cal-continuous{padding:16px;}
+  .cal-month-segment{position:relative;}
+  .cal-cell.month-tint-cell:not(.empty-cell){background:#EEE8D9;}
+  .cal-cell.month-boundary-top{border-top:3px solid var(--navy) !important;}
+  .cal-cell.month-boundary-left{border-left:3px solid var(--navy) !important;}
+  .week-row.week-stripe-a .cal-cell{border-top:2px solid #B7CBDC;}
+  .week-row.week-stripe-b .cal-cell{border-top:2px solid #D9C9A6;}
+  .cal-month-watermark{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:var(--mono);font-weight:800;font-size:min(18vw,220px);line-height:1;
+    color:var(--navy-deep);opacity:.13;pointer-events:none;z-index:3;user-select:none;white-space:nowrap;
+  }
+  .cal-legend-card{margin-top:14px;padding:14px 18px;}
+  @media (max-width:900px){
+    .app,.header-inner{width:1180px;}
+  }
+  .week-row{margin-bottom:0;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;position:relative;z-index:1;}
+  .cal-grid.has-labels{grid-template-columns:100px repeat(7,1fr);}
+  .site-label-col{display:flex;flex-direction:column;min-height:0;background:var(--paper);border:1px solid var(--paper-line);border-right:none;}
+  .site-label-tab{
+    display:flex;align-items:center;padding:4px 6px;border-left:4px solid transparent;border-top:1px solid var(--paper-line);
+    font-size:9.5px;font-weight:700;line-height:1.15;color:var(--ink);overflow:hidden;
+  }
+  .site-label-tab:first-child{border-top:none;}
+  .site-label-tab span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .site-label-tab.has-abbr{justify-content:center;}
+  .site-label-abbr{
+    font-size:22px;font-weight:800;line-height:1.1;color:var(--navy);text-align:center;
+    -webkit-line-clamp:2 !important;
+  }
+  .cal-cell{
+    background:var(--card);border:1px solid var(--paper-line);border-radius:0;min-height:168px;padding:0;
+    display:flex;flex-direction:column;gap:0;cursor:pointer;overflow:hidden;
+  }
+  .cal-cell.empty-cell{background:transparent;border:none;cursor:default;}
+  .cal-cell.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
+  .cal-cell.picked{border-color:var(--navy);box-shadow:inset 0 0 0 1.5px var(--navy);}
+  .cal-cell.drag-over{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft);}
+  .cal-cell:hover:not(.empty-cell){border-color:var(--steel);}
+  .cal-date{font-family:var(--mono);font-size:17px;font-weight:800;color:var(--ink-soft);padding:5px 6px 3px;display:flex;justify-content:space-between;align-items:baseline;line-height:1;}
+  .cal-date-sun{color:#C0392B;}
+  .cal-date-sat{color:#1B5E86;}
+  .cal-dow-inline{font-size:14px;margin-left:5px;opacity:.85;}
+  .cal-cell.holiday-cell:not(.empty-cell){background:#FBE4E4;}
+  .cal-cell.holiday-cell.month-tint-cell:not(.empty-cell){background:#F5D9D2;}
+  .cal-holiday-name{
+    font-size:10.5px;font-weight:800;color:#C0392B;padding:0 6px 3px;display:block;line-height:1.1;
+  }
+  .gantt-bar{
+    height:15px;border-radius:0;flex-shrink:0;display:flex;align-items:center;overflow:hidden;box-sizing:border-box;
+  }
+  .gantt-bar.empty{background:transparent;}
+  .gantt-bar.lane-gap{margin-top:5px;}
+  .gantt-bar.round-l{border-radius:4px 0 0 4px;margin-left:1px;}
+  .gantt-bar.round-r{border-radius:0 4px 4px 0;margin-right:1px;}
+  .gantt-bar.round-l.round-r{border-radius:4px;margin-left:1px;margin-right:1px;}
+  .gantt-bar.project{
+    height:19px;border:2.5px solid var(--accent);box-shadow:0 2px 4px rgba(22,35,63,0.35);
+  }
+  .gantt-bar.project .gantt-label{font-weight:800;letter-spacing:.02em;}
+  .gantt-label{
+    font-size:9.5px;color:#fff;font-weight:700;padding-left:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .site-lane-wrap{display:flex;flex-direction:column;flex:1;min-height:0;gap:3px;}
+  .site-day-block{
+    border:0;border-radius:0;padding:1px 3px;
+    display:flex;flex-direction:column;gap:0;overflow:hidden;min-height:0;
+  }
+  .site-day-block.empty-lane{background:transparent !important;}
+  .trade-slots-fill{display:flex;flex-direction:column;flex:1;min-height:0;justify-content:flex-start;}
+  .trade-slot{
+    min-height:38px;display:flex;align-items:center;overflow:visible;
+  }
+  .trade-slot-empty{cursor:pointer;border-radius:2px;}
+  .trade-slot-empty:hover{background:rgba(226,121,47,0.18);}
+  .trade-day-chip{
+    width:100%;min-height:34px;height:auto;border-radius:3px;display:flex;align-items:center;padding:4px 7px;overflow:visible;
+    box-shadow:none;margin-bottom:4px;box-sizing:border-box;cursor:grab;
+  }
+  .trade-day-chip:active{cursor:grabbing;}
+  .trade-day-chip .chip-main{color:#fff;font-weight:800;white-space:normal;overflow:visible;line-height:1.2;word-break:keep-all;overflow-wrap:break-word;}
+  .site-worker-row{
+    height:16px;min-height:16px;display:flex;align-items:center;padding:1px 5px;overflow:hidden;
+    font-size:8.5px;color:var(--ink-soft);font-weight:700;background:rgba(20,20,20,0.035);
+    border-top:1px dashed var(--paper-line);box-sizing:border-box;white-space:nowrap;text-overflow:ellipsis;
+  }
+  .site-worker-row-clickable{cursor:pointer;}
+  .site-worker-row-clickable:hover{background:rgba(226,121,47,0.15);}
+  .site-worker-row-hint{opacity:.45;}
+  .site-worker-row-clickable:hover .site-worker-row-hint{opacity:.9;color:var(--accent);}
+  .site-name-fill{
+    font-size:9px;line-height:1.2;color:var(--ink);font-weight:800;letter-spacing:.01em;
+    padding:3px 5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+    opacity:.75;cursor:pointer;border-radius:2px;
+  }
+  .site-name-fill:hover{opacity:1;background:rgba(226,121,47,0.18);}
+  .cal-empty-add{
+    flex:1;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    font-size:10.5px;color:var(--ink-soft);opacity:.4;transition:opacity .12s;border-radius:4px;
+  }
+  .cal-cell:hover .cal-empty-add{opacity:.75;}
+  .cal-empty-add:hover{opacity:1 !important;background:rgba(226,121,47,0.15);color:var(--accent);font-weight:700;}
+
+  .cal-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-soft);}
+  .legend-dot{width:9px;height:9px;border-radius:3px;}
+
+  .daypanel{margin-top:16px;}
+  .day-sched{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--paper-line);border-radius:10px;margin-bottom:8px;}
+  .day-sched .swatch-bar{width:4px;border-radius:3px;align-self:stretch;}
+
+  .footer-note{margin-top:40px;font-size:12px;color:var(--ink-soft);text-align:center;font-family:var(--mono);}
+
+  @media (max-width:640px){
+    .row2{grid-template-columns:1fr;}
+    .contact-item{grid-template-columns:1fr;gap:4px;}
+    .tabs{overflow-x:auto;}
+  }
 </style>
 </head>
 <body>
+<div id="root"></div>
 
-<!-- ─── NAV ─── -->
-<nav>
-  <div class="nav-logo">LINE<span>.</span> INTERIOR</div>
-  <div class="nav-links">
-    <a href="#why">왜 라인인가</a>
-    <a href="#cases">시공사례</a>
-    <a href="#contact">견적문의</a>
-    <a href="https://blog.naver.com/line_interior_" target="_blank" style="display:flex;align-items:center;gap:5px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="#03C75A"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
-      블로그
-    </a>
-  </div>
-  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 문의</button>
-</nav>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
-<!-- ─── HERO SLIDER ─── -->
-<section class="hero" id="heroSlider">
+/* ================= REAL-TIME SHARED SYNC (Firebase Firestore) =================
+   To let multiple people view/edit this scheduler together with live updates:
+   1. Go to https://console.firebase.google.com → create a free project
+   2. In the project, open "Build → Firestore Database" → Create database
+      → start in test mode (or use the security rules note in the README)
+   3. Open Project settings (gear icon) → General → "Your apps" → add a Web app
+   4. Copy the firebaseConfig values it gives you into FIREBASE_CONFIG below
+   5. Save this file, commit, and push — every visitor will now share the same
+      live data instead of each browser having its own separate copy.
+   Until you fill this in, the app keeps working exactly as before (data saved
+   only in this browser's localStorage) — nothing breaks either way.
+================================================================================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC1CKmlgT01s3woqxZJ4G8DFwNBedEsrnA",
+  authDomain: "scheduler-12e2d.firebaseapp.com",
+  projectId: "scheduler-12e2d",
+  storageBucket: "scheduler-12e2d.firebasestorage.app",
+  messagingSenderId: "828090719410",
+  appId: "1:828090719410:web:697ac46eb901cc7742fdab",
+};
 
-  <!-- 슬라이드 0: 영상 -->
-  <div class="slide active" data-type="video">
-    <video id="heroVideo" src="video/0803.mp4" muted autoplay loop playsinline preload="auto"
-      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
-      webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
-    <button class="video-play-btn" id="videoPlayBtn" onclick="playHeroVideo()">
-      <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-    </button>
-    <div class="slide-overlay">
-      <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
-      <div class="slide-title">공간이 말하는<br><em>당신만의 이야기</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 1: hero_01.jpg = 주방(ㄱ자형, 화이트톤) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_01.jpg" alt="주방 인테리어" loading="eager">
-    <div class="slide-overlay">
-      <div class="slide-tag">KITCHEN</div>
-      <div class="slide-title">화이트로 완성한<br><em>모던 주방</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 2: hero_02.jpg = 거실(소파+스완체어+통창뷰) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_02.jpg" alt="거실 인테리어" loading="eager">
-    <div class="slide-overlay">
-      <div class="slide-tag">LIVING ROOM</div>
-      <div class="slide-title">탁 트인 뷰가 있는<br><em>프리미엄 거실</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 3: hero_03.jpg = 침실(붙박이장+스카이라이트) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_03.jpg" alt="침실 인테리어" loading="lazy">
-    <div class="slide-overlay">
-      <div class="slide-tag">BEDROOM</div>
-      <div class="slide-title">넉넉한 수납이 있는<br><em>편안한 침실</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 4: hero_04.jpg = 주방(아일랜드+링펜던트조명) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_04.jpg" alt="주방 인테리어" loading="lazy">
-    <div class="slide-overlay">
-      <div class="slide-tag">KITCHEN</div>
-      <div class="slide-title">감성 조명이<br><em>완성한 주방</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 5: hero_05.jpg = 현관+주방 복도(중문+파우더코너) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_05.jpg" alt="현관 인테리어" loading="lazy">
-    <div class="slide-overlay">
-      <div class="slide-tag">ENTRANCE</div>
-      <div class="slide-title">현관에서 시작되는<br><em>세심한 디테일</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 6: hero_06.jpg = 거실 TV월(실링팬+거울슬라이딩도어) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_06.jpg" alt="거실 인테리어" loading="lazy">
-    <div class="slide-overlay">
-      <div class="slide-tag">MODERN MINIMAL</div>
-      <div class="slide-title">깔끔한 라인의<br><em>모던 거실</em></div>
-      <div class="slide-btns">
-        <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 견적 받기</button>
-        <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 컨트롤 -->
-  <button class="slider-arrow slider-prev" onclick="heroSlide(-1)">
-    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <button class="slider-arrow slider-next" onclick="heroSlide(1)">
-    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
-  <div class="slider-dots" id="sliderDots"></div>
-  <div class="slider-counter"><span id="sliderCurrent">1</span> / <span id="sliderTotal">7</span></div>
-  <div class="slider-progress" id="sliderProgress"></div>
-
-</section>
-
-<!-- ─── WHY LINE ─── -->
-<section id="why" class="why-new reveal">
-  <!-- 배경 이미지 -->
-  <div class="why-bg" style="background-image:url('images/misc/why_bg.jpg');"></div>
-  <!-- 좌측 어두운 오버레이 -->
-  <div class="why-overlay"></div>
-  <!-- 텍스트 콘텐츠 -->
-  <div class="why-content">
-    <div class="why-eyebrow">WHY LINE INTERIOR</div>
-    <h2 class="why-main-title" style="white-space:nowrap;font-size:clamp(22px, 3.2vw, 52px);">왜 라인 인테리어인가?</h2>
-
-    <div class="why-quote">
-      "인테리어, 시작하기도 전에<br>감정 소모부터 걱정되시나요?"
-    </div>
-
-    <p class="why-body">
-      "이 업체는 믿을 수 있을까?" 하는 불안함과 조율 과정의 스트레스까지,
-      고객님의 마음을 누구보다 잘 알고 있습니다.<br>
-      라인 인테리어는 단순히 시공만 하는 것이 아니라,
-      늘 고객의 입장에서 함께 고민합니다.
-    </p>
-
-    <div class="why-emphasis">"과정은 편안하게, 결과는 완벽하게."</div>
-
-    <p class="why-body">
-      "공사가 다 끝났는데, 실장님과 매일 나누던 대화가 그리워 아쉽다"고
-      말씀해 주시는 고객님들의 따뜻한 마음을 저희는 항상 기억합니다.<br>
-      공사가 끝난 뒤에도 부담 없이 언제든 들러 맛있는 커피 한잔 나누실 수 있는 곳.
-    </p>
-
-    <p class="why-body">
-      편안한 소통과 뛰어난 시공 퀄리티 덕분에
-      수많은 분들이 지인에게 선뜻 추천해 주시는 곳.<br>
-      이것이 라인 인테리어에 소개 공사가 끊이지 않는 이유입니다.
-    </p>
-
-    <div class="why-btns">
-      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청하기</button>
-      <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
-    </div>
-  </div>
-</section>
-
-<!-- ─── CASES ─── -->
-<section id="cases" class="section reveal" style="background: var(--bg);">
-  <div class="section-header">
-    <div class="section-tag">PORTFOLIO</div>
-    <h2 class="section-title" style="color:var(--black);">시공 <em>사례</em></h2>
-    <p class="section-desc" style="color:var(--gray);">라인 인테리어가 완성한 공간들을 만나보세요. 사진을 클릭하면 더 많은 이미지를 확인하실 수 있습니다.</p>
-  </div>
-  <div class="cases-grid" id="casesGrid"></div>
-</section>
-
-<!-- ─── CONTACT ─── -->
-<section id="contact" class="section reveal">
-  <div class="section-header">
-    <div class="section-tag">CONTACT</div>
-    <h2 class="section-title">견적 및 <em>문의하기</em></h2>
-    <p class="section-desc">어떤 공간이든 무료 상담을 통해 최적의 방향을 제안해드립니다.</p>
-  </div>
-  <div class="contact-grid">
-    <div class="contact-info">
-      <div class="contact-detail">
-        <div class="contact-icon">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6.09 6.09l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        </div>
-        <div style="flex:1">
-          <div class="contact-detail-label">친절상담</div>
-          <a href="tel:032-246-3155" class="tel-link" style="text-decoration:none;">
-            <div class="contact-detail-value" style="font-size:28px;font-weight:500;letter-spacing:0.04em;transition:color .2s;">032-246-3155</div>
-          </a>
-          <div class="contact-detail-sub">평일 09:00 – 18:00</div>
-          <a href="tel:032-246-3155" class="call-btn tel-link">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6.09 6.09l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            지금 바로 전화하기
-          </a>
-        </div>
-      </div>
-      <div class="contact-detail" style="flex-direction:column;align-items:flex-start;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-          <div class="contact-icon">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <div>
-            <div class="contact-detail-label">LOCATION</div>
-            <div class="contact-detail-value">경기도 부천시 소사로126번길 7</div>
-            <div class="contact-detail-sub">전국 상담 가능</div>
-          </div>
-        </div>
-        <!-- 구글맵 임베드 -->
-        <div id="naverMap" style="width:100%;height:280px;border-radius:8px;overflow:hidden;border:0.5px solid var(--border);line-height:0;">
-          <iframe src="https://maps.google.com/maps?q=경기도+부천시+소사로126번길+7&t=m&z=17&ie=UTF8&iwloc=&output=embed&hl=ko" width="100%" height="280" style="border:none;display:block;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </div>
-      <button class="kakao-row" style="display:none;" onclick="window.open('https://pf.kakao.com/_YOUR_ID')">
-        <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="18" rx="18" ry="14" fill="#3A1D1D" opacity="0.15"/><path d="M20 6C11.163 6 4 11.373 4 18c0 4.243 2.794 7.974 7 10.172L9.5 32l5.2-2.6C15.7 29.8 17.82 30 20 30c8.837 0 16-5.373 16-12S28.837 6 20 6z" fill="#3A1D1D"/></svg>
-        <span>카카오톡으로 빠르게 상담하기</span>
-      </button>
-    </div>
-    <div class="form-wrap">
-      <h3>무료 견적 문의</h3>
-      <p class="form-sub">몇 가지만 답해주시면 딱 맞는 상담을 도와드려요</p>
-      <!-- 전송 완료 메시지 -->
-      <div id="formSuccess" style="display:none;text-align:center;padding:40px 20px;">
-        <div style="font-size:32px;margin-bottom:16px;">✅</div>
-        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;">문의가 접수되었습니다</div>
-        <div style="font-size:13px;color:var(--gray);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
-      </div>
-      <!-- 단계별 위저드 -->
-      <div id="wizardBody">
-        <div class="wiz-progress"><div class="wiz-progress-bar" id="wizProgressBar"></div></div>
-        <div id="wizStepLabel" class="wiz-step-label"></div>
-        <div id="wizQuestion" class="wiz-question"></div>
-        <div id="wizContent"></div>
-        <div class="wiz-nav">
-          <button type="button" class="wiz-btn-prev" id="wizPrevBtn" onclick="wizPrev()" style="display:none;">이전</button>
-          <button type="button" class="wiz-btn-next" id="wizNextBtn" onclick="wizNext()" disabled>다음</button>
-        </div>
-        <p class="form-notice">개인정보는 상담 목적 외 사용되지 않습니다</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── FOOTER ─── -->
-<footer>
-  <div class="footer-logo">LINE. INTERIOR</div>
-  <div class="footer-info">
-    상호: 라인 인테리어 &nbsp;|&nbsp; 대표: 박지희 &nbsp;|&nbsp; 사업자번호: 296-24-02323<br>
-    주소: 경기도 부천시 소사로126번길 7 &nbsp;|&nbsp; 대표번호: 032-246-3155<br>
-    이메일: dongjun4944@naver.com
-  </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
-    <a href="https://blog.naver.com/line_interior_" target="_blank" style="
-      display:inline-flex;align-items:center;gap:8px;
-      background:#03C75A;color:#fff;
-      padding:8px 16px;border-radius:4px;
-      font-size:12px;font-weight:500;
-      text-decoration:none;letter-spacing:0.04em;
-      transition:filter .2s;"
-      onmouseover="this.style.filter='brightness(0.9)'"
-      onmouseout="this.style.filter='brightness(1)'">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
-      네이버 블로그 바로가기
-    </a>
-    <div class="footer-copy">© 2026 LINE INTERIOR. All rights reserved.</div>
-  </div>
-</footer>
-
-<!-- ─── CASE MODAL (한샘몰 스타일) ─── -->
-<div class="modal-backdrop" id="caseModal" onclick="closeModal(event)">
-  <div class="modal-inner" onclick="event.stopPropagation()">
-    <!-- 헤더 -->
-    <div class="modal-header">
-      <div class="modal-header-info">
-        <div class="modal-case-name" id="modalCaseName"></div>
-        <div class="modal-case-meta" id="modalCaseMeta"></div>
-      </div>
-      <button class="modal-close" onclick="closeCaseModal()">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <!-- 이미지 세로 스크롤 -->
-    <div class="modal-scroll">
-      <div class="modal-img-stack" id="modalGallery"></div>
-    </div>
-    <!-- 하단 버튼 -->
-    <div class="modal-footer">
-      <button class="modal-wish-btn" title="찜하기">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      </button>
-      <button class="modal-consult-btn" id="modalConsultBtn" onclick="consultFromCase()">이 시공사례로 상담하기</button>
-    </div>
-  </div>
-</div>
-
-<!-- ─── ZOOM MODAL ─── -->
-<div class="zoom-backdrop" id="zoomModal" onclick="closeZoom()">
-  <div class="zoom-inner" onclick="event.stopPropagation()">
-    <button class="zoom-close" onclick="closeZoom()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      닫기
-    </button>
-    <button class="zoom-nav zoom-prev" onclick="zoomNav(-1)">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="zoom-img-wrap" id="zoomImgWrap"></div>
-    <button class="zoom-nav zoom-next" onclick="zoomNav(1)">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-    <div class="zoom-counter" id="zoomCounter"></div>
-  </div>
-</div>
-
-<script>
-// ════════════════════════════════════════════════════════
-//  ★ 구글 시트 연동 설정 ★
-//  아래 SHEET_URL 에 본인 구글 시트 게시 URL을 붙여넣으세요
-//  (설정 방법은 홈페이지 하단 안내 참고)
-// ════════════════════════════════════════════════════════
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTJqltJid6HPBZS18xiJslcf9YpbWOnnvAbEWAB1S8t9pkQ39kQx9ABWJfy-lpPR1MIsjAUxyX7G3gU/pub?output=csv';
-
-// ─── 구글 시트에서 데이터 불러오기 (CORS 우회 포함) ───
-async function loadFromSheet() {
-  // 직접 fetch 시도
-  const attempts = [
-    () => fetch(SHEET_URL, { signal: AbortSignal.timeout(8000) }),
-    () => fetch('https://corsproxy.io/?' + encodeURIComponent(SHEET_URL), { signal: AbortSignal.timeout(8000) }),
-  ];
-  for (const attempt of attempts) {
-    try {
-      const res = await attempt();
-      if (!res.ok) continue;
-      const csv = await res.text();
-      const parsed = parseCSV(csv);
-      if (parsed && parsed.length > 0) return parsed;
-    } catch(e) { /* 다음 시도 */ }
-  }
-  console.warn('구글 시트 로드 실패, 샘플 데이터 사용');
-  return null;
-}
-
-// ─── 구글 드라이브 URL 자동 변환 ───
-// /view?usp=sharing → uc?id= 형태로 변환해서 이미지 직접 표시
-function toDirectUrl(url) {
-  if (!url || !url.startsWith('http')) return '';
-  // https://drive.google.com/file/d/FILE_ID/view... → uc?id=FILE_ID
-  const match = url.match(/\/file\/d\/([^/]+)/);
-  if (match) return `https://drive.google.com/uc?id=${match[1]}`;
-  // 이미 uc?id= 형태면 그대로
-  if (url.includes('uc?id=') || url.includes('uc&id=')) return url;
-  return url;
-}
-
-// ─── CSV → 2차원 배열 (따옴표 안의 줄바꿈·쉼표까지 안전하게 처리) ───
-// 주의: csv.split('\n')으로 먼저 줄단위로 쪼개면 셀 안에 개행이 포함된
-// (예: 여러 줄짜리 상세설명) 행부터 컬럼이 밀려버리므로 문자 단위로 파싱한다.
-function csvToRows(text) {
-  const rows = [];
-  let row = [], field = '', inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (text[i + 1] === '"') { field += '"'; i++; }
-        else inQuotes = false;
-      } else field += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ',') { row.push(field); field = ''; }
-      else if (ch === '\r') { /* skip, \n이 줄바꿈 처리 */ }
-      else if (ch === '\n') { row.push(field); field = ''; rows.push(row); row = []; }
-      else field += ch;
-    }
-  }
-  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
-  return rows;
-}
-
-// ─── CSV 파싱 ───
-// 시트 컬럼 순서: 프로젝트명 | 유형 | 설명 | 썸네일URL | 이미지1~10
-function parseCSV(csv) {
-  const allRows = csvToRows(csv.trim());
-  // 실제 데이터 행 조건:
-  // - 첫 번째 셀이 비어있지 않고
-  // - 헤더/안내 키워드가 아니며
-  // - URL로 시작하지 않고
-  // - 괄호로 시작하지 않는 행
-  const rows = allRows.filter(cols => {
-    const firstCell = (cols[0] || '').trim();
-    if (!firstCell) return false;
-    if (firstCell.startsWith('http')) return false;
-    if (firstCell.startsWith('(')) return false;
-    if (firstCell.startsWith('※')) return false;
-    if (firstCell.startsWith('LINE')) return false;
-    if (firstCell === '프로젝트명') return false;
-    if (firstCell.includes('필수')) return false;
+let _fbApp = null, _fbDb = null;
+function fbReady(){
+  if(_fbDb) return true;
+  if(typeof firebase === "undefined") return false;
+  if(!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith("YOUR_")) return false;
+  try{
+    _fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+    _fbDb = firebase.firestore();
     return true;
+  }catch(e){ console.error("Firebase init failed:", e); return false; }
+}
+function fbCollection(name){ return _fbDb.collection(name); }
+
+// Drop-in replacement for useState + localStorage persistence, but when Firebase is
+// configured it also keeps the data live-synced (in real time) across everyone using
+// the app: each record is its own Firestore document (by its `id`), so different
+// people editing different sites/trades/schedules at once don't clobber each other.
+function useSyncedState(collectionName, initialValue){
+  const [state, setStateRaw] = useState(() => loadLS("scheduler:"+collectionName, initialValue));
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  useEffect(() => {
+    if(!fbReady()) return;
+    let firstSnapshot = true;
+    const unsub = fbCollection(collectionName).onSnapshot(snap => {
+      if(firstSnapshot && snap.empty){
+        firstSnapshot = false;
+        const seed = (stateRef.current && stateRef.current.length) ? stateRef.current : initialValue;
+        if(seed && seed.length){
+          const batch = _fbDb.batch();
+          seed.forEach(item => batch.set(fbCollection(collectionName).doc(String(item.id)), item));
+          batch.commit().catch(err => console.error("initial seed failed:", err));
+        }
+        return; // the batch write above will trigger another snapshot with the real data
+      }
+      firstSnapshot = false;
+      const list = snap.docs.map(d => d.data());
+      setStateRaw(list);
+      saveLS("scheduler:"+collectionName, list);
+    }, err => console.error("sync error on", collectionName, err));
+    return () => unsub();
+  }, [collectionName]);
+
+  const setState = useCallback((updater) => {
+    setStateRaw(prev => {
+      const next = typeof updater==="function" ? updater(prev) : updater;
+      saveLS("scheduler:"+collectionName, next);
+      if(fbReady()){
+        const batch = _fbDb.batch();
+        let ops = 0;
+        const prevIds = new Set(prev.map(x=>x.id));
+        next.forEach(item => {
+          const prevItem = prev.find(p=>p.id===item.id);
+          if(!prevItem || JSON.stringify(prevItem)!==JSON.stringify(item)){
+            batch.set(fbCollection(collectionName).doc(String(item.id)), item);
+            ops++;
+          }
+        });
+        prev.forEach(item => {
+          if(!next.some(n=>n.id===item.id)){
+            batch.delete(fbCollection(collectionName).doc(String(item.id)));
+            ops++;
+          }
+        });
+        if(ops>0) batch.commit().catch(err => console.error("sync write failed:", err));
+      }
+      return next;
+    });
+  }, [collectionName]);
+
+  return [state, setState];
+}
+
+
+/* ---------- data ---------- */
+const DEFAULT_TRADES = [
+  { id:"demolition", name:"철거", color:"#A02A2A",
+    contacts:[{id:"c-demolition-1", name:"손정수", phone:"5622-1031", bank:"기업", account:"181-088341-02-013", isDefault:true}],
+    note:"철거 가능 여부 문의 후 등본 통해 진행" },
+  { id:"sash", name:"샷시", color:"#1B5E86",
+    contacts:[{id:"c-sash-1", name:"노영수(대리님)", phone:"7243-6283", bank:"카드결제", account:"", isDefault:true}],
+    note:"도면/주소 주고 실측 약속 잡고, 계약 이후 시공일 잡으면 됨" },
+  { id:"carpentry", name:"목공", color:"#7A4A1E",
+    contacts:[{id:"c-carpentry-1", name:"강동혁", phone:"", bank:"신한", account:"110-593-427718", isDefault:true}],
+    note:"도면/주소 주고, 시공내역 주면서, 며칠 걸릴지 물어서 잡으면 됨" },
+  { id:"tile", name:"타일", color:"#0F7A63",
+    contacts:[{id:"c-tile-1", name:"최환석", phone:"4664-8678", bank:"국민", account:"839-2020-4084-824", isDefault:true}],
+    note:"도면/주소 주고, 시공내역 주면서, 며칠 걸릴지 물어서 잡으면 됨" },
+  { id:"ceramic", name:"도기", color:"#6A2FA0",
+    contacts:[{id:"c-ceramic-1", name:"장호준", phone:"7190-7777", bank:"기업", account:"010-6413-6628", isDefault:true}],
+    note:"도면/주소 주고, 시공내역 주면서, 날짜 잡음" },
+  { id:"electric", name:"전기", color:"#B5860B",
+    contacts:[{id:"c-electric-1", name:"이대희", phone:"9481-0907", bank:"농협", account:"302-9481-0907-11", isDefault:true}],
+    note:"주소 주고 날짜 잡음" },
+  { id:"furniture", name:"가구", color:"#9C4B14",
+    contacts:[{id:"c-furniture-1", name:"박호성", phone:"6295-2575", bank:"", account:"", isDefault:true}],
+    note:"주소 주고, 철거 후 실측하고(손님과), 시공일 잡음" },
+  { id:"wallpaper", name:"도배", color:"#C1275D",
+    contacts:[{id:"c-wallpaper-1", name:"양여사님", phone:"9193-8481", bank:"신한", account:"969 04 098890", isDefault:true}],
+    note:"주소/도면/날짜 주면 알아서 맞춰오심. 자재량 여쭤보고 주문" },
+  { id:"wallpaper-supply", name:"도배지", color:"#B9761F",
+    contacts:[{id:"c-wallpaper-supply-1", name:"하임상사", phone:"", bank:"", account:"", isDefault:true}],
+    note:"도배 전날로 도착하도록 주문" },
+  { id:"flooring", name:"마루", color:"#5C3A1E",
+    contacts:[{id:"c-flooring-1", name:"대진동화(이사님)", phone:"3765-6993", bank:"국민우리데코", account:"164537-04-004100", isDefault:true}],
+    note:"도배 전날로 도착하도록 주문" },
+  { id:"door", name:"중문", color:"#1F4E5A",
+    contacts:[{id:"c-door-1", name:"김현철(차장님)", phone:"6541-8110", bank:"기업태성밀리", account:"306-124748-04-010", isDefault:true}],
+    note:"해당 양식대로 주면서, 날짜 잡음" },
+  { id:"paint", name:"도장", color:"#C1440E",
+    contacts:[{id:"c-paint-1", name:"박수혁", phone:"2264-7734", bank:"국민", account:"269902-04-224410", isDefault:true}],
+    note:"도면/주소 주고, 시공내역 주면서, 날짜 잡음" },
+  { id:"film", name:"필름", color:"#2F3E9E",
+    contacts:[{id:"c-film-1", name:"필름반장님", phone:"5851-8749", bank:"", account:"", isDefault:true}],
+    note:"시공내역 사진으로 견적 후 필요 날짜 잡음 (주말도 가능)" },
+  { id:"movein-clean", name:"입주청소", color:"#1F6B4A",
+    contacts:[{id:"c-movein-clean-1", name:"김강민", phone:"5489-8001", bank:"우리", account:"1002-9304-04398", isDefault:true}],
+    note:"주소(평형) 주고 날짜 잡음" },
+  { id:"grout", name:"메지", color:"#6C2BC9",
+    contacts:[{id:"c-grout-1", name:"허연서", phone:"010-3809-3382", bank:"", account:"", isDefault:true}],
+    note:"타일 시공 후 도면/주소 주고 날짜 잡음" },
+  { id:"misc", name:"기타(일당)", color:"#707070",
+    contacts:[{id:"c-misc-1", name:"", phone:"", bank:"", account:"", isDefault:true}],
+    note:"특정 공정에 속하지 않는 일당 인부 — 그날 여러 잡일을 할 수 있어요" },
+];
+
+const TRADE_COLOR_POOL = [
+  "#0E6E86","#B5174B","#0C8F6E","#B8790A","#6B4A22","#2451B5","#C23B3B",
+  "#37424F","#5E1FA0","#1D6B5C","#B14E1D","#8A5210","#152F3D","#B85E1B",
+];
+function nextTradeColor(existingColors){
+  const found = TRADE_COLOR_POOL.find(c => !existingColors.includes(c));
+  return found || "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
+}
+const PROJECT_COLOR_POOL = [
+  "#16233F","#5C3D2E","#1B4332","#5C2A3D","#2F4858","#4A3F35","#233D4D","#3A2E39",
+];
+
+// 2026년 대한민국 법정공휴일(대체공휴일 포함). 설날/추석/부처님오신날처럼 음력 기준인
+// 날짜는 매년 바뀌므로, 다음 해가 되면 이 목록도 업데이트가 필요합니다.
+const KR_HOLIDAYS_2026 = {
+  "2026-01-01": "신정",
+  "2026-02-16": "설날",
+  "2026-02-17": "설날",
+  "2026-02-18": "설날",
+  "2026-03-01": "삼일절",
+  "2026-03-02": "대체휴일",
+  "2026-05-01": "근로자날",
+  "2026-05-05": "어린이날",
+  "2026-05-24": "부처님날",
+  "2026-05-25": "대체휴일",
+  "2026-06-03": "지방선거",
+  "2026-06-06": "현충일",
+  "2026-07-17": "제헌절",
+  "2026-08-15": "광복절",
+  "2026-08-17": "대체휴일",
+  "2026-09-24": "추석",
+  "2026-09-25": "추석",
+  "2026-09-26": "추석",
+  "2026-10-03": "개천절",
+  "2026-10-05": "대체휴일",
+  "2026-10-09": "한글날",
+  "2026-12-25": "성탄절",
+};
+function krHoliday(dateStr){ return KR_HOLIDAYS_2026[dateStr] || null; }
+
+// a curated set of clearly distinguishable colors for the site color picker
+const SITE_COLOR_SWATCHES = [
+  "#16233F","#B23A48","#1B7A4B","#C9701A","#5B2C87","#0E7A8C","#8C1D40","#3F5EA8",
+  "#A0522D","#2E7D6B","#C0392B","#6C3483","#117864","#B7950B","#943126","#1F618D",
+];
+
+const DEFAULT_VENDORS = [
+  { id:"v-1", name:"여기가 우리집(박과장)", phone:"010-6304-7584", memo:"" },
+  { id:"v-2", name:"한빛조명", phone:"010-6376-6293", memo:"" },
+];
+
+const DOW = ["일","월","화","수","목","금","토"];
+const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+const pad = n => String(n).padStart(2,"0");
+const todayStr = () => { const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+function scheduleRange(sc){
+  const start = sc.startDate || sc.date;
+  const end = sc.endDate || sc.startDate || sc.date;
+  return end < start ? { start: end, end: start } : { start, end };
+}
+function daySpan(sc){
+  const { start, end } = scheduleRange(sc);
+  return Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+}
+function shiftDateStr(dateStr, deltaDays){
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const dt = new Date(y, m-1, d);
+  dt.setDate(dt.getDate() + deltaDays);
+  return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+}
+function daysBetweenStr(fromStr, toStr){
+  const [ay,am,ad] = fromStr.split("-").map(Number);
+  const [by,bm,bd] = toStr.split("-").map(Number);
+  const a = new Date(ay, am-1, ad), b = new Date(by, bm-1, bd);
+  return Math.round((b - a) / 86400000);
+}
+function splitWorkerNames(str){
+  if(!str) return [];
+  return str.split(",").map(s => s.trim()).filter(Boolean);
+}
+// breaks an abbreviation longer than 3 chars (spaces included) into two clean lines —
+// at the space if there is one, otherwise at the midpoint — instead of an arbitrary
+// mid-character wrap
+function formatAbbrLines(text){
+  if(!text || text.length<=3) return [text];
+  if(text.includes(" ")){
+    const idx = text.indexOf(" ");
+    return [text.slice(0,idx), text.slice(idx+1)];
+  }
+  const mid = Math.ceil(text.length/2);
+  return [text.slice(0,mid), text.slice(mid)];
+}
+// picks the blank (no name/phone/bank/account) contact as the default when adding a new
+// schedule, instead of auto-selecting the trade's designated default contact — falls back
+// to the first contact if the trade has no blank one
+function defaultContactId(trade){
+  if(!trade || !trade.contacts?.length) return "";
+  const blank = trade.contacts.find(c => !c.name && !c.phone && !c.bank && !c.account);
+  return blank ? blank.id : trade.contacts[0].id;
+}
+
+function loadLS(key, fallback){
+  try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch(e){ return fallback; }
+}
+function saveLS(key, value){
+  try{ localStorage.setItem(key, JSON.stringify(value)); }
+  catch(e){ console.error("저장 실패 (용량 초과일 수 있어요):", e); alert("저장에 실패했습니다. 업로드한 이미지 용량이 너무 크지 않은지 확인해주세요."); }
+}
+function fileToDataUrl(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
-  return rows
-    .map((cols, i) => {
-      const clean = cols.map(c => c.trim());
-      const name      = clean[0] || '';
-      const type      = clean[1] || '인테리어';
-      const meta      = clean[2] || '';
-      const thumbnail = toDirectUrl(clean[3] || '');
-      const imgUrls   = clean.slice(4)
-        .map(toDirectUrl)
-        .filter(u => u && u.startsWith('http'));
-      return { id: i+1, name, type, meta, thumbnail,
-               images: imgUrls.map(url => ({ url })) };
-    })
-    .filter(c => c.name && c.name.length > 0);
+}
+function isSpreadsheetName(name=""){ return /\.(xlsx|xls|csv)$/i.test(name); }
+function isPdfName(name=""){ return /\.pdf$/i.test(name); }
+function extBadge(name=""){
+  const m = name.match(/\.([a-zA-Z0-9]+)$/);
+  return m ? m[1].toUpperCase().slice(0,4) : "FILE";
+}
+function excelDataUrlToHtml(dataUrl){
+  try{
+    const base64 = dataUrl.split(",")[1];
+    const wb = XLSX.read(base64, { type: "base64" });
+    const sheetName = wb.SheetNames[0];
+    return XLSX.utils.sheet_to_html(wb.Sheets[sheetName]);
+  }catch(e){
+    console.error(e);
+    return "<p>미리보기를 불러올 수 없습니다.</p>";
+  }
 }
 
-// ─── 샘플 데이터 제거 (구글 시트 연동 완료) ───
-const SAMPLE_CASES = [];
-let CASES = [];
+/* ---------- root ---------- */
+function App(){
+  const [tab, setTab] = useState("sites");
+  const [trades, setTrades] = useSyncedState("trades", DEFAULT_TRADES);
+  const [sites, setSites] = useSyncedState("sites", []);
+  const [schedules, setSchedules] = useSyncedState("schedules", []);
+  const [vendors, setVendors] = useSyncedState("vendors", DEFAULT_VENDORS);
+  const [synced, setSynced] = useState(false);
 
-// ─── 이미지 렌더 ───
-function renderImg(url, alt='', cls='') {
-  if (url && url.startsWith('http')) {
-    return `<img src="${url}" alt="${alt}" class="${cls}"
-      style="width:100%;height:100%;object-fit:cover;display:block;"
-      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="img-placeholder" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:#ede9e2;">
-        <svg width="32" height="32" fill="none" stroke="#c8c4bc" stroke-width="1.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      </div>`;
-  }
-  return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#ede9e2;">
-    <svg width="36" height="36" fill="none" stroke="#c8c4bc" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-  </div>`;
-}
+  useEffect(() => { setSynced(fbReady()); }, []);
 
-// ─── 카드 렌더 ───
-function renderCases() {
-  const grid = document.getElementById('casesGrid');
-  if (!CASES.length) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:80px 20px;">
-        <div style="display:inline-block;width:36px;height:36px;border:2px solid #d8d3ca;border-top-color:#b89a6a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>
-        <div style="font-size:13px;color:#7a7670;letter-spacing:0.08em;">시공사례를 불러오는 중입니다...</div>
-      </div>`;
-    return;
-  }
-  grid.innerHTML = CASES.map(c => `
-    <div class="case-card" onclick="location.href='case.html?id=${c.id}'">
-      <div class="case-thumb">
-        <div class="case-thumb-inner" style="width:100%;height:100%;position:relative;">
-          ${renderImg(c.thumbnail, c.name)}
+  // if a new default trade category gets added to the app later (like "메지" was),
+  // make sure everyone's existing data picks it up automatically instead of only
+  // brand-new installs seeing it
+  useEffect(() => {
+    const missing = DEFAULT_TRADES.filter(dt => !trades.some(t => t.id===dt.id));
+    if(missing.length) setTrades(prev => [...prev, ...missing.filter(dt => !prev.some(t=>t.id===dt.id))]);
+  }, [trades]);
+
+  // every trade should always have at least one blank spare contact slot ready to
+  // fill in — add one to any trade that doesn't have one yet (existing trades included)
+  useEffect(() => {
+    const isBlank = c => !c.name && !c.phone && !c.bank && !c.account;
+    const needsBlank = trades.some(t => !t.contacts.some(isBlank));
+    if(needsBlank){
+      setTrades(prev => prev.map(t => {
+        if(t.contacts.some(isBlank)) return t;
+        return { ...t, contacts: [...t.contacts, { id: uid(), name:"", phone:"", bank:"", account:"", isDefault:false }] };
+      }));
+    }
+  }, [trades]);
+
+  // give every site a display `order` value, sorted by its overall-project start date
+  // the first time (sites without a start date go last). After that, order is only
+  // ever changed by adding a new site (auto-placed by date) or by dragging a card
+  // (see SitesTab) — so a manual drag reorder is never silently undone.
+  useEffect(() => {
+    if(sites.length===0) return;
+    const missingOrder = sites.some(s => s.order===undefined || s.order===null);
+    if(!missingOrder) return;
+    const dateKey = s => s.projectStart || "9999-99-99";
+    const sorted = [...sites].sort((a,b) => dateKey(a).localeCompare(dateKey(b)) || (a.createdAt||0)-(b.createdAt||0));
+    setSites(sorted.map((s,i) => ({ ...s, order: i*10 })));
+  }, [sites]);
+
+  const rulerTicks = Array.from({length: 40});
+
+  return (
+    <div className="app">
+      <div className="header">
+        <div className="header-inner">
+          <p className="eyebrow">PROJECT SCHEDULE / 도면 기준</p>
+          <h1 className="title">공정표</h1>
+          <p className="subtitle">현장 · 공사 담당자 · 캘린더를 한곳에서 관리합니다</p>
+          <div className="tabs">
+            <button className={"tab" + (tab==="sites"?" active":"")} onClick={()=>setTab("sites")}>현장관리</button>
+            <button className={"tab" + (tab==="calendar"?" active":"")} onClick={()=>setTab("calendar")}>공사캘린더</button>
+            <button className={"tab" + (tab==="contacts"?" active":"")} onClick={()=>setTab("contacts")}>거래처관리</button>
+            <button className={"tab" + (tab==="vendors"?" active":"")} onClick={()=>setTab("vendors")}>기타거래처</button>
+            <button className={"tab" + (tab==="labor"?" active":"")} onClick={()=>setTab("labor")}>담당자관리</button>
+            <button className={"tab" + (tab==="worker-sched"?" active":"")} onClick={()=>setTab("worker-sched")}>담당자 일정</button>
+          </div>
         </div>
-        <div class="case-overlay">
-          <div class="case-overlay-text">
-            <svg width="22" height="22" fill="none" stroke="#f5f2ed" stroke-width="1.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-            사진 ${c.images.length}장 보기
+        <div className="ruler">{rulerTicks.map((_,i)=><span key={i}/>)}</div>
+      </div>
+
+      <div className="content">
+        {tab==="sites" && (
+          <SitesTab sites={sites} setSites={setSites} trades={trades} schedules={schedules} setSchedules={setSchedules} />
+        )}
+        {tab==="calendar" && (
+          <CalendarTab sites={sites} trades={trades} schedules={schedules} setSchedules={setSchedules} />
+        )}
+        {tab==="contacts" && (
+          <ContactsTab trades={trades} setTrades={setTrades} schedules={schedules} setSchedules={setSchedules} />
+        )}
+        {tab==="vendors" && (
+          <VendorsTab vendors={vendors} setVendors={setVendors} />
+        )}
+        {tab==="labor" && (
+          <LaborTab trades={trades} sites={sites} schedules={schedules} />
+        )}
+        {tab==="worker-sched" && (
+          <WorkerScheduleTab trades={trades} sites={sites} schedules={schedules} />
+        )}
+      </div>
+
+      <p className="footer-note">
+        {synced ? "🟢 LIVE SYNC ON — 다른 사람의 수정이 실시간으로 반영됩니다" : "DATA IS STORED LOCALLY IN THIS BROWSER — 이 브라우저에만 저장됩니다 (실시간 공유를 켜려면 README 참고)"}
+      </p>
+    </div>
+  );
+}
+
+/* ---------- Sites tab ---------- */
+function SitesTab({ sites, setSites, trades, schedules, setSchedules }){
+  const [showAdd, setShowAdd] = useState(false);
+  const [detailSiteId, setDetailSiteId] = useState(null);
+  const [viewFile, setViewFile] = useState(null); // {name, dataUrl, isImage}
+  const [dragOverSiteId, setDragOverSiteId] = useState(null);
+
+  const detailSite = sites.find(s => s.id === detailSiteId);
+  const orderedSites = [...sites].sort((a,b) => (a.order??0) - (b.order??0));
+
+  function addSite(site){
+    setSites(prev => {
+      const ordered = [...prev].sort((a,b) => (a.order??0)-(b.order??0));
+      const newDate = site.projectStart || "9999-99-99";
+      let insertAt = ordered.findIndex(s => (s.projectStart || "9999-99-99") > newDate);
+      if(insertAt===-1) insertAt = ordered.length;
+      const prevOrder = insertAt>0 ? (ordered[insertAt-1].order ?? 0) : (ordered.length ? (ordered[0].order??0)-10 : 0);
+      const nextOrder = insertAt<ordered.length ? (ordered[insertAt].order ?? prevOrder+10) : prevOrder+10;
+      return [...prev, { ...site, id: uid(), createdAt: Date.now(), order: (prevOrder+nextOrder)/2 }];
+    });
+    setShowAdd(false);
+  }
+  function updateSite(id, patch){
+    setSites(prev => prev.map(s => s.id===id ? {...s, ...patch} : s));
+  }
+  function deleteSite(id){
+    if(!confirm("이 현장을 삭제하면 관련 일정도 함께 삭제됩니다. 계속할까요?")) return;
+    setSites(prev => prev.filter(s => s.id!==id));
+    setSchedules(prev => prev.filter(sc => sc.siteId!==id));
+    if(detailSiteId===id) setDetailSiteId(null);
+  }
+  function reorderSites(draggedId, targetId){
+    if(draggedId===targetId) return;
+    setSites(prev => {
+      const ordered = [...prev].sort((a,b) => (a.order??0)-(b.order??0));
+      const fromIdx = ordered.findIndex(s=>s.id===draggedId);
+      const toIdx = ordered.findIndex(s=>s.id===targetId);
+      if(fromIdx===-1 || toIdx===-1) return prev;
+      const [moved] = ordered.splice(fromIdx,1);
+      ordered.splice(toIdx,0,moved);
+      return ordered.map((s,i)=>({...s, order:i*10}));
+    });
+  }
+
+  return (
+    <div>
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">SITES</p>
+          <h2>공사 현장</h2>
+        </div>
+        <button className="btn btn-accent" onClick={()=>setShowAdd(true)}>+ 새 현장 추가</button>
+      </div>
+
+      {sites.length===0 ? (
+        <div className="empty"><b>등록된 현장이 없습니다.</b><br/>“새 현장 추가”를 눌러 주소와 도면을 등록해보세요.</div>
+      ) : (
+        <div className="grid-sites">
+          {orderedSites.map(site => (
+            <div
+              className={"card site-card" + (dragOverSiteId===site.id ? " drag-over" : "")}
+              key={site.id}
+              draggable
+              onDragStart={e=>{ e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain", site.id); }}
+              onDragOver={e=>e.preventDefault()}
+              onDragEnter={e=>{ e.preventDefault(); setDragOverSiteId(site.id); }}
+              onDragLeave={()=>{ if(dragOverSiteId===site.id) setDragOverSiteId(null); }}
+              onDrop={e=>{ e.preventDefault(); setDragOverSiteId(null); reorderSites(e.dataTransfer.getData("text/plain"), site.id); }}
+              onDragEnd={()=>setDragOverSiteId(null)}
+              title="드래그해서 순서를 바꿀 수 있어요"
+            >
+              <div className="corner" />
+              <span className="drag-handle">⠿</span>
+              <p className="site-name">{site.name}</p>
+              <p className="site-addr">📍 {site.address || "주소 미등록"}</p>
+              {site.projectStart && site.projectEnd && (
+                <p className="site-addr">🗂 전체 공사: {site.projectStart} ~ {site.projectEnd} ({daySpan({startDate:site.projectStart, endDate:site.projectEnd})}일)</p>
+              )}
+              {site.officePhone && <p className="site-addr">🏢 {site.officeName || "관리사무소"} · {site.officePhone}</p>}
+              <div className="tag-row">
+                <span className={"tag" + (site.floorPlan ? " ok":"")}>{site.floorPlan ? "도면 등록됨" : "도면 없음"}</span>
+                <span className={"tag" + (site.estimate ? " ok":"")}>{site.estimate ? "견적서 등록됨" : "견적서 없음"}</span>
+                <span className={"tag" + (site.officePhone ? " ok":"")}>{site.officePhone ? "관리사무소 등록됨" : "관리사무소 없음"}</span>
+                <span className="tag">{schedules.filter(sc=>sc.siteId===site.id).length}건 일정</span>
+              </div>
+              <div className="site-actions">
+                <button className="btn btn-ghost btn-sm" onClick={()=>setDetailSiteId(site.id)}>일정 관리</button>
+                {site.floorPlan && <button className="btn btn-ghost btn-sm" onClick={()=>setViewFile(site.floorPlan)}>도면 보기</button>}
+                {site.estimate && <button className="btn btn-ghost btn-sm" onClick={()=>setViewFile(site.estimate)}>견적서 보기</button>}
+                <button className="btn btn-danger btn-sm" onClick={()=>deleteSite(site.id)}>삭제</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showAdd && <SiteFormModal onClose={()=>setShowAdd(false)} onSave={addSite} />}
+      {detailSite && (
+        <SiteDetailModal
+          site={detailSite}
+          trades={trades}
+          schedules={schedules.filter(sc=>sc.siteId===detailSite.id)}
+          onClose={()=>setDetailSiteId(null)}
+          onUpdateSite={patch=>updateSite(detailSite.id, patch)}
+          onAddSchedule={sc=>setSchedules(prev=>[...prev, {...sc, id: uid(), siteId: detailSite.id}])}
+          onUpdateSchedule={(id, patch)=>setSchedules(prev=>prev.map(s=>s.id===id ? {...s, ...patch} : s))}
+          onDeleteSchedule={id=>setSchedules(prev=>prev.filter(s=>s.id!==id))}
+          onViewFile={setViewFile}
+        />
+      )}
+      {viewFile && <FileViewerModal file={viewFile} onClose={()=>setViewFile(null)} />}
+    </div>
+  );
+}
+
+function SiteFormModal({ onClose, onSave, initial }){
+  const [name, setName] = useState(initial?.name || "");
+  const [abbreviation, setAbbreviation] = useState(initial?.abbreviation || "");
+  const [color, setColor] = useState(initial?.color || "");
+  const [address, setAddress] = useState(initial?.address || "");
+  const [memo, setMemo] = useState(initial?.memo || "");
+  const [floorPlan, setFloorPlan] = useState(initial?.floorPlan || null);
+  const [estimate, setEstimate] = useState(initial?.estimate || null);
+  const [officeName, setOfficeName] = useState(initial?.officeName || "");
+  const [officePhone, setOfficePhone] = useState(initial?.officePhone || "");
+  const [projectStart, setProjectStart] = useState(initial?.projectStart || "");
+  const [projectEnd, setProjectEnd] = useState(initial?.projectEnd || "");
+
+  async function handleFile(e, setter){
+    const file = e.target.files[0];
+    if(!file) return;
+    if(file.size > 650*1024){
+      alert("파일이 너무 큽니다 (650KB 이하 권장). 여러 사람과 실시간으로 공유되는 항목이라 용량 제한이 있어요. 이미지를 압축하거나 캡처본으로 올려주세요.");
+      return;
+    }
+    const dataUrl = await fileToDataUrl(file);
+    setter({
+      name: file.name,
+      dataUrl,
+      isImage: file.type.startsWith("image/"),
+      isSpreadsheet: isSpreadsheetName(file.name),
+      isPdf: isPdfName(file.name) || file.type === "application/pdf",
+    });
+  }
+
+  function submit(){
+    if(!name.trim() || !address.trim()){ alert("현장명과 주소는 필수입니다."); return; }
+    if(projectStart && projectEnd && projectEnd < projectStart){ alert("전체 공사 종료일이 시작일보다 빠를 수 없습니다."); return; }
+    onSave({
+      name: name.trim(), abbreviation: abbreviation.trim(), color, address: address.trim(), memo: memo.trim(), floorPlan, estimate,
+      officeName: officeName.trim(), officePhone: officePhone.trim(),
+      projectStart, projectEnd,
+    });
+  }
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <h3>{initial ? "현장 정보 수정" : "새 현장 추가"}</h3>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="row2">
+          <div className="field">
+            <label>현장명</label>
+            <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="예: 서울숲 리버뷰 24평" />
+          </div>
+          <div className="field">
+            <label>약어 (달력에 크게 표시)</label>
+            <input type="text" value={abbreviation} onChange={e=>setAbbreviation(e.target.value)} placeholder="예: 홍은" />
+          </div>
+        </div>
+
+        <div className="field">
+          <label>현장 색상 (캘린더·담당자 일정표에 사용)</label>
+          <div className="color-swatch-row">
+            {SITE_COLOR_SWATCHES.map(c => (
+              <button
+                type="button"
+                key={c}
+                className={"color-swatch" + (color===c ? " selected" : "")}
+                style={{background:c}}
+                onClick={()=>setColor(c)}
+                title={c}
+              />
+            ))}
+            <label className="color-swatch color-swatch-custom" style={{background: color || "#fff"}} title="직접 선택">
+              <input type="color" value={color || "#16233F"} onChange={e=>setColor(e.target.value)} />
+            </label>
+            {color && <button type="button" className="btn btn-ghost btn-sm" onClick={()=>setColor("")}>기본값으로</button>}
+          </div>
+        </div>
+
+        <div className="field">
+          <label>주소</label>
+          <input type="text" value={address} onChange={e=>setAddress(e.target.value)} placeholder="지번 또는 도로명 주소" />
+        </div>
+
+        <div className="row2">
+          <div className="field">
+            <label>전체 공사 시작일</label>
+            <input type="date" value={projectStart} onChange={e=>setProjectStart(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>전체 공사 종료일</label>
+            <input type="date" value={projectEnd} min={projectStart || undefined} onChange={e=>setProjectEnd(e.target.value)} />
+          </div>
+        </div>
+
+        <div className="row2">
+          <div className="field">
+            <label>관리사무소 이름</label>
+            <input type="text" value={officeName} onChange={e=>setOfficeName(e.target.value)} placeholder="예: OO아파트 관리사무소" />
+          </div>
+          <div className="field">
+            <label>관리사무소 연락처</label>
+            <input type="text" value={officePhone} onChange={e=>setOfficePhone(e.target.value)} placeholder="예: 02-1234-5678" />
+          </div>
+        </div>
+
+        <div className="row2">
+          <div className="field">
+            <label>도면 업로드</label>
+            <div className="file-drop">
+              <FilePreviewThumb file={floorPlan} />
+              <span style={{flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{floorPlan?.name || "파일 없음"}</span>
+              <label>업로드<input type="file" accept="image/*,.pdf" onChange={e=>handleFile(e, setFloorPlan)} /></label>
+            </div>
+          </div>
+          <div className="field">
+            <label>견적서 업로드 (이미지·PDF·엑셀 가능)</label>
+            <div className="file-drop">
+              <FilePreviewThumb file={estimate} />
+              <span style={{flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{estimate?.name || "파일 없음"}</span>
+              <label>업로드<input type="file" accept="image/*,.pdf,.xlsx,.xls,.csv" onChange={e=>handleFile(e, setEstimate)} /></label>
+            </div>
+          </div>
+        </div>
+
+        <div className="field">
+          <label>메모</label>
+          <textarea value={memo} onChange={e=>setMemo(e.target.value)} placeholder="특이사항 등" />
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>취소</button>
+          <button className="btn btn-primary" onClick={submit}>저장</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SiteDetailModal({ site, trades, schedules, onClose, onUpdateSite, onAddSchedule, onUpdateSchedule, onDeleteSchedule, onViewFile }){
+  const [editing, setEditing] = useState(false);
+  const [addingTradeId, setAddingTradeId] = useState(null);
+  const [editingScheduleId, setEditingScheduleId] = useState(null);
+  const editingSchedule = schedules.find(s => s.id===editingScheduleId);
+  const editingTrade = editingSchedule ? trades.find(t => t.id===editingSchedule.tradeId) : null;
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal" style={{maxWidth:720}}>
+        <div className="modal-head">
+          <div>
+            <p className="eyebrow">SITE DETAIL</p>
+            <h3>{site.name}</h3>
+          </div>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="tag-row" style={{marginBottom:14}}>
+          <span className="tag">📍 {site.address}</span>
+          {site.projectStart && site.projectEnd && (
+            <span className="tag ok">🗂 전체 공사 {site.projectStart} ~ {site.projectEnd}</span>
+          )}
+          {site.officePhone && <span className="tag">🏢 {site.officeName || "관리사무소"} · {site.officePhone}</span>}
+          {site.floorPlan && <span className="tag ok" style={{cursor:"pointer"}} onClick={()=>onViewFile(site.floorPlan)}>도면 보기</span>}
+          {site.estimate && <span className="tag ok" style={{cursor:"pointer"}} onClick={()=>onViewFile(site.estimate)}>견적서 보기</span>}
+          <button className="btn btn-ghost btn-sm" onClick={()=>setEditing(true)}>현장정보 수정</button>
+        </div>
+
+        <p className="eyebrow" style={{marginBottom:8}}>TRADES / 공사별 일정 (기간) — 클릭하면 수정</p>
+        <div className="trade-list">
+          {trades.map(trade => {
+            const tradeSchedules = schedules.filter(s => s.tradeId===trade.id);
+            return (
+              <div className="trade-row" key={trade.id} style={{flexDirection:"column", alignItems:"stretch"}}>
+                <div style={{display:"flex", alignItems:"center", gap:12}}>
+                  <span className="trade-swatch" style={{background:trade.color}} />
+                  <div className="trade-info">
+                    <div className="trade-name">{trade.name}</div>
+                    {tradeSchedules.length===0 && <div className="trade-note">{trade.note}</div>}
+                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={()=>setAddingTradeId(addingTradeId===trade.id ? null : trade.id)}>
+                    + 기간 추가
+                  </button>
+                </div>
+
+                {tradeSchedules.length>0 && (
+                  <div className="sched-chips">
+                    {tradeSchedules.map(sc => {
+                      const contact = trade.contacts.find(c=>c.id===sc.contactId);
+                      const { start, end } = scheduleRange(sc);
+                      const span = daySpan(sc);
+                      return (
+                        <span className="chip" key={sc.id} style={{cursor:"pointer"}} onClick={()=>setEditingScheduleId(sc.id)}>
+                          📅 {start}{end!==start && ` ~ ${end}`} ({span}일) · {contact?.name || "담당자 미지정"}{sc.workerName && ` · 작업자:${sc.workerName}`}{sc.laborUnits!=null && ` · ${sc.laborUnits}품`} {sc.memo && `· ${sc.memo}`}
+                          <span className="x" onClick={e=>{ e.stopPropagation(); onDeleteSchedule(sc.id); }}>✕</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {addingTradeId===trade.id && (
+                  <AddScheduleInline
+                    trade={trade}
+                    onCancel={()=>setAddingTradeId(null)}
+                    onAdd={sc=>{ onAddSchedule({...sc, tradeId: trade.id}); setAddingTradeId(null); }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>닫기</button>
+        </div>
+      </div>
+      {editing && (
+        <SiteFormModal
+          initial={site}
+          onClose={()=>setEditing(false)}
+          onSave={patch=>{ onUpdateSite(patch); setEditing(false); }}
+        />
+      )}
+      {editingSchedule && editingTrade && (
+        <EditScheduleModal
+          schedule={editingSchedule}
+          trade={editingTrade}
+          site={site}
+          onClose={()=>setEditingScheduleId(null)}
+          onSave={patch=>{ onUpdateSchedule(editingSchedule.id, patch); setEditingScheduleId(null); }}
+          onDelete={()=>{ onDeleteSchedule(editingSchedule.id); setEditingScheduleId(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function DayWorkersModal({ site, date, trades, onClose, onSave }){
+  const [names, setNames] = useState(() => Object.fromEntries(trades.map(t => [t.key, t.workerName || ""])));
+
+  function submit(){
+    onSave(trades.map(t => ({ id: t.id, isNew: t.isNew, tradeId: t.trade.id, workerName: (names[t.key] || "").trim() })));
+    onClose();
+  }
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <div>
+            <p className="eyebrow">ASSIGN WORKERS</p>
+            <h3>{site.name} · {date}</h3>
+          </div>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+
+        <p style={{fontSize:12.5, color:"var(--ink-soft)", marginBottom:12}}>이 날짜에 진행되는 공정별로 작업자명을 지정하세요. "기타(일당)"은 특정 공정 없이 그날 여러 잡일을 한 인부를 기록할 때 씁니다.</p>
+
+        {trades.map(t => (
+          <div className="field" key={t.key}>
+            <label>
+              <span className="trade-swatch" style={{background:t.trade.color, marginRight:6, display:"inline-block", verticalAlign:"middle"}} />
+              {t.trade.name}
+            </label>
+            <input
+              type="text"
+              value={names[t.key]}
+              onChange={e=>setNames(prev => ({...prev, [t.key]: e.target.value}))}
+              placeholder="예: 김철수"
+            />
+          </div>
+        ))}
+
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>취소</button>
+          <button className="btn btn-primary" onClick={submit}>저장</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QuickAddScheduleModal({ sites, initialSiteId, trades, initialDate, onClose, onAdd }){
+  const [siteId, setSiteId] = useState(initialSiteId || sites[0]?.id || "");
+  const site = sites.find(s => s.id===siteId);
+  const [tradeId, setTradeId] = useState(trades[0]?.id || "");
+  const trade = trades.find(t => t.id===tradeId);
+  const [startDate, setStartDate] = useState(initialDate);
+  const [endDate, setEndDate] = useState(initialDate);
+  const [contactId, setContactId] = useState(defaultContactId(trade));
+  const [workerName, setWorkerName] = useState("");
+  const [laborUnits, setLaborUnits] = useState("");
+  const [memo, setMemo] = useState("");
+
+  function handleTradeChange(id){
+    setTradeId(id);
+    const t = trades.find(x => x.id===id);
+    setContactId(defaultContactId(t));
+  }
+  function handleStartChange(v){
+    setStartDate(v);
+    if(endDate < v) setEndDate(v);
+  }
+  function submit(){
+    if(!siteId){ alert("현장을 선택해주세요."); return; }
+    if(!tradeId){ alert("공정을 선택해주세요."); return; }
+    if(!startDate || !endDate){ alert("시작일과 종료일을 입력해주세요."); return; }
+    onAdd(siteId, { tradeId, startDate, endDate: endDate<startDate ? startDate : endDate, contactId, workerName: workerName.trim(), laborUnits: laborUnits==="" ? null : Number(laborUnits), memo });
+  }
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <div>
+            <p className="eyebrow">ADD SCHEDULE</p>
+            <h3>{initialSiteId ? site?.name : "일정 추가"}</h3>
+          </div>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="row2">
+          {!initialSiteId && (
+            <div className="field" style={{gridColumn:"1 / -1"}}>
+              <label>현장</label>
+              <select value={siteId} onChange={e=>setSiteId(e.target.value)}>
+                {sites.map(s => <option value={s.id} key={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+          )}
+          <div className="field">
+            <label>공정</label>
+            <select value={tradeId} onChange={e=>handleTradeChange(e.target.value)}>
+              {trades.map(t => <option value={t.id} key={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+          <div className="field">
+            <label>담당자 (연락용 거래처)</label>
+            <select value={contactId} onChange={e=>setContactId(e.target.value)}>
+              {trade?.contacts.map(c => <option value={c.id} key={c.id}>{c.name || "(이름 미입력)"}{c.isDefault ? " (기본)" : ""}</option>)}
+            </select>
+          </div>
+          <div className="field">
+            <label>작업자명 (직접 입력)</label>
+            <input type="text" value={workerName} onChange={e=>setWorkerName(e.target.value)} placeholder="예: 김철수" />
+          </div>
+          <div className="field">
+            <label>시작일</label>
+            <input type="date" value={startDate} onChange={e=>handleStartChange(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>종료일 (총 기간)</label>
+            <input type="date" value={endDate} min={startDate} onChange={e=>setEndDate(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>품수 (0.5 단위)</label>
+            <input type="number" step="0.5" min="0" value={laborUnits} onChange={e=>setLaborUnits(e.target.value)} placeholder="예: 1.5" />
+          </div>
+          <div className="field" style={{gridColumn:"1 / -1"}}>
+            <label>메모</label>
+            <input type="text" value={memo} onChange={e=>setMemo(e.target.value)} placeholder="예: 자재 주문, 실측 방문 등" />
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>취소</button>
+          <button className="btn btn-primary" onClick={submit}>추가</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EditScheduleModal({ schedule, trade, site, onClose, onSave, onDelete }){
+  const range = scheduleRange(schedule);
+  const [startDate, setStartDate] = useState(range.start);
+  const [endDate, setEndDate] = useState(range.end);
+  const [contactId, setContactId] = useState(schedule.contactId || defaultContactId(trade));
+  const [workerName, setWorkerName] = useState(schedule.workerName || "");
+  const [laborUnits, setLaborUnits] = useState(schedule.laborUnits!=null ? String(schedule.laborUnits) : "");
+  const [memo, setMemo] = useState(schedule.memo || "");
+
+  function handleStartChange(v){
+    setStartDate(v);
+    if(endDate < v) setEndDate(v);
+  }
+  function submit(){
+    if(!startDate || !endDate){ alert("시작일과 종료일을 입력해주세요."); return; }
+    onSave({ startDate, endDate: endDate<startDate ? startDate : endDate, contactId, workerName: workerName.trim(), laborUnits: laborUnits==="" ? null : Number(laborUnits), memo });
+  }
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <div>
+            <p className="eyebrow">EDIT SCHEDULE</p>
+            <h3>{site?.name} · {trade?.name}</h3>
+          </div>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="row2">
+          <div className="field">
+            <label>시작일</label>
+            <input type="date" value={startDate} onChange={e=>handleStartChange(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>종료일 (총 기간)</label>
+            <input type="date" value={endDate} min={startDate} onChange={e=>setEndDate(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>담당자 (연락용 거래처)</label>
+            <select value={contactId} onChange={e=>setContactId(e.target.value)}>
+              {trade?.contacts.map(c => <option value={c.id} key={c.id}>{c.name || "(이름 미입력)"}{c.isDefault ? " (기본)" : ""}</option>)}
+            </select>
+          </div>
+          <div className="field">
+            <label>작업자명 (직접 입력)</label>
+            <input type="text" value={workerName} onChange={e=>setWorkerName(e.target.value)} placeholder="예: 김철수" />
+          </div>
+          <div className="field">
+            <label>품수 (0.5 단위)</label>
+            <input type="number" step="0.5" min="0" value={laborUnits} onChange={e=>setLaborUnits(e.target.value)} placeholder="예: 1.5" />
+          </div>
+          <div className="field">
+            <label>메모</label>
+            <input type="text" value={memo} onChange={e=>setMemo(e.target.value)} placeholder="예: 실측 약속, 오전 시공 등" />
+          </div>
+        </div>
+
+        <div className="modal-footer" style={{justifyContent:"space-between"}}>
+          <button className="btn btn-danger" onClick={onDelete}>일정 삭제</button>
+          <div style={{display:"flex", gap:8}}>
+            <button className="btn btn-ghost" onClick={onClose}>취소</button>
+            <button className="btn btn-primary" onClick={submit}>저장</button>
           </div>
         </div>
       </div>
-      <div class="case-body">
-        <div class="case-type">${c.type}</div>
-        <div class="case-name">${c.name}</div>
-        <div class="case-meta">${c.meta}</div>
+    </div>
+  );
+}
+
+function AddScheduleInline({ trade, onCancel, onAdd }){
+  const [startDate, setStartDate] = useState(todayStr());
+  const [endDate, setEndDate] = useState(todayStr());
+  const [contactId, setContactId] = useState(defaultContactId(trade));
+  const [workerName, setWorkerName] = useState("");
+  const [laborUnits, setLaborUnits] = useState("");
+  const [memo, setMemo] = useState("");
+
+  function handleStartChange(v){
+    setStartDate(v);
+    if(endDate < v) setEndDate(v);
+  }
+
+  function submit(){
+    if(!startDate || !endDate){ alert("시작일과 종료일을 입력해주세요."); return; }
+    onAdd({ startDate, endDate: endDate < startDate ? startDate : endDate, contactId, workerName: workerName.trim(), laborUnits: laborUnits==="" ? null : Number(laborUnits), memo });
+  }
+
+  return (
+    <div className="row2" style={{marginTop:8, background:"var(--paper)", padding:10, borderRadius:8}}>
+      <div className="field" style={{marginBottom:0}}>
+        <label>시작일</label>
+        <input type="date" value={startDate} onChange={e=>handleStartChange(e.target.value)} />
+      </div>
+      <div className="field" style={{marginBottom:0}}>
+        <label>종료일 (총 기간)</label>
+        <input type="date" value={endDate} min={startDate} onChange={e=>setEndDate(e.target.value)} />
+      </div>
+      <div className="field" style={{marginBottom:0}}>
+        <label>담당자 (연락용 거래처)</label>
+        <select value={contactId} onChange={e=>setContactId(e.target.value)}>
+          {trade.contacts.map(c => <option value={c.id} key={c.id}>{c.name || "(이름 미입력)"}{c.isDefault ? " (기본)" : ""}</option>)}
+        </select>
+      </div>
+      <div className="field" style={{marginBottom:0}}>
+        <label>작업자명 (직접 입력)</label>
+        <input type="text" value={workerName} onChange={e=>setWorkerName(e.target.value)} placeholder="예: 김철수" />
+      </div>
+      <div className="field" style={{marginBottom:0}}>
+        <label>품수 (0.5 단위)</label>
+        <input type="number" step="0.5" min="0" value={laborUnits} onChange={e=>setLaborUnits(e.target.value)} placeholder="예: 1.5" />
+      </div>
+      <div className="field" style={{marginBottom:0}}>
+        <label>메모</label>
+        <input type="text" value={memo} onChange={e=>setMemo(e.target.value)} placeholder="예: 실측 약속, 오전 시공 등" />
+      </div>
+      <div style={{gridColumn:"1 / -1", display:"flex", justifyContent:"flex-end", gap:8, marginTop:4}}>
+        <button className="btn btn-ghost btn-sm" onClick={onCancel}>취소</button>
+        <button className="btn btn-primary btn-sm" onClick={submit}>추가</button>
       </div>
     </div>
-  `).join('');
+  );
 }
 
-// ─── CASE MODAL ───
-let currentCaseId = null;
-let currentZoomImages = [];
-let currentZoomIdx = 0;
+function FilePreviewThumb({ file }){
+  if(!file) return null;
+  if(file.isImage) return <img className="file-thumb" src={file.dataUrl} />;
+  if(file.isSpreadsheet ?? isSpreadsheetName(file.name)) return <div className="file-badge" style={{background:"var(--green)"}}>{extBadge(file.name)}</div>;
+  if(file.isPdf ?? isPdfName(file.name)) return <div className="file-badge" style={{background:"var(--danger)"}}>PDF</div>;
+  return <div className="file-badge" style={{background:"var(--ink-soft)"}}>{extBadge(file.name)}</div>;
+}
 
-function openCaseModal(caseId) {
-  const c = CASES.find(x => x.id === caseId);
-  if (!c) return;
-  currentCaseId = caseId;
-  currentZoomImages = c.images;
-  document.getElementById('modalCaseName').textContent = c.name;
-  document.getElementById('modalCaseMeta').textContent = c.meta;
-  const gallery = document.getElementById('modalGallery');
-  // 세로 스크롤 이미지 스택
-  gallery.innerHTML = c.images.map((img, i) => `
-    <div class="modal-img-row" onclick="openZoom(${i})">
-      ${img.url && img.url.startsWith('http')
-        ? `<img src="${img.url}" alt="시공사례 ${i+1}" loading="${i < 2 ? 'eager' : 'lazy'}"
-            onerror="this.parentElement.style.display='none'">`
-        : `<div style="width:100%;aspect-ratio:4/3;background:#ede9e2;display:flex;align-items:center;justify-content:center;">
-            <svg width="36" height="36" fill="none" stroke="#c8c4bc" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-           </div>`
-      }
-      <div class="modal-img-overlay">
-        <svg width="28" height="28" fill="none" stroke="white" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+function FileViewerModal({ file, onClose }){
+  // fall back to name/mime sniffing for files saved before these flags existed
+  const isImage = !!file.isImage;
+  const isSpreadsheet = file.isSpreadsheet ?? isSpreadsheetName(file.name);
+  const isPdf = file.isPdf ?? (isPdfName(file.name) || (file.dataUrl || "").startsWith("data:application/pdf"));
+  const tableHtml = useMemo(() => isSpreadsheet ? excelDataUrlToHtml(file.dataUrl) : null, [file]);
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal" style={{maxWidth: isSpreadsheet ? 900 : 800}}>
+        <div className="modal-head">
+          <h3>{file.name}</h3>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+        {isImage && <img src={file.dataUrl} style={{width:"100%", borderRadius:8}} />}
+        {isPdf && <embed src={file.dataUrl} type="application/pdf" style={{width:"100%", height:"70vh", borderRadius:8}} />}
+        {isSpreadsheet && (
+          <div className="excel-table-wrap" dangerouslySetInnerHTML={{__html: tableHtml}} />
+        )}
+        {!isImage && !isPdf && !isSpreadsheet && (
+          <p style={{color:"var(--ink-soft)", fontSize:13}}>이 파일 형식은 미리보기를 지원하지 않습니다. 다운로드해서 확인해주세요.</p>
+        )}
+        <div className="modal-footer">
+          <a className="btn btn-primary" href={file.dataUrl} download={file.name}>다운로드</a>
+        </div>
       </div>
     </div>
-  `).join('');
-  // 스크롤 맨 위로
-  const scroll = document.querySelector('.modal-scroll');
-  if (scroll) scroll.scrollTop = 0;
-  document.getElementById('caseModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  );
 }
 
-function closeModal(e) {
-  if (e.target === document.getElementById('caseModal')) closeCaseModal();
-}
-function closeCaseModal() {
-  document.getElementById('caseModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
+/* ---------- Calendar tab ---------- */
+function SiteMultiSelect({ sites, selectedSiteIds, onChange }){
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
-// 이 시공사례로 상담하기
-function consultFromCase() {
-  const c = CASES.find(x => x.id === currentCaseId);
-  closeCaseModal();
-  setTimeout(() => {
-    document.getElementById('contact').scrollIntoView({behavior:'smooth'});
-    if (c) {
-      const memo = document.getElementById('f_memo');
-      if (memo) memo.value = `[시공사례 참고] ${c.name} (${c.meta}) 스타일로 상담 요청드립니다.`;
-    }
-  }, 400);
-}
+  useEffect(() => {
+    function handleOutside(e){ if(ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
 
-// ─── ZOOM ───
-function openZoom(idx) {
-  currentZoomIdx = idx;
-  renderZoomImage();
-  document.getElementById('zoomModal').classList.add('open');
-}
+  const allSelected = selectedSiteIds===null;
+  const isChecked = id => allSelected || selectedSiteIds.includes(id);
+  const selectedCount = allSelected ? sites.length : selectedSiteIds.length;
+  const label = sites.length===0 ? "현장 없음"
+    : allSelected ? "전체 현장"
+    : selectedCount===0 ? "현장 선택"
+    : selectedCount===1 ? sites.find(s=>isChecked(s.id))?.name || "1개 현장"
+    : `현장 ${selectedCount}개 선택`;
 
-function renderZoomImage() {
-  const img = currentZoomImages[currentZoomIdx];
-  const wrap = document.getElementById('zoomImgWrap');
-  if (img && img.url && img.url.startsWith('http')) {
-    wrap.innerHTML = `<img src="${img.url}" alt="확대 이미지"
-      style="max-width:88vw;max-height:82vh;object-fit:contain;display:block;">`;
-  } else {
-    wrap.innerHTML = `<div style="width:600px;max-width:88vw;height:400px;display:flex;align-items:center;justify-content:center;background:#161512;">
-      <svg width="48" height="48" fill="none" stroke="#3a3730" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    </div>`;
-  }
-  document.getElementById('zoomCounter').textContent =
-    `${currentZoomIdx + 1} / ${currentZoomImages.length}`;
-}
-
-function zoomNav(dir) {
-  currentZoomIdx = (currentZoomIdx + dir + currentZoomImages.length) % currentZoomImages.length;
-  renderZoomImage();
-}
-
-function closeZoom() {
-  document.getElementById('zoomModal').classList.remove('open');
-}
-
-document.addEventListener('keydown', e => {
-  if (document.getElementById('zoomModal').classList.contains('open')) {
-    if (e.key === 'ArrowLeft') zoomNav(-1);
-    if (e.key === 'ArrowRight') zoomNav(1);
-    if (e.key === 'Escape') closeZoom();
-  } else if (document.getElementById('caseModal').classList.contains('open')) {
-    if (e.key === 'Escape') closeCaseModal();
-  }
-});
-
-// ─── HERO SLIDER ───
-(function() {
-  const slides = document.querySelectorAll('.slide');
-  const dotsEl = document.getElementById('sliderDots');
-  const progressEl = document.getElementById('sliderProgress');
-  const currentEl = document.getElementById('sliderCurrent');
-  const totalEl = document.getElementById('sliderTotal');
-  const TOTAL = slides.length;
-  const DURATION = 3000;
-  const hero = document.getElementById('heroSlider');
-  let current = 0;
-  let timer = null;
-  let isPaused = false;
-
-  // 도트 생성
-  totalEl.textContent = TOTAL;
-  for (let i = 0; i < TOTAL; i++) {
-    const dot = document.createElement('button');
-    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', '슬라이드 ' + (i+1));
-    dot.onclick = (function(idx){ return function(){ goTo(idx); }; })(i);
-    dotsEl.appendChild(dot);
-  }
-
-  function updateDots(idx) {
-    document.querySelectorAll('.slider-dot').forEach(function(d, i) {
-      d.classList.toggle('active', i === idx);
-    });
-  }
-
-  function goTo(idx) {
-    clearTimeout(timer);
-    slides[current].classList.remove('active');
-    current = (idx + TOTAL) % TOTAL;
-    slides[current].classList.add('active');
-    currentEl.textContent = current + 1;
-    updateDots(current);
-
-    // 강제 리페인트: GPU 레이어가 오래 유휴 상태였다가 전환될 때
-    // 이전 화면 잔상이 남는 브라우저 버그를 방지
-    void hero.offsetHeight;
-
-    // 진행 바 리셋
-    progressEl.style.transition = 'none';
-    progressEl.style.width = '0%';
-
-    var isVideo = slides[current].dataset.type === 'video';
-    var dur = isVideo ? 8000 : DURATION;
-
-    setTimeout(function() {
-      progressEl.style.transition = 'width ' + dur + 'ms linear';
-      progressEl.style.width = '100%';
-    }, 30);
-
-    if (!isPaused) {
-      timer = setTimeout(function() { goTo(current + 1); }, dur);
-    }
-  }
-
-  window.heroSlide = function(dir) { goTo(current + dir); };
-
-  window.playHeroVideo = function() {
-    var video = document.getElementById('heroVideo');
-    var btn = document.getElementById('videoPlayBtn');
-    if (video) {
-      video.play();
-      if (btn) btn.classList.add('hidden');
-    }
-  };
-
-  // 초기화
-  window.addEventListener('load', function() {
-    var video = document.getElementById('heroVideo');
-    var isMobile = window.innerWidth <= 768;
-
-    if (video) {
-      video.muted = true;
-      video.volume = 0;
-
-      if (!isMobile) {
-        // PC: 자동재생 시도
-        var playAttempt = setInterval(function() {
-          video.play().then(function() {
-            clearInterval(playAttempt);
-          }).catch(function() {
-            // 계속 시도
-          });
-        }, 300);
-        // 2초 후에도 안되면 포기
-        setTimeout(function() { clearInterval(playAttempt); }, 2000);
-      }
-
-      // 영상 재생 오류 시 2번 슬라이드로 이동
-      video.addEventListener('error', function() {
-        goTo(1);
-      });
-    }
-
-    // 첫 슬라이드 진행 바 시작 (영상: 19초)
-    var dur = 19000;
-    setTimeout(function() {
-      progressEl.style.transition = 'width ' + dur + 'ms linear';
-      progressEl.style.width = '100%';
-    }, 100);
-    timer = setTimeout(function() { goTo(1); }, dur);
-  });
-
-  // 마우스 첫 움직임 시 영상 재생 시도
-  var videoStarted = false;
-  function tryPlayVideo() {
-    if (videoStarted) return;
-    var video = document.getElementById('heroVideo');
-    if (video && current === 0) {
-      video.play().then(function() { videoStarted = true; }).catch(function(){});
-    }
-  }
-  document.addEventListener('mousemove', tryPlayVideo, {once: true});
-  document.addEventListener('click', tryPlayVideo, {once: true});
-
-  // 호버 일시정지 (풀스크린 배경 전체가 아니라, 글자를 읽는 텍스트 영역에
-  // 마우스가 있을 때만 멈춘다. 히어로 전체(100vh)를 기준으로 하면 페이지
-  // 진입 직후부터 항상 마우스가 그 안에 있어 영상이 영원히 안 넘어가는
-  // 문제가 있었다)
-  var overlays = document.querySelectorAll('.slide-overlay');
-  overlays.forEach(function(ov) {
-    ov.style.pointerEvents = 'auto';
-    ov.addEventListener('mouseenter', function() {
-      isPaused = true;
-      clearTimeout(timer);
-      progressEl.style.transition = 'none';
-    });
-    ov.addEventListener('mouseleave', function() {
-      isPaused = false;
-      var isVideo = slides[current].dataset.type === 'video';
-      var dur = isVideo ? 8000 : DURATION;
-      progressEl.style.transition = 'width ' + dur + 'ms linear';
-      progressEl.style.width = '100%';
-      timer = setTimeout(function() { goTo(current + 1); }, dur);
-    });
-  });
-
-  // 터치 스와이프
-  var touchX = 0;
-  var heroEl = document.querySelector('.hero');
-  heroEl.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
-  heroEl.addEventListener('touchend', function(e) {
-    var dx = e.changedTouches[0].clientX - touchX;
-    if (Math.abs(dx) > 50) heroSlide(dx < 0 ? 1 : -1);
-  }, {passive:true});
-
-  // 새 탭/창 전환 후 복귀 시 이미지·텍스트 어긋남 방지
-  // (백그라운드 탭에서는 CSS opacity 전환 레이어가 재도색되지 않는
-  //  브라우저 렌더링 버그가 있어, 복귀 시 현재 슬라이드를 강제로 다시 그려준다)
-  document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-      // 탭이 백그라운드로 가면 타이머를 멈춰 어긋난 시점에 넘어가는 것을 방지
-      clearTimeout(timer);
-      progressEl.style.transition = 'none';
+  function toggleSite(id){
+    if(allSelected){
+      onChange(sites.map(s=>s.id).filter(sid=>sid!==id));
     } else {
-      // 복귀 시: 현재 슬라이드를 제외한 모든 슬라이드의 active를 강제로 정리하고
-      var idx = current;
-      slides.forEach(function(s, i) { s.classList.toggle('active', i === idx); });
-      updateDots(idx);
-      currentEl.textContent = idx + 1;
-
-      // 강제 리페인트 (레이아웃을 한 번 읽어 리플로우 유발)
-      void hero.offsetHeight;
-
-      // 진행 바 및 타이머 재시작
-      var isVideo = slides[idx].dataset.type === 'video';
-      var dur = isVideo ? 8000 : DURATION;
-      progressEl.style.transition = 'none';
-      progressEl.style.width = '0%';
-      setTimeout(function() {
-        progressEl.style.transition = 'width ' + dur + 'ms linear';
-        progressEl.style.width = '100%';
-      }, 30);
-      if (!isPaused) {
-        timer = setTimeout(function() { goTo(idx + 1); }, dur);
-      }
+      const next = selectedSiteIds.includes(id) ? selectedSiteIds.filter(x=>x!==id) : [...selectedSiteIds, id];
+      onChange(next.length===sites.length ? null : next);
     }
-  });
-})()
-// ─── 견적 위저드 ───
-const WIZ_STEPS = [
-  { key: 'space', q: '인테리어가 필요한 공간은 어디인가요?', type: 'single',
-    options: ['아파트', '빌라/다세대', '단독주택', '오피스텔'] },
-  { key: 'size', q: '인테리어 공간의 평수를 선택해주세요.', type: 'single',
-    options: ['10~20평대', '30평대', '40평대', '50평대 이상'] },
-  { key: 'condition', q: '인테리어 할 집은 어떤 상태인가요?', type: 'single',
-    options: ['거주하며 공사 예정', '현재 공실', '시공 시 공실 예정', '신축 입주', '기타'] },
-  { key: 'reason', q: '인테리어를 고려하시게 된 주요 이유를 선택해주세요.', type: 'single',
-    options: ['집을 구매하여 리모델링 계획 중', '사는 집을 새롭게 바꾸기 위해', '매매나 임대를 위한 리모델링', '기타'] },
-  { key: 'areas', q: '인테리어가 필요한 공간을 모두 골라주세요.', type: 'multi',
-    options: ['키친', '바스', '수납', '마루', '중문', '도어', '창호', '필름', '벽지', '조명', '타일', '전체'] },
-  { key: 'budget', q: '인테리어 예산은 총 얼마를 생각하시나요?', type: 'single',
-    options: ['1천만원 미만', '1~3천만원', '3~5천만원', '5~7천만원', '7천만원~1억원', '1억원 이상', '아직 미정이에요'] },
-  { key: 'timeline', q: '인테리어가 언제 시작되길 희망하시나요?', type: 'single',
-    options: ['1개월 이내', '2개월 이내', '3개월 이내', '3개월 이후', '6개월 이후'] },
-  { key: 'contact', q: '마지막으로, 연락처를 남겨주세요.', type: 'contact' },
-];
-let wizIdx = 0;
-const wizAnswers = { space:'', size:'', condition:'', reason:'', areas:[], budget:'', timeline:'', memo:'' };
-
-function wizRender() {
-  const step = WIZ_STEPS[wizIdx];
-  document.getElementById('wizProgressBar').style.width = (wizIdx / (WIZ_STEPS.length - 1) * 100) + '%';
-  document.getElementById('wizStepLabel').textContent = `STEP ${wizIdx + 1} / ${WIZ_STEPS.length}`;
-  document.getElementById('wizQuestion').textContent = step.q;
-  const contentEl = document.getElementById('wizContent');
-  const prevBtn = document.getElementById('wizPrevBtn');
-  const nextBtn = document.getElementById('wizNextBtn');
-  prevBtn.style.display = wizIdx === 0 ? 'none' : 'inline-block';
-  nextBtn.disabled = false;
-
-  if (step.type === 'single' || step.type === 'multi') {
-    const wide = step.options.some(o => o.length > 7);
-    contentEl.innerHTML = `<div class="wiz-options${wide ? ' wiz-options-wide' : ''}">` +
-      step.options.map(opt => {
-        const selected = step.type === 'single'
-          ? wizAnswers[step.key] === opt
-          : wizAnswers[step.key].includes(opt);
-        return `<div class="wiz-option${selected ? ' selected' : ''}" onclick='wizSelect(${JSON.stringify(step.key)}, ${JSON.stringify(opt)}, ${JSON.stringify(step.type)})'>${opt}</div>`;
-      }).join('') + `</div>`;
-    nextBtn.textContent = '다음';
-    nextBtn.disabled = step.type === 'single' ? !wizAnswers[step.key] : wizAnswers[step.key].length === 0;
-  } else if (step.type === 'contact') {
-    contentEl.innerHTML = `
-      <div class="fg"><label>성함 <span style="color:#c0392b">*</span></label><input type="text" id="f_name" placeholder="홍길동"></div>
-      <div class="fg"><label>연락처 <span style="color:#c0392b">*</span></label><input type="tel" id="f_tel" placeholder="010-0000-0000"></div>
-      <div class="fg"><label>건물명</label><input type="text" id="f_building" placeholder="예) 양우아파트"></div>
-      <div class="fg"><label>요청사항</label><textarea id="f_memo" placeholder="참고하고 싶은 스타일, 특별히 신경 써 주셨으면 하는 부분 등 자유롭게 입력해주세요">${wizAnswers.memo}</textarea></div>
-      <label class="wiz-consent"><input type="checkbox" id="f_consent"> 개인정보 수집 및 이용에 동의합니다 (상담 목적, 필수)</label>
-    `;
-    nextBtn.textContent = '상담 신청하기';
   }
+
+  return (
+    <div className="site-multiselect" ref={ref}>
+      <button type="button" className="site-multiselect-btn" onClick={()=>setOpen(o=>!o)}>{label} ▾</button>
+      {open && (
+        <div className="site-multiselect-panel">
+          <div className="site-multiselect-actions">
+            <button type="button" onClick={()=>onChange(null)}>전체 선택</button>
+            <button type="button" onClick={()=>onChange([])}>전체 해제</button>
+          </div>
+          {sites.length===0 ? (
+            <p className="site-multiselect-empty">등록된 현장이 없습니다</p>
+          ) : sites.map(s => (
+            <label className="site-multiselect-item" key={s.id}>
+              <input type="checkbox" checked={isChecked(s.id)} onChange={()=>toggleSite(s.id)} />
+              {s.name}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
-let wizAutoTimer = null;
-function wizSelect(key, opt, type) {
-  if (type === 'single') {
-    wizAnswers[key] = opt;
-    wizRender();
-    if (wizAutoTimer) clearTimeout(wizAutoTimer);
-    // 단일 선택은 클릭 즉시 선택 표시를 보여준 뒤 자동으로 다음 단계로 이동
-    wizAutoTimer = setTimeout(() => {
-      if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
-    }, 320);
-  } else {
-    const arr = wizAnswers[key];
-    const i = arr.indexOf(opt);
-    if (i > -1) arr.splice(i, 1); else arr.push(opt);
-    wizRender();
+function CalendarTab({ sites, trades, schedules, setSchedules }){
+  const [view, setView] = useState("month"); // "month" | "agenda"
+  const [cursor, setCursor] = useState(() => { const d = new Date(); return {y: d.getFullYear(), m: d.getMonth()}; });
+  const [selectedSiteIds, setSelectedSiteIds] = useState(null); // null = all sites; otherwise array of selected site ids
+  const [chipStyle, setChipStyle] = useState(() => loadLS("scheduler:chipStyle", "fill")); // "fill" | "text"
+  const [chipFontSize, setChipFontSize] = useState(() => loadLS("scheduler:chipFontSize", 28));
+  useEffect(() => saveLS("scheduler:chipFontSize", chipFontSize), [chipFontSize]);
+  useEffect(() => saveLS("scheduler:chipStyle", chipStyle), [chipStyle]);
+  const [selectedDate, setSelectedDate] = useState(null); // full "YYYY-MM-DD" string, or null
+  const [dragOverDate, setDragOverDate] = useState(null);
+  const [editingScheduleId, setEditingScheduleId] = useState(null);
+  const [quickAdd, setQuickAdd] = useState(null); // { siteId, date } or null
+  const [workerEditor, setWorkerEditor] = useState(null); // { site, date, trades } or null
+
+  const isSiteSelected = siteId => selectedSiteIds===null || selectedSiteIds.includes(siteId);
+
+  function handleChipDragStart(e, scheduleId, originDate){
+    e.stopPropagation();
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", JSON.stringify({ scheduleId, originDate }));
   }
-}
-
-function wizPrev() {
-  if (wizAutoTimer) clearTimeout(wizAutoTimer);
-  if (wizIdx === 0) return;
-  wizIdx--;
-  wizRender();
-}
-
-function wizNext() {
-  if (wizAutoTimer) clearTimeout(wizAutoTimer);
-  const step = WIZ_STEPS[wizIdx];
-  if (step.type === 'contact') { wizSubmit(); return; }
-  if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
-}
-
-// 시공사례 상세에서 넘어온 경우 자동입력
-(function() {
-  const consultCase = sessionStorage.getItem('consultCase');
-  if (consultCase) {
-    wizAnswers.memo = `[시공사례 참고] ${consultCase} 스타일로 상담 요청드립니다.`;
-    sessionStorage.removeItem('consultCase');
-    setTimeout(() => {
-      const contact = document.getElementById('contact');
-      if (contact) contact.scrollIntoView({ behavior: 'smooth' });
-    }, 500);
+  function handleCellDrop(e, dropDateStr){
+    e.preventDefault();
+    setDragOverDate(null);
+    let payload;
+    try{ payload = JSON.parse(e.dataTransfer.getData("text/plain")); }catch(err){ return; }
+    if(!payload || !payload.scheduleId || !payload.originDate || !dropDateStr) return;
+    const delta = daysBetweenStr(payload.originDate, dropDateStr);
+    if(delta===0) return;
+    setSchedules(prev => prev.map(sc => {
+      if(sc.id!==payload.scheduleId) return sc;
+      const { date, ...rest } = sc;
+      const { start, end } = scheduleRange(sc);
+      return { ...rest, startDate: shiftDateStr(start, delta), endDate: shiftDateStr(end, delta) };
+    }));
   }
-})();
+  function deleteScheduleById(scheduleId, label){
+    if(!confirm(`"${label}" 일정을 삭제할까요?`)) return;
+    setSchedules(prev => prev.filter(sc => sc.id!==scheduleId));
+  }
 
-// ─── FORMSPREE 전송 ───
-async function wizSubmit() {
-  const name = document.getElementById('f_name').value.trim();
-  const tel = document.getElementById('f_tel').value.trim();
-  const building = document.getElementById('f_building').value.trim();
-  const memo = document.getElementById('f_memo').value.trim();
-  const consent = document.getElementById('f_consent').checked;
-  if (!name) { alert('성함을 입력해주세요.'); return; }
-  if (!tel) { alert('연락처를 입력해주세요.'); return; }
-  if (!consent) { alert('개인정보 수집 및 이용에 동의해주세요.'); return; }
+  const tradeById = useMemo(() => Object.fromEntries(trades.map(t=>[t.id,t])), [trades]);
+  const siteById = useMemo(() => Object.fromEntries(sites.map(s=>[s.id,s])), [sites]);
 
-  const btn = document.getElementById('wizNextBtn');
-  btn.textContent = '전송 중...';
-  btn.disabled = true;
+  const filtered = schedules.filter(sc => isSiteSelected(sc.siteId));
 
-  const data = {
-    성함: name,
-    연락처: tel,
-    건물명: building,
-    공간유형: wizAnswers.space,
-    평수: wizAnswers.size,
-    집상태: wizAnswers.condition,
-    고려이유: wizAnswers.reason,
-    필요한공간: wizAnswers.areas.join(', '),
-    예산범위: wizAnswers.budget,
-    희망시작시기: wizAnswers.timeline,
-    요청사항: memo,
-  };
+  function addMonths({y, m}, delta){
+    let nm = m + delta, ny = y;
+    while(nm<0){ nm+=12; ny--; }
+    while(nm>11){ nm-=12; ny++; }
+    return { y: ny, m: nm };
+  }
 
-  try {
-    const res = await fetch('https://formspree.io/f/xjgzllpv', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(data)
+  // build full weeks (leading/trailing blanks included) so bars line up cleanly row by row
+  function buildWeeks(y, m){
+    const firstDow = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const totalCells = firstDow + daysInMonth;
+    const trailing = (7 - (totalCells % 7)) % 7;
+    const cellsFull = [];
+    for(let i=0;i<firstDow;i++) cellsFull.push(null);
+    for(let d=1; d<=daysInMonth; d++) cellsFull.push(d);
+    for(let i=0;i<trailing;i++) cellsFull.push(null);
+    const out = [];
+    for(let i=0;i<cellsFull.length;i+=7) out.push(cellsFull.slice(i,i+7));
+    return out;
+  }
+
+  // builds one uninterrupted sequence of weeks spanning several consecutive months —
+  // no blank filler between the end of one month and the start of the next, only at
+  // the very start (before the 1st Sunday) and very end (after the last Saturday)
+  function buildContinuousWeeks(monthCursors){
+    const first = monthCursors[0], last = monthCursors[monthCursors.length-1];
+    const firstDate = new Date(first.y, first.m, 1);
+    const lastDate = new Date(last.y, last.m+1, 0);
+    const firstDow = firstDate.getDay();
+    const totalDays = Math.round((lastDate - firstDate) / 86400000) + 1;
+    const trailing = (7 - ((firstDow + totalDays) % 7)) % 7;
+    const cells = [];
+    for(let i=0;i<firstDow;i++) cells.push(null);
+    for(let i=0;i<totalDays;i++){
+      const d = new Date(firstDate); d.setDate(d.getDate()+i);
+      cells.push({ y: d.getFullYear(), m: d.getMonth(), day: d.getDate() });
+    }
+    for(let i=0;i<trailing;i++) cells.push(null);
+    const weeks = [];
+    for(let i=0;i<cells.length;i+=7) weeks.push(cells.slice(i,i+7));
+    return weeks;
+  }
+
+  function dateStrFor(y, m, day){ return day ? `${y}-${pad(m+1)}-${pad(day)}` : null; }
+
+  function schedulesOn(dateStr){
+    if(!dateStr) return [];
+    return filtered.filter(sc => { const {start,end} = scheduleRange(sc); return dateStr>=start && dateStr<=end; });
+  }
+
+  const projectItems = useMemo(() => sites
+    .filter(s => isSiteSelected(s.id) && s.projectStart && s.projectEnd)
+    .map(s => ({ id:"proj-"+s.id, isProject:true, siteId:s.id, tradeId:null, startDate:s.projectStart, endDate:s.projectEnd })),
+    [sites, selectedSiteIds]);
+
+  // a distinct color per site for the overall-project header bar (stable regardless of filter)
+  // — uses the site's own chosen color if set, otherwise falls back to an auto-assigned one
+  const siteColorMap = useMemo(() => Object.fromEntries(
+    sites.map((s, i) => [s.id, s.color || PROJECT_COLOR_POOL[i % PROJECT_COLOR_POOL.length]])
+  ), [sites]);
+
+  const relevantSites = useMemo(() => sites
+    .filter(s => isSiteSelected(s.id))
+    .sort((a,b) => (a.order??0) - (b.order??0)),
+    [sites, selectedSiteIds]);
+
+  // display range for each site's header bar: its registered project period, or (if none
+  // was set) the span from its earliest to latest trade schedule
+  const siteRanges = useMemo(() => {
+    const map = {};
+    relevantSites.forEach(site => {
+      const proj = projectItems.find(p => p.siteId===site.id);
+      if(proj){ map[site.id] = scheduleRange(proj); return; }
+      const siteSchedules = filtered.filter(sc => sc.siteId===site.id);
+      if(siteSchedules.length===0){ map[site.id] = null; return; }
+      const ranges = siteSchedules.map(scheduleRange);
+      map[site.id] = {
+        start: ranges.reduce((a,r) => r.start<a ? r.start : a, ranges[0].start),
+        end: ranges.reduce((a,r) => r.end>a ? r.end : a, ranges[0].end),
+      };
     });
-    if (res.ok) {
-      document.getElementById('wizardBody').style.display = 'none';
-      document.getElementById('formSuccess').style.display = 'block';
+    return map;
+  }, [relevantSites, projectItems, filtered]);
+
+  // 해당 날짜에 실제 진행 중인 현장만 블록으로 표시합니다.
+  // 현장별 배경색으로 영역을 구분하고, 그 색상 위에 일자별 공정을 칩 형태로 넣습니다.
+  function dayItems(dateStr, sitesOverride){
+    if(!dateStr) return [];
+    const siteList = sitesOverride || relevantSites;
+    return siteList.map(site => {
+      const range = siteRanges[site.id];
+      const headerActive = range && dateStr>=range.start && dateStr<=range.end;
+      const siteTradesToday = trades
+        .map(t => {
+          const sc = filtered.find(s => s.siteId===site.id && s.tradeId===t.id && (() => {
+            const { start, end } = scheduleRange(s); return dateStr>=start && dateStr<=end;
+          })());
+          if(!sc) return null;
+          const r = scheduleRange(sc);
+          return { trade:t, start:r.start, end:r.end, id: sc.id, siteId: site.id, memo: sc.memo, laborUnits: sc.laborUnits, workerName: sc.workerName };
+        })
+        .filter(Boolean);
+      return { site, active: !!headerActive || siteTradesToday.length>0, start:range?.start, end:range?.end, trades:siteTradesToday };
+    });
+  }
+
+  function changeMonth(delta){
+    setCursor(prev => addMonths(prev, delta));
+    setSelectedDate(null);
+  }
+
+  const todayFull = todayStr();
+
+  // agenda view: every schedule across all time (respecting the site filter), grouped by start month
+  const agendaGroups = useMemo(() => {
+    const combined = [...filtered, ...projectItems];
+    const sorted = combined.sort((a,b) => scheduleRange(a).start.localeCompare(scheduleRange(b).start));
+    const groups = {};
+    sorted.forEach(sc => {
+      const key = scheduleRange(sc).start.slice(0,7); // YYYY-MM
+      if(!groups[key]) groups[key] = [];
+      groups[key].push(sc);
+    });
+    return Object.entries(groups);
+  }, [filtered, projectItems]);
+
+  // renders one month's dow-row + week grid (used twice, stacked vertically)
+  function renderCalendarBlock(monthCursors, sitesOverride){
+    const weeks = buildContinuousWeeks(monthCursors);
+    const siteList = sitesOverride || relevantSites;
+    const monthKeyOf = cell => cell ? `${cell.y}-${cell.m}` : null;
+
+    // segments are only used to place the big faint month-number watermark —
+    // approximate centering is fine there. Actual tinting and the boundary line
+    // are computed per cell below, directly from each cell's own date, so a row
+    // that's mostly one month never gets mis-tinted by a single day from the next.
+    const weekMonthKey = week => {
+      const counts = {};
+      week.forEach(c => { if(c){ const k = monthKeyOf(c); counts[k] = (counts[k]||0)+1; } });
+      let best = null, bestCount = 0;
+      Object.entries(counts).forEach(([k,v]) => { if(v>bestCount){ best=k; bestCount=v; } });
+      return best;
+    };
+    const segments = [];
+    weeks.forEach((week, wi) => {
+      const key = weekMonthKey(week);
+      const last = segments[segments.length-1];
+      if(last && last.key===key) last.weekIndices.push(wi);
+      else segments.push({ key, weekIndices:[wi] });
+    });
+
+    return (
+      <div className="card cal-continuous">
+        <div className="cal-dow-row">
+          <div className="cal-dow-spacer" />
+          {DOW.map((d,i) => <div className={"cal-dow" + (i===0?" cal-date-sun":"") + (i===6?" cal-date-sat":"")} key={d}>{d}</div>)}
+        </div>
+        {segments.map((seg, si) => {
+          const [segY, segM] = seg.key ? seg.key.split("-").map(Number) : [null, null];
+          return (
+            <div className="cal-month-segment" key={seg.key || si}>
+              {segM!==null && <span className="cal-month-watermark">{segM+1}</span>}
+              {seg.weekIndices.map(wi => {
+                const weekDays = weeks[wi];
+                const dateStrs = weekDays.map(c => c ? dateStrFor(c.y, c.m, c.day) : null);
+                const weekParity = wi % 2 === 0 ? " week-stripe-a" : " week-stripe-b";
+                // only show a site's label/lane this week if it's actually active on at
+                // least one day of the week — otherwise its name would show for weeks
+                // that have nothing scheduled for it at all
+                const weekSiteList = siteList.filter(site => dateStrs.some(ds => {
+                  if(!ds) return false;
+                  const range = siteRanges[site.id];
+                  const headerActive = range && ds>=range.start && ds<=range.end;
+                  const hasTrade = filtered.some(sc => sc.siteId===site.id && (() => { const {start,end}=scheduleRange(sc); return ds>=start && ds<=end; })());
+                  return !!headerActive || hasTrade;
+                }));
+                return (
+                  <div className={"week-row" + weekParity} key={wi}>
+                    <div className="cal-grid has-labels">
+                      <div className="site-label-col">
+                        <span className="cal-date" style={{visibility:"hidden"}}>0<span className="cal-dow-inline">일</span></span>
+                        {weekSiteList.map(site => (
+                          <div
+                            key={site.id}
+                            className={"site-label-tab" + (site.abbreviation ? " has-abbr" : "")}
+                            style={{ flex:`1 1 ${100/weekSiteList.length}%`, background: siteColorMap[site.id]+"1c", borderLeftColor: siteColorMap[site.id] }}
+                            title={site.name}
+                          >
+                            {site.abbreviation ? (
+                              <span className="site-label-abbr">
+                                {formatAbbrLines(site.abbreviation).map((line, i, arr) => (
+                                  <React.Fragment key={i}>{line}{i<arr.length-1 && <br/>}</React.Fragment>
+                                ))}
+                              </span>
+                            ) : <span>{site.name}</span>}
+                          </div>
+                        ))}
+                      </div>
+                      {weekDays.map((cell, di) => {
+                        const dateStr = dateStrs[di];
+                        const aboveCell = wi>0 ? weeks[wi-1][di] : null;
+                        const leftCell = di>0 ? weekDays[di-1] : null;
+                        const topBoundary = cell && aboveCell && monthKeyOf(cell)!==monthKeyOf(aboveCell);
+                        const leftBoundary = cell && leftCell && monthKeyOf(cell)!==monthKeyOf(leftCell);
+                        const tintOn = cell && cell.m % 2 === 1;
+                        const holidayName = cell && krHoliday(dateStr);
+                        return (
+                          <div
+                            key={di}
+                            className={"cal-cell" + (!cell ? " empty-cell" : "") + (tintOn ? " month-tint-cell" : "") + (holidayName ? " holiday-cell" : "") + (dateStr===todayFull ? " today" : "") + (selectedDate===dateStr && cell ? " picked" : "") + (dragOverDate===dateStr && cell ? " drag-over" : "") + (topBoundary ? " month-boundary-top" : "") + (leftBoundary ? " month-boundary-left" : "")}
+                            onClick={()=> cell && setSelectedDate(dateStr)}
+                            onDragOver={e=>{ if(cell) e.preventDefault(); }}
+                            onDragEnter={e=>{ if(cell){ e.preventDefault(); setDragOverDate(dateStr); } }}
+                            onDragLeave={()=>{ if(dragOverDate===dateStr) setDragOverDate(null); }}
+                            onDrop={e=>{ if(cell) handleCellDrop(e, dateStr); }}
+                          >
+                            {cell && (
+                              <span className={"cal-date" + (di===0 || holidayName ? " cal-date-sun" : "") + (di===6 && !holidayName ? " cal-date-sat" : "")}>
+                                {cell.day}<span className="cal-dow-inline">{holidayName || DOW[di]}</span>
+                              </span>
+                            )}
+                            {cell && (() => {
+                              const items = dayItems(dateStr, weekSiteList);
+                              const hasAnyActive = items.some(item => item.active);
+                              if(!hasAnyActive){
+                                return (
+                                  <div
+                                    className="cal-empty-add"
+                                    title="클릭해서 이 날짜에 미리 일정 추가"
+                                    onClick={e=>{ e.stopPropagation(); setQuickAdd({siteId:null, date:dateStr}); }}
+                                  >
+                                    + 일정 추가
+                                  </div>
+                                );
+                              }
+                              return (
+                              <div className="site-lane-wrap">
+                                {items.map((item, idx) => {
+                                  const siteColor = siteColorMap[item.site.id];
+                                  const titleText = `${item.site.name}${item.start && item.end ? ` 전체공사 (${item.start} ~ ${item.end})` : ""}`;
+                                  const laneStyle = { flex: items.length ? `1 1 ${100/items.length}%` : "1", background: item.active ? siteColor + "48" : "transparent" };
+                                  const visibleTrades = item.trades.filter(t => t.trade.id!=="misc");
+                                  const tradeSlots = Array.from({length: Math.max(3, visibleTrades.length)}, (_, i) => visibleTrades[i] || null);
+                                  return (
+                                    <div
+                                      key={idx}
+                                      className={"site-day-block" + (!item.active ? " empty-lane" : "")}
+                                      style={laneStyle}
+                                      title={item.active ? titleText : ""}
+                                    >
+                                      <div className="trade-slots-fill">
+                                        {tradeSlots.map((tr, ti) => (
+                                          <div
+                                            className={"trade-slot" + (tr ? "" : " trade-slot-empty")}
+                                            key={ti}
+                                            title={tr ? "" : "클릭해서 이 날짜에 공정 추가"}
+                                            onClick={tr ? undefined : (e=>{ e.stopPropagation(); setQuickAdd({siteId: item.site.id, date: dateStr}); })}
+                                          >
+                                            {tr && (
+                                              <div
+                                                className={"trade-day-chip" + (chipStyle==="text" ? " chip-text-mode" : "")}
+                                                style={chipStyle==="text" ? {background:"transparent"} : {background: tr.trade.color}}
+                                                title={`${item.site.name} · ${tr.trade.name}${tr.workerName ? " · "+tr.workerName : ""} (${tr.start} ~ ${tr.end}) — 드래그로 날짜 이동, 클릭하면 수정`}
+                                                draggable
+                                                onDragStart={e=>handleChipDragStart(e, tr.id, dateStr)}
+                                                onDragEnd={()=>setDragOverDate(null)}
+                                                onClick={e=>{ e.stopPropagation(); setEditingScheduleId(tr.id); }}
+                                              >
+                                                <span className="chip-main" style={{fontSize: chipFontSize+"px", ...(chipStyle==="text" ? {color: tr.trade.color, fontWeight:800} : {})}}>
+                                                  {tr.trade.name}{tr.laborUnits!=null && ` ${tr.laborUnits}품`}{tr.memo && `(${tr.memo})`}
+                                                </span>
+                                              </div>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                      {(() => {
+                                        const workers = [...new Set(item.trades.flatMap(t => splitWorkerNames(t.workerName)))];
+                                        const canEdit = true;
+                                        return (
+                                          <div
+                                            className={"site-worker-row" + (canEdit ? " site-worker-row-clickable" : "")}
+                                            title={canEdit ? "클릭해서 담당자 지정" : ""}
+                                            onClick={canEdit ? (e=>{
+                                              e.stopPropagation();
+                                              const modalTrades = item.trades.map(t => ({ key:t.id, id:t.id, isNew:false, trade:t.trade, workerName:t.workerName }));
+                                              const miscTrade = trades.find(tr => tr.id==="misc");
+                                              const hasMisc = item.trades.some(t => t.trade.id==="misc");
+                                              if(miscTrade && !hasMisc){
+                                                modalTrades.push({ key:"misc-new", id:null, isNew:true, trade:miscTrade, workerName:"" });
+                                              }
+                                              setWorkerEditor({ site: item.site, date: dateStr, trades: modalTrades });
+                                            }) : undefined}
+                                          >
+                                            {workers.length>0 ? <span>👷 {workers.join(", ")}</span> : (canEdit && <span className="site-worker-row-hint">+ 담당자 지정</span>)}
+                                          </div>
+                                        );
+                                      })()}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              );
+                            })()}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">SCHEDULE OVERVIEW</p>
+          <h2>공사 캘린더</h2>
+        </div>
+        <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap"}}>
+          <div className="view-toggle">
+            <button className={view==="month"?"active":""} onClick={()=>setView("month")}>달력형</button>
+            <button className={view==="bysite"?"active":""} onClick={()=>setView("bysite")}>현장별 보기</button>
+            <button className={view==="agenda"?"active":""} onClick={()=>setView("agenda")}>전체 목록형</button>
+          </div>
+          {(view==="month" || view==="bysite") && (
+            <div className="view-toggle" title="공정 막대 색상 표시 방식">
+              <button className={chipStyle==="fill"?"active":""} onClick={()=>setChipStyle("fill")}>배경색</button>
+              <button className={chipStyle==="text"?"active":""} onClick={()=>setChipStyle("text")}>글자색</button>
+            </div>
+          )}
+          {(view==="month" || view==="bysite") && (
+            <div className="view-toggle" title="공정 막대 글자 크기">
+              <button className={chipFontSize===28?"active":""} onClick={()=>setChipFontSize(28)}>기본</button>
+              <button className={chipFontSize===22?"active":""} onClick={()=>setChipFontSize(22)}>조금 작게</button>
+              <button className={chipFontSize===17?"active":""} onClick={()=>setChipFontSize(17)}>작게</button>
+              <button className={chipFontSize===13?"active":""} onClick={()=>setChipFontSize(13)}>매우 작게</button>
+            </div>
+          )}
+          <div className="cal-filter">
+            <SiteMultiSelect sites={sites} selectedSiteIds={selectedSiteIds} onChange={ids=>{setSelectedSiteIds(ids); setSelectedDate(null);}} />
+          </div>
+          {(view==="month" || view==="bysite") && (
+            <div className="cal-nav">
+              <button onClick={()=>changeMonth(-1)}>‹</button>
+              <span className="cal-month">{cursor.y}.{pad(cursor.m+1)} - {addMonths(cursor,1).y}.{pad(addMonths(cursor,1).m+1)}</span>
+              <button onClick={()=>changeMonth(1)}>›</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {view==="month" && (
+        <>
+          {renderCalendarBlock([cursor, addMonths(cursor, 1)])}
+
+          <div className="card cal-legend-card">
+            <div className="cal-legend">
+              {projectItems.map(p => (
+                <span className="legend-item" key={p.id}>
+                  <span className="legend-dot" style={{background: siteColorMap[p.siteId]}} />
+                  {siteById[p.siteId]?.name} (전체공사)
+                </span>
+              ))}
+              {trades.map(t => (
+                <span className="legend-item" key={t.id}><span className="legend-dot" style={{background:t.color}} />{t.name}</span>
+              ))}
+            </div>
+          </div>
+
+          {selectedDate && (
+            <div className="daypanel">
+              <p className="eyebrow">{selectedDate}</p>
+              {projectItems.filter(p => { const {start,end} = scheduleRange(p); return selectedDate>=start && selectedDate<=end; }).map(p => (
+                <div className="tag ok" key={p.id} style={{marginBottom:8, display:"inline-block"}}>
+                  🗂 {siteById[p.siteId]?.name} 전체 공사기간 진행 중
+                </div>
+              ))}
+              {schedulesOn(selectedDate).length===0 ? (
+                <div className="empty">이 날짜에 진행 중인 공사가 없습니다.</div>
+              ) : (
+                schedulesOn(selectedDate).map(sc => (
+                  <ScheduleRow key={sc.id} sc={sc} trade={tradeById[sc.tradeId]} site={siteById[sc.siteId]} onDelete={()=>setSchedules(prev=>prev.filter(s=>s.id!==sc.id))} onEdit={()=>setEditingScheduleId(sc.id)} />
+                ))
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {view==="bysite" && (() => {
+        const orderedAll = [...sites].sort((a,b) => (a.order??0) - (b.order??0));
+        const activeSite = orderedAll.find(s => isSiteSelected(s.id));
+        if(!activeSite) return <div className="empty">선택된 현장이 없습니다. 위 현장 선택에서 하나 이상 선택해주세요.</div>;
+        return (
+          <div className="by-site-list">
+            <div className="by-site-section">
+              <div className="by-site-header" style={{background: siteColorMap[activeSite.id]}}>{activeSite.name}</div>
+              {renderCalendarBlock([cursor, addMonths(cursor,1)], [activeSite])}
+            </div>
+          </div>
+        );
+      })()}
+
+      {view==="agenda" && (
+        <div className="card">
+          {agendaGroups.length===0 ? (
+            <div className="empty">등록된 일정이 없습니다. 현장관리 탭에서 공사별 기간을 추가해보세요.</div>
+          ) : (
+            agendaGroups.map(([monthKey, items]) => (
+              <div className="agenda-group" key={monthKey}>
+                <p className="agenda-month">{monthKey.replace("-", "년 ")}월</p>
+                {items.map(sc => {
+                  const isProject = sc.isProject;
+                  const trade = isProject ? null : tradeById[sc.tradeId];
+                  const site = siteById[sc.siteId];
+                  const contact = isProject ? null : trade?.contacts.find(c=>c.id===sc.contactId);
+                  const { start, end } = scheduleRange(sc);
+                  const d = new Date(start + "T00:00:00");
+                  const isPast = end < todayFull;
+                  const span = daySpan(sc);
+                  return (
+                    <div
+                      className={"agenda-item" + (isPast ? " past" : "")}
+                      key={sc.id}
+                      onClick={()=> !isProject && setEditingScheduleId(sc.id)}
+                      style={isProject ? {} : {cursor:"pointer"}}
+                    >
+                      <span className="agenda-swatch" style={{background: isProject ? "var(--navy-deep)" : trade?.color}} />
+                      <div className="agenda-date">
+                        {d.getDate()}
+                        <span className="dow">{DOW[d.getDay()]}</span>
+                      </div>
+                      <div className="agenda-body">
+                        <div className="agenda-title">{isProject ? `🗂 ${site?.name} 전체 공사기간` : `${trade?.name} · ${site?.name}`}</div>
+                        <div className="agenda-sub">
+                          {start}{end!==start && ` ~ ${end}`} ({span}일)
+                          {!isProject && <> · 담당자: {contact?.name || "미지정"} {contact?.phone && `· ${contact.phone}`} {sc.memo && `· ${sc.memo}`}</>}
+                        </div>
+                      </div>
+                      {!isProject && <button className="btn btn-danger btn-sm" onClick={e=>{ e.stopPropagation(); setSchedules(prev=>prev.filter(s=>s.id!==sc.id)); }}>삭제</button>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {editingScheduleId && (() => {
+        const sc = schedules.find(s => s.id===editingScheduleId);
+        if(!sc) return null;
+        const trade = tradeById[sc.tradeId];
+        const site = siteById[sc.siteId];
+        return (
+          <EditScheduleModal
+            schedule={sc}
+            trade={trade}
+            site={site}
+            onClose={()=>setEditingScheduleId(null)}
+            onSave={patch => { setSchedules(prev => prev.map(s => s.id===sc.id ? {...s, ...patch} : s)); setEditingScheduleId(null); }}
+            onDelete={() => { if(confirm(`"${site?.name} · ${trade?.name}" 일정을 삭제할까요?`)){ setSchedules(prev=>prev.filter(s=>s.id!==sc.id)); setEditingScheduleId(null); } }}
+          />
+        );
+      })()}
+
+      {quickAdd && sites.length>0 && (
+        <QuickAddScheduleModal
+          sites={sites}
+          initialSiteId={quickAdd.siteId}
+          trades={trades}
+          initialDate={quickAdd.date}
+          onClose={()=>setQuickAdd(null)}
+          onAdd={(siteId, sc) => { setSchedules(prev => [...prev, { ...sc, id: uid(), siteId }]); setQuickAdd(null); }}
+        />
+      )}
+
+      {workerEditor && (
+        <DayWorkersModal
+          site={workerEditor.site}
+          date={workerEditor.date}
+          trades={workerEditor.trades}
+          onClose={()=>setWorkerEditor(null)}
+          onSave={updates => {
+            setSchedules(prev => {
+              let next = prev.map(sc => {
+                const found = updates.find(u => !u.isNew && u.id===sc.id);
+                return found ? { ...sc, workerName: found.workerName } : sc;
+              });
+              const toCreate = updates.filter(u => u.isNew && u.workerName);
+              toCreate.forEach(u => {
+                next = [...next, {
+                  id: uid(), siteId: workerEditor.site.id, tradeId: u.tradeId,
+                  startDate: workerEditor.date, endDate: workerEditor.date,
+                  contactId: "", workerName: u.workerName, laborUnits: null, memo: "",
+                }];
+              });
+              return next;
+            });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function ScheduleRow({ sc, trade, site, onDelete, onEdit }){
+  const contact = trade?.contacts.find(c=>c.id===sc.contactId);
+  const { start, end } = scheduleRange(sc);
+  const span = daySpan(sc);
+  return (
+    <div className="day-sched" onClick={onEdit} style={onEdit ? {cursor:"pointer"} : {}}>
+      <span className="swatch-bar" style={{background: trade?.color}} />
+      <div style={{flex:1}}>
+        <div style={{fontWeight:800, fontSize:14}}>{trade?.name} · {site?.name}</div>
+        <div style={{fontSize:13, color:"var(--ink-soft)"}}>
+          {start}{end!==start && ` ~ ${end}`} ({span}일) · 담당자: {contact?.name || "미지정"} {contact?.phone && `· ${contact.phone}`}
+        </div>
+        {sc.memo && <div style={{fontSize:12.5, color:"var(--ink-soft)", marginTop:2}}>메모: {sc.memo}</div>}
+      </div>
+      <button className="btn btn-danger btn-sm" onClick={e=>{ e.stopPropagation(); onDelete(); }}>삭제</button>
+    </div>
+  );
+}
+
+/* ---------- Contacts tab ---------- */
+function ContactsTab({ trades, setTrades, schedules, setSchedules }){
+  const [showAddTrade, setShowAddTrade] = useState(false);
+
+  function updateContact(tradeId, contactId, patch){
+    setTrades(prev => prev.map(t => t.id!==tradeId ? t : {
+      ...t, contacts: t.contacts.map(c => c.id===contactId ? {...c, ...patch} : c)
+    }));
+  }
+  function addContact(tradeId){
+    setTrades(prev => prev.map(t => t.id!==tradeId ? t : {
+      ...t, contacts: [...t.contacts, {id: uid(), name:"", phone:"", bank:"", account:"", isDefault:false}]
+    }));
+  }
+  function deleteContact(tradeId, contactId){
+    setTrades(prev => prev.map(t => {
+      if(t.id!==tradeId) return t;
+      if(t.contacts.length<=1){ alert("최소 1명의 담당자는 유지해야 합니다."); return t; }
+      return {...t, contacts: t.contacts.filter(c=>c.id!==contactId)};
+    }));
+  }
+  function makeDefault(tradeId, contactId){
+    setTrades(prev => prev.map(t => t.id!==tradeId ? t : {
+      ...t, contacts: t.contacts.map(c => ({...c, isDefault: c.id===contactId}))
+    }));
+  }
+  function addTrade({ name, note, contactName, phone, bank, account }){
+    const color = nextTradeColor(trades.map(t=>t.color));
+    const newTrade = {
+      id: "trade-" + uid(),
+      name, color, note,
+      contacts: [
+        { id: uid(), name: contactName, phone, bank, account, isDefault: true },
+        { id: uid(), name: "", phone: "", bank: "", account: "", isDefault: false },
+      ],
+    };
+    setTrades(prev => [...prev, newTrade]);
+    setShowAddTrade(false);
+  }
+  function deleteTrade(tradeId, tradeName){
+    if(!confirm(`"${tradeName}" 공정을 삭제하면 관련된 일정도 함께 삭제됩니다. 계속할까요?`)) return;
+    setTrades(prev => prev.filter(t => t.id!==tradeId));
+    setSchedules(prev => prev.filter(sc => sc.tradeId!==tradeId));
+  }
+
+  return (
+    <div>
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">CONTACTS</p>
+          <h2>공사별 담당자</h2>
+        </div>
+        <button className="btn btn-accent" onClick={()=>setShowAddTrade(true)}>+ 공정 추가</button>
+      </div>
+
+      {trades.map(trade => (
+        <div className="card contact-card" key={trade.id}>
+          <div className="contact-head">
+            <span className="trade-swatch" style={{background:trade.color}} />
+            <h4 style={{flex:1}}>{trade.name}</h4>
+            <button className="btn btn-danger btn-sm" onClick={()=>deleteTrade(trade.id, trade.name)}>공정 삭제</button>
+          </div>
+          <p className="contact-note">{trade.note}</p>
+
+          {trade.contacts.map(c => (
+            <div className="contact-item" key={c.id}>
+              <input type="text" value={c.name} placeholder="이름" onChange={e=>updateContact(trade.id, c.id, {name:e.target.value})} />
+              <input type="text" value={c.phone} placeholder="전화번호" onChange={e=>updateContact(trade.id, c.id, {phone:e.target.value})} />
+              <input type="text" value={c.bank} placeholder="은행" onChange={e=>updateContact(trade.id, c.id, {bank:e.target.value})} />
+              <input type="text" value={c.account} placeholder="계좌번호" onChange={e=>updateContact(trade.id, c.id, {account:e.target.value})} />
+              <div style={{display:"flex", gap:6, alignItems:"center", justifyContent:"flex-end"}}>
+                {c.isDefault ? <span className="default-badge">기본</span> : (
+                  <button className="btn btn-ghost btn-sm" onClick={()=>makeDefault(trade.id, c.id)}>기본으로</button>
+                )}
+                <button className="btn btn-danger btn-sm" onClick={()=>deleteContact(trade.id, c.id)}>✕</button>
+              </div>
+            </div>
+          ))}
+
+          <button className="btn btn-ghost btn-sm" style={{marginTop:10}} onClick={()=>addContact(trade.id)}>+ 담당자 추가</button>
+        </div>
+      ))}
+
+      {showAddTrade && <AddTradeModal onClose={()=>setShowAddTrade(false)} onSave={addTrade} />}
+    </div>
+  );
+}
+
+function AddTradeModal({ onClose, onSave }){
+  const [name, setName] = useState("");
+  const [note, setNote] = useState("");
+  const [contactName, setContactName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bank, setBank] = useState("");
+  const [account, setAccount] = useState("");
+
+  function submit(){
+    if(!name.trim()){ alert("공정 이름을 입력해주세요."); return; }
+    onSave({
+      name: name.trim(), note: note.trim(),
+      contactName: contactName.trim(), phone: phone.trim(), bank: bank.trim(), account: account.trim(),
+    });
+  }
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <h3>새 공정 추가</h3>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+        <div className="field">
+          <label>공정 이름</label>
+          <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="예: 메지" />
+        </div>
+        <div className="field">
+          <label>진행 방식 메모</label>
+          <input type="text" value={note} onChange={e=>setNote(e.target.value)} placeholder="예: 타일 시공 후 도면/주소 주고 날짜 잡음" />
+        </div>
+        <div className="row2">
+          <div className="field">
+            <label>기본 담당자 이름</label>
+            <input type="text" value={contactName} onChange={e=>setContactName(e.target.value)} placeholder="이름" />
+          </div>
+          <div className="field">
+            <label>연락처</label>
+            <input type="text" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="010-0000-0000" />
+          </div>
+          <div className="field">
+            <label>은행 (선택)</label>
+            <input type="text" value={bank} onChange={e=>setBank(e.target.value)} placeholder="예: 국민" />
+          </div>
+          <div className="field">
+            <label>계좌번호 (선택)</label>
+            <input type="text" value={account} onChange={e=>setAccount(e.target.value)} placeholder="계좌번호" />
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>취소</button>
+          <button className="btn btn-primary" onClick={submit}>추가</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Vendors tab (거래처관리) ---------- */
+function VendorsTab({ vendors, setVendors }){
+  const [showAdd, setShowAdd] = useState(false);
+
+  function addVendor(v){
+    setVendors(prev => [...prev, { ...v, id: uid() }]);
+    setShowAdd(false);
+  }
+  function updateVendor(id, patch){
+    setVendors(prev => prev.map(v => v.id===id ? {...v, ...patch} : v));
+  }
+  function deleteVendor(id){
+    if(!confirm("이 거래처 정보를 삭제할까요?")) return;
+    setVendors(prev => prev.filter(v => v.id!==id));
+  }
+
+  return (
+    <div>
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">VENDORS</p>
+          <h2>거래처 / 업체 정보</h2>
+        </div>
+        <button className="btn btn-accent" onClick={()=>setShowAdd(true)}>+ 업체 추가</button>
+      </div>
+
+      {vendors.length===0 ? (
+        <div className="empty"><b>등록된 거래처가 없습니다.</b><br/>자재상, 조명, 기타 협력업체 등 공정에 속하지 않는 업체 정보를 등록해보세요.</div>
+      ) : (
+        <div className="card">
+          {vendors.map(v => (
+            <div className="vendor-item" key={v.id}>
+              <input type="text" value={v.name} placeholder="업체명" onChange={e=>updateVendor(v.id, {name:e.target.value})} />
+              <input type="text" value={v.phone} placeholder="전화번호" onChange={e=>updateVendor(v.id, {phone:e.target.value})} />
+              <input type="text" value={v.memo} placeholder="메모 (담당자, 품목 등)" onChange={e=>updateVendor(v.id, {memo:e.target.value})} />
+              <button className="btn btn-danger btn-sm" onClick={()=>deleteVendor(v.id)}>✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showAdd && <VendorFormModal onClose={()=>setShowAdd(false)} onSave={addVendor} />}
+    </div>
+  );
+}
+
+function VendorFormModal({ onClose, onSave }){
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [memo, setMemo] = useState("");
+
+  function submit(){
+    if(!name.trim()){ alert("업체명을 입력해주세요."); return; }
+    onSave({ name: name.trim(), phone: phone.trim(), memo: memo.trim() });
+  }
+
+  return (
+    <div className="overlay" onClick={e=>e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-head">
+          <h3>거래처 추가</h3>
+          <button className="close-x" onClick={onClose}>✕</button>
+        </div>
+        <div className="field">
+          <label>업체명</label>
+          <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="예: 한빛조명" />
+        </div>
+        <div className="field">
+          <label>전화번호</label>
+          <input type="text" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="예: 010-1234-5678" />
+        </div>
+        <div className="field">
+          <label>메모</label>
+          <input type="text" value={memo} onChange={e=>setMemo(e.target.value)} placeholder="담당자, 취급 품목 등" />
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>취소</button>
+          <button className="btn btn-primary" onClick={submit}>저장</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Labor tab (담당자관리 — 품수 집계) ---------- */
+function LaborTab({ trades, sites, schedules }){
+  const [cursor, setCursor] = useState(() => { const d = new Date(); return {y: d.getFullYear(), m: d.getMonth()}; });
+
+  function changeMonth(delta){
+    setCursor(prev => {
+      let nm = prev.m + delta, ny = prev.y;
+      while(nm<0){ nm+=12; ny--; }
+      while(nm>11){ nm-=12; ny++; }
+      return { y: ny, m: nm };
+    });
+  }
+
+  const monthStart = `${cursor.y}-${pad(cursor.m+1)}-01`;
+  const monthEnd = `${cursor.y}-${pad(cursor.m+1)}-${pad(new Date(cursor.y, cursor.m+1, 0).getDate())}`;
+  const tradeById = Object.fromEntries(trades.map(t=>[t.id,t]));
+
+  const monthSchedules = schedules.filter(sc => {
+    const { start, end } = scheduleRange(sc);
+    return start<=monthEnd && end>=monthStart;
+  });
+
+  const grouped = {};
+  monthSchedules.forEach(sc => {
+    const trade = tradeById[sc.tradeId];
+    if(!trade) return;
+    const contact = trade.contacts.find(c => c.id===sc.contactId);
+    const names = splitWorkerNames(sc.workerName);
+    const workerNames = names.length ? names : [contact?.name || "작업자 미입력"];
+    if(!grouped[trade.id]) grouped[trade.id] = { trade, contacts: {} };
+    workerNames.forEach(workerName => {
+      if(!grouped[trade.id].contacts[workerName]) grouped[trade.id].contacts[workerName] = { units: 0, count: 0 };
+      grouped[trade.id].contacts[workerName].units += (sc.laborUnits || 0);
+      grouped[trade.id].contacts[workerName].count += 1;
+    });
+  });
+
+  const groupList = trades.map(t => grouped[t.id]).filter(Boolean);
+  const grandTotal = groupList.reduce((sum, g) => sum + Object.values(g.contacts).reduce((s,c) => s+c.units, 0), 0);
+
+  return (
+    <div>
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">LABOR / 품수 집계</p>
+          <h2>담당자 품수 관리</h2>
+        </div>
+        <div className="cal-nav">
+          <button onClick={()=>changeMonth(-1)}>‹</button>
+          <span className="cal-month">{cursor.y}. {pad(cursor.m+1)}</span>
+          <button onClick={()=>changeMonth(1)}>›</button>
+        </div>
+      </div>
+
+      <p style={{fontSize:13, color:"var(--ink-soft)", marginBottom:16, maxWidth:640}}>
+        캘린더에서 일정을 추가·수정할 때 입력한 <b>품수(0.5 단위)</b>를 공정별·담당자별로 이번 달 기준 합산합니다. 일당 계산할 때 참고하세요.
+      </p>
+
+      {groupList.length===0 ? (
+        <div className="empty">이번 달에 품수가 입력된 일정이 없습니다.<br/>캘린더에서 일정을 추가하거나 수정할 때 "품수" 칸에 값을 넣어보세요.</div>
+      ) : (
+        <>
+          {groupList.map(g => (
+            <div className="card" style={{marginBottom:12}} key={g.trade.id}>
+              <div style={{display:"flex", alignItems:"center", gap:8, marginBottom:10}}>
+                <span className="trade-swatch" style={{background:g.trade.color}} />
+                <h4 style={{margin:0, fontSize:15}}>{g.trade.name}</h4>
+              </div>
+              {Object.entries(g.contacts).map(([name, data]) => (
+                <div key={name} style={{display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 2px", borderTop:"1px solid var(--paper-line)", fontSize:13.5}}>
+                  <span>{name}</span>
+                  <span style={{fontFamily:"var(--mono)", fontWeight:800, color:"var(--navy)"}}>{data.units}품 <span style={{color:"var(--ink-soft)", fontWeight:600}}>({data.count}건)</span></span>
+                </div>
+              ))}
+            </div>
+          ))}
+          <div className="card" style={{background:"var(--navy-deep)", color:"#fff"}}>
+            <div style={{display:"flex", justifyContent:"space-between", fontWeight:800, fontSize:14}}>
+              <span>이번 달 전체 합계</span>
+              <span style={{fontFamily:"var(--mono)"}}>{grandTotal}품</span>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function WorkerMultiSelect({ workers, selected, onChange }){
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleOutside(e){ if(ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
+
+  const allSelected = selected===null;
+  const isChecked = w => allSelected || selected.includes(w);
+  const count = allSelected ? workers.length : selected.length;
+  const label = workers.length===0 ? "담당자 없음"
+    : allSelected ? "전체 담당자"
+    : count===0 ? "담당자 선택"
+    : count===1 ? selected[0]
+    : `담당자 ${count}명`;
+
+  function toggle(w){
+    if(allSelected){
+      onChange(workers.filter(x=>x!==w));
     } else {
-      alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      btn.textContent = '상담 신청하기';
-      btn.disabled = false;
+      const next = selected.includes(w) ? selected.filter(x=>x!==w) : [...selected, w];
+      onChange(next.length===workers.length ? null : next);
     }
-  } catch(e) {
-    alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    btn.textContent = '상담 신청하기';
-    btn.disabled = false;
   }
+
+  return (
+    <div className="site-multiselect" ref={ref}>
+      <button type="button" className="site-multiselect-btn" onClick={()=>setOpen(o=>!o)}>{label} ▾</button>
+      {open && (
+        <div className="site-multiselect-panel">
+          <div className="site-multiselect-actions">
+            <button type="button" onClick={()=>onChange(null)}>전체 선택</button>
+            <button type="button" onClick={()=>onChange([])}>전체 해제</button>
+          </div>
+          {workers.length===0 ? (
+            <p className="site-multiselect-empty">등록된 담당자가 없습니다</p>
+          ) : workers.map(w => (
+            <label className="site-multiselect-item" key={w}>
+              <input type="checkbox" checked={isChecked(w)} onChange={()=>toggle(w)} />
+              {w}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
-wizRender();
+/* ---------- Worker schedule tab (담당자 일정 — 날짜×담당자 매트릭스) ---------- */
+function WorkerScheduleTab({ trades, sites, schedules }){
+  const [cursor, setCursor] = useState(() => { const d = new Date(); return {y: d.getFullYear(), m: d.getMonth()}; });
+  const [selectedWorkers, setSelectedWorkers] = useState(null); // null = all
 
-// ─── 전화번호 링크: 모바일에서만 실제로 전화 연결, PC에서는 앱 선택 팝업 대신 번호 복사 ───
-(function() {
-  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
-  if (isTouchDevice) return; // 모바일/터치 기기는 tel: 링크 그대로 사용 (탭하면 바로 전화)
-  document.querySelectorAll('.tel-link').forEach(el => {
-    el.addEventListener('click', function(e) {
-      e.preventDefault();
-      const num = this.getAttribute('href').replace('tel:', '');
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(num).then(() => {
-          alert(`전화번호가 복사되었습니다: ${num}`);
-        }).catch(() => {});
-      }
+  const tradeById = Object.fromEntries(trades.map(t=>[t.id,t]));
+  const siteById = Object.fromEntries(sites.map(s=>[s.id,s]));
+  const siteColorMap = Object.fromEntries(sites.map((s,i) => [s.id, s.color || PROJECT_COLOR_POOL[i % PROJECT_COLOR_POOL.length]]));
+
+  function workerNamesOf(sc){
+    const trade = tradeById[sc.tradeId];
+    const contact = trade?.contacts.find(c => c.id===sc.contactId);
+    const names = splitWorkerNames(sc.workerName);
+    return names.length ? names : (contact?.name ? [contact.name] : []);
+  }
+
+  const allWorkers = useMemo(() => {
+    const set = new Set();
+    schedules.forEach(sc => { workerNamesOf(sc).forEach(n => set.add(n)); });
+    return Array.from(set).sort();
+  }, [schedules, trades]);
+
+  // custom column order (drag-to-reorder), persisted locally; new workers are appended,
+  // removed workers drop out automatically
+  const [workerOrder, setWorkerOrder] = useState(() => loadLS("scheduler:workerOrder", []));
+  useEffect(() => { saveLS("scheduler:workerOrder", workerOrder); }, [workerOrder]);
+  useEffect(() => {
+    setWorkerOrder(prev => {
+      const kept = prev.filter(w => allWorkers.includes(w));
+      const added = allWorkers.filter(w => !kept.includes(w));
+      const next = [...kept, ...added];
+      const changed = next.length!==prev.length || next.some((w,i) => w!==prev[i]);
+      return changed ? next : prev;
     });
-  });
-})();
+  }, [allWorkers.join("|")]);
 
-// ─── SCROLL REVEAL ───
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// ─── INIT: 샘플 먼저 렌더 → 시트 로드되면 교체 (페이지 깨짐 방지) ───
-async function init() {
-  renderCases(); // 샘플 데이터로 즉시 렌더 (페이지 정상 표시 보장)
-  if (SHEET_URL !== 'YOUR_GOOGLE_SHEET_CSV_URL') {
-    try {
-      const sheetData = await loadFromSheet();
-      if (sheetData && sheetData.length > 0) {
-        CASES = sheetData;
-        renderCases(); // 시트 데이터 로드 성공시 교체
-      }
-    } catch(e) {
-      console.warn('init 오류, 샘플 유지:', e);
-    }
+  const [dragOverWorker, setDragOverWorker] = useState(null);
+  function reorderWorkers(draggedName, targetName){
+    if(draggedName===targetName) return;
+    setWorkerOrder(prev => {
+      const next = prev.filter(w => w!==draggedName);
+      const idx = next.indexOf(targetName);
+      next.splice(idx===-1 ? next.length : idx, 0, draggedName);
+      return next;
+    });
   }
-}
-init();
-</script>
-<!-- ─── 채널톡 ─── -->
-<script>
-(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(s,x);}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
-ChannelIO('boot', {
-  pluginKey: '32389073-c30f-4c5d-ba11-ffc74b5c60cc'
-});
-</script>
 
+  const orderedAllWorkers = workerOrder.length ? workerOrder : allWorkers;
+  const workers = selectedWorkers===null ? orderedAllWorkers : orderedAllWorkers.filter(w => selectedWorkers.includes(w));
+
+  function changeMonth(delta){
+    setCursor(prev => {
+      let nm = prev.m + delta, ny = prev.y;
+      while(nm<0){ nm+=12; ny--; }
+      while(nm>11){ nm-=12; ny++; }
+      return { y: ny, m: nm };
+    });
+  }
+
+  const nextCursor = cursor.m>=11 ? { y: cursor.y+1, m: 0 } : { y: cursor.y, m: cursor.m+1 };
+  const rangeStart = new Date(cursor.y, cursor.m, 1);
+  const rangeEnd = new Date(nextCursor.y, nextCursor.m+1, 0); // last day of the second month
+  const totalDays = Math.round((rangeEnd - rangeStart) / 86400000) + 1;
+  const dateList = Array.from({length: totalDays}, (_, i) => {
+    const d = new Date(rangeStart); d.setDate(d.getDate()+i);
+    const dateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    return { day: d.getDate(), month: d.getMonth()+1, dateStr, dow: d.getDay() };
+  });
+
+  function siteForWorkerOnDate(worker, dateStr){
+    const sc = schedules.find(sc => {
+      if(!workerNamesOf(sc).includes(worker)) return false;
+      const { start, end } = scheduleRange(sc);
+      return dateStr>=start && dateStr<=end;
+    });
+    if(!sc) return null;
+    return siteById[sc.siteId] || null;
+  }
+
+  const [showEmptyDates, setShowEmptyDates] = useState(false);
+  const activeDates = dateList.filter(d => workers.some(w => siteForWorkerOnDate(w, d.dateStr)));
+  const visibleDateList = showEmptyDates || activeDates.length===0
+    ? (showEmptyDates ? dateList : activeDates)
+    : dateList.filter(d => d.dateStr>=activeDates[0].dateStr && d.dateStr<=activeDates[activeDates.length-1].dateStr);
+  return (
+    <div>
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">LABOR SCHEDULE</p>
+          <h2>담당자별 일정</h2>
+        </div>
+        <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap"}}>
+          <WorkerMultiSelect workers={orderedAllWorkers} selected={selectedWorkers} onChange={setSelectedWorkers} />
+          <label style={{display:"flex", alignItems:"center", gap:6, fontSize:12.5, color:"var(--ink-soft)", cursor:"pointer"}}>
+            <input type="checkbox" checked={showEmptyDates} onChange={e=>setShowEmptyDates(e.target.checked)} />
+            빈 날짜도 표시
+          </label>
+          <div className="cal-nav">
+            <button onClick={()=>changeMonth(-1)}>‹</button>
+            <span className="cal-month">{cursor.y}.{pad(cursor.m+1)} - {nextCursor.y}.{pad(nextCursor.m+1)}</span>
+            <button onClick={()=>changeMonth(1)}>›</button>
+          </div>
+        </div>
+      </div>
+
+      <p style={{fontSize:13, color:"var(--ink-soft)", marginBottom:16, maxWidth:640}}>
+        선택한 담당자가 날짜별로 어느 현장에 있는지 한눈에 봅니다. 셀 색상은 현장별 색상과 같습니다.
+      </p>
+
+      {workers.length===0 ? (
+        <div className="empty">표시할 담당자가 없습니다. 위에서 담당자를 선택해주세요.</div>
+      ) : visibleDateList.length===0 ? (
+        <div className="empty">이번 달엔 선택한 담당자의 일정이 없습니다.<br/>"빈 날짜도 표시"를 체크하면 전체 날짜를 볼 수 있어요.</div>
+      ) : (
+        <div className="card" style={{overflowX:"auto", padding:0}}>
+          <table className="worker-sched-table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>요일</th>
+                {workers.map(w => (
+                  <th
+                    key={w}
+                    className={dragOverWorker===w ? "th-drag-over" : ""}
+                    draggable
+                    title="드래그해서 순서 변경"
+                    onDragStart={e=>{ e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain", w); }}
+                    onDragOver={e=>e.preventDefault()}
+                    onDragEnter={e=>{ e.preventDefault(); setDragOverWorker(w); }}
+                    onDragLeave={()=>{ if(dragOverWorker===w) setDragOverWorker(null); }}
+                    onDrop={e=>{ e.preventDefault(); setDragOverWorker(null); reorderWorkers(e.dataTransfer.getData("text/plain"), w); }}
+                    onDragEnd={()=>setDragOverWorker(null)}
+                  >
+                    {w}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {visibleDateList.map(d => (
+                <tr key={d.dateStr} className={d.dow===0 ? "row-sun" : d.dow===6 ? "row-sat" : ""}>
+                  <td>{d.month}/{d.day}</td>
+                  <td>{DOW[d.dow]}</td>
+                  {workers.map(w => {
+                    const site = siteForWorkerOnDate(w, d.dateStr);
+                    return (
+                      <td
+                        key={w}
+                        style={site ? { background: siteColorMap[site.id]+"55", color:"var(--ink)", fontWeight:700 } : {}}
+                        title={site ? site.name : ""}
+                      >
+                        {site ? (site.abbreviation || site.name.slice(0,2)) : ""}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {sites.length>0 && (
+        <div className="cal-legend" style={{marginTop:14}}>
+          {sites.map(s => (
+            <span className="legend-item" key={s.id}>
+              <span className="legend-dot" style={{background:siteColorMap[s.id]}} />
+              {s.abbreviation || s.name.slice(0,2)} = {s.name}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
 </body>
 </html>
