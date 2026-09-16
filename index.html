@@ -1246,9 +1246,9 @@ function parseCSV(csv) {
     groupRows.forEach(r => {
       const url = toDirectUrl(r[4] || '');
       if (!url || !url.startsWith('http')) return;
-      const isThumb = (r[5] || '').trim().toUpperCase() === 'Y';
+      const isThumbOnly = (r[5] || '').trim().toUpperCase() === 'Y';
+      if (isThumbOnly) { thumbnail = url; return; } // 썸네일 전용: 갤러리에는 안 넣음
       images.push({ url });
-      if (isThumb) thumbnail = url;
     });
     if (!thumbnail && images.length) thumbnail = images[0].url;
 
