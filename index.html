@@ -1203,7 +1203,9 @@ function csvToRows(text) {
 }
 
 // ─── CSV 파싱 ───
-// 시트 컬럼 순서: 프로젝트명 | 유형 | 설명 | 썸네일URL | 이미지1~10
+// 시트 컬럼 순서 (한 줄 = 사진 한 장):
+// A 프로젝트명(필수) | B 유형(필수) | C 설명 | D 상세설명 | E 이미지URL(필수) | F 대표이미지(Y) | G 이미지제목 | H 이미지설명
+// 같은 프로젝트명을 가진 줄들을 하나의 시공사례로 묶는다.
 function parseCSV(csv) {
   const allRows = csvToRows(csv.trim());
   // 실제 데이터 행 조건:
@@ -1222,20 +1224,36 @@ function parseCSV(csv) {
     if (firstCell.includes('필수')) return false;
     return true;
   });
-  return rows
-    .map((cols, i) => {
-      const clean = cols.map(c => c.trim());
-      const name      = clean[0] || '';
-      const type      = clean[1] || '인테리어';
-      const meta      = clean[2] || '';
-      const thumbnail = toDirectUrl(clean[3] || '');
-      const imgUrls   = clean.slice(4)
-        .map(toDirectUrl)
-        .filter(u => u && u.startsWith('http'));
-      return { id: i+1, name, type, meta, thumbnail,
-               images: imgUrls.map(url => ({ url })) };
-    })
-    .filter(c => c.name && c.name.length > 0);
+
+  // 프로젝트명 기준으로 그룹핑 (처음 등장한 순서 유지)
+  const order = [];
+  const groups = {};
+  rows.forEach(cols => {
+    const c = cols.map(x => x.trim());
+    const name = c[0] || '';
+    if (!name) return;
+    if (!groups[name]) { groups[name] = []; order.push(name); }
+    groups[name].push(c);
+  });
+
+  return order.map((name, i) => {
+    const groupRows = groups[name];
+    const type = groupRows.map(r => r[1]).find(v => v) || '인테리어';
+    const meta = groupRows.map(r => r[2]).find(v => v) || '';
+
+    const images = [];
+    let thumbnail = '';
+    groupRows.forEach(r => {
+      const url = toDirectUrl(r[4] || '');
+      if (!url || !url.startsWith('http')) return;
+      const isThumb = (r[5] || '').trim().toUpperCase() === 'Y';
+      images.push({ url });
+      if (isThumb) thumbnail = url;
+    });
+    if (!thumbnail && images.length) thumbnail = images[0].url;
+
+    return { id: i + 1, name, type, meta, thumbnail, images };
+  }).filter(c => c.name && c.name.length > 0);
 }
 
 // ─── 샘플 데이터 제거 (구글 시트 연동 완료) ───
