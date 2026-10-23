@@ -202,7 +202,7 @@ button { font: inherit; color: inherit; }
   display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
   gap: 24px; padding-top: 40px;
 }
-.smile { color: var(--point); font-weight: 700; display: inline-block; transform: translateY(-0.3em); margin-left: 2px; }
+.smile { color: var(--point); display: inline-block; width: 0.95em; height: 0.56em; margin-left: 0.15em; vertical-align: 0.12em; overflow: visible; }
 .hero-lead { font-size: clamp(21px, 2.4vw, 32px); font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; }
 .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
 
@@ -495,7 +495,7 @@ button { font: inherit; color: inherit; }
   <div class="wrap">
   <h1 class="hero-title">LINE INTERIOR</h1>
   <div class="hero-row">
-    <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 그려드릴게요. <span class="smile" aria-hidden="true">◡</span></p>
+    <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 <span style="white-space: nowrap;">그려드릴게요.&nbsp;<svg class="smile" viewBox="0 0 24 14" aria-hidden="true"><path d="M3.5 3 C7 12.5 17 12.5 20.5 3" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></span></p>
     <div class="hero-btns">
       <a href="#contact" class="btn btn-point">견적 문의</a>
       <a href="#cases" class="btn btn-line">시공사례 보기</a>
@@ -775,48 +775,63 @@ function renderCases() {
   }).join('');
 }
 
-// ─── 대표 사진 묶음 번갈아 보여주기 (PC) ───
+// ─── 대표 사진 자동 넘김 ───
+// 3초마다 자동으로 넘어가고, 직접 넘기면(점·꺽쇠·밀기) 멈췄다가 30초 뒤 다시 자동으로 넘어감
 (function () {
   const wrap = document.getElementById('heroTrio');
   if (!wrap) return;
   const sets = wrap.querySelectorAll('.trio-set');
   const dots = wrap.querySelectorAll('.trio-dot');
+  const prevBtn = document.querySelector('.trio-prev');
+  const nextBtn = document.querySelector('.trio-next');
   if (sets.length < 2) return;
-  let cur = 0, timer = null;
-  const INTERVAL = 5000;
+  const INTERVAL = 3000;      // 자동 넘김 간격
+  const RESUME_AFTER = 30000; // 직접 넘긴 뒤 다시 자동으로 넘기기까지
+  let cur = 0, timer = null, resumeTimer = null;
+  const isPhone = () => matchMedia('(max-width: 860px)').matches;
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function show(i) {
     cur = (i + sets.length) % sets.length;
     sets.forEach((s, k) => s.classList.toggle('active', k === cur));
     dots.forEach((d, k) => { d.classList.toggle('active', k === cur); d.setAttribute('aria-pressed', k === cur); });
   }
-  const auto = () => matchMedia('(min-width: 861px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function start() { stop(); if (auto()) timer = setInterval(() => show(cur + 1), INTERVAL); }
+  // 휴대폰: 사진 줄을 한 장씩 옆으로, 끝에 닿으면 처음으로
+  function phoneStep(dir) {
+    const item = wrap.querySelector('.trio-item');
+    const w = item ? item.getBoundingClientRect().width + 8 : wrap.clientWidth * 0.8;
+    const atEnd = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 4;
+    const atStart = wrap.scrollLeft <= 4;
+    if (dir > 0 && atEnd) wrap.scrollTo({ left: 0, behavior: 'smooth' });
+    else if (dir < 0 && atStart) wrap.scrollTo({ left: wrap.scrollWidth, behavior: 'smooth' });
+    else wrap.scrollBy({ left: dir * w, behavior: 'smooth' });
+  }
+  function advance() { isPhone() ? phoneStep(1) : show(cur + 1); }
+
   function stop() { clearInterval(timer); timer = null; }
-  dots.forEach((d, k) => d.addEventListener('click', () => { show(k); start(); }));
-  // 좌우 꺽쇠: PC는 이전/다음 사진, 휴대폰은 옆으로 한 장씩 이동
-  const prevBtn = document.querySelector('.trio-prev');
-  const nextBtn = document.querySelector('.trio-next');
-  const isPhone = () => matchMedia('(max-width: 860px)').matches;
-  function step(dir) {
-    if (isPhone()) {
-      const item = wrap.querySelector('.trio-item');
-      const w = item ? item.getBoundingClientRect().width + 8 : wrap.clientWidth * 0.8;
-      wrap.scrollBy({ left: dir * w, behavior: 'smooth' });
-    } else { show(cur + dir); start(); }
+  function start() { stop(); if (!reduced() && !document.hidden) timer = setInterval(advance, INTERVAL); }
+  function pauseForUser() {
+    stop(); clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(start, RESUME_AFTER);
   }
+
+  dots.forEach((d, k) => d.addEventListener('click', () => { show(k); pauseForUser(); }));
+  prevBtn.addEventListener('click', () => { isPhone() ? phoneStep(-1) : show(cur - 1); pauseForUser(); });
+  nextBtn.addEventListener('click', () => { isPhone() ? phoneStep(1) : show(cur + 1); pauseForUser(); });
+  // 휴대폰에서 손가락으로 밀어 넘긴 경우도 직접 넘긴 것으로 봄
+  wrap.addEventListener('touchstart', pauseForUser, { passive: true });
+  wrap.addEventListener('wheel', e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) pauseForUser(); }, { passive: true });
+
   function updateArrows() {
-    if (!isPhone()) { prevBtn.disabled = false; nextBtn.disabled = false; return; }
-    prevBtn.disabled = wrap.scrollLeft <= 4;
-    nextBtn.disabled = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 4;
+    // 자동으로 처음↔끝을 오가므로 꺽쇠는 항상 누를 수 있게 둠
+    prevBtn.disabled = false; nextBtn.disabled = false;
   }
-  prevBtn.addEventListener('click', () => step(-1));
-  nextBtn.addEventListener('click', () => step(1));
-  wrap.addEventListener('scroll', updateArrows, { passive: true });
   window.addEventListener('resize', updateArrows);
   updateArrows();
-  wrap.addEventListener('mouseenter', stop);
-  wrap.addEventListener('mouseleave', start);
-  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { stop(); clearTimeout(resumeTimer); } else start();
+  });
   start();
 })();
 
