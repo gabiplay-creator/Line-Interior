@@ -760,34 +760,33 @@ footer {
   margin-bottom: 32px;
   letter-spacing: 0.02em;
 }
-.why-quote {
+.why-item {
+  margin-bottom: 34px;
+}
+.why-item:last-child {
+  margin-bottom: 0;
+}
+.why-item-num {
   font-family: var(--font-display);
-  font-size: clamp(18px, 2.2vw, 26px);
-  font-weight: 400;
-  font-style: italic;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--gold-light);
-  line-height: 1.5;
-  margin-bottom: 20px;
-  padding-left: 16px;
-  border-left: 2px solid var(--gold);
+  margin-bottom: 10px;
 }
-.why-body {
-  font-size: clamp(13px, 1.1vw, 15px);
-  color: rgba(220, 214, 204, 0.88);
-  line-height: 1.95;
-  margin-bottom: 18px;
-}
-.why-emphasis {
+.why-item-title {
   font-family: var(--font-display);
-  font-size: clamp(16px, 1.8vw, 22px);
-  font-weight: 500;
-  color: #f0ebe4;
-  margin: 24px 0;
-  letter-spacing: 0.02em;
+  font-size: clamp(19px, 2.1vw, 25px);
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
 }
-.why-btns {
-  display: flex; gap: 12px;
-  margin-top: 36px;
+.why-item-body {
+  font-size: clamp(14px, 1.15vw, 16px);
+  color: rgba(238, 234, 227, 0.95);
+  line-height: 1.9;
 }
 @media (max-width: 900px) {
   .why-content { padding: 80px 32px; max-width: 100%; }
@@ -803,7 +802,6 @@ footer {
 }
 @media (max-width: 560px) {
   .why-content { padding: 60px 24px; }
-  .why-btns { flex-direction: column; }
 }
 
 /* ─── RESPONSIVE ─── */
@@ -964,34 +962,30 @@ footer {
     <div class="why-eyebrow">WHY LINE INTERIOR</div>
     <h2 class="why-main-title" style="white-space:nowrap;font-size:clamp(22px, 3.2vw, 52px);">왜 라인 인테리어인가?</h2>
 
-    <div class="why-quote">
-      "인테리어, 시작하기도 전에<br>감정 소모부터 걱정되시나요?"
+    <div class="why-item">
+      <div class="why-item-num">01</div>
+      <div class="why-item-title">늘 고객의 입장에서 함께 고민합니다</div>
+      <p class="why-item-body">
+        "이 업체는 믿을 수 있을까?" 하는 불안함과 조율 과정의 스트레스까지 잘 알고 있습니다.
+        단순히 시공만 하는 곳이 아닌, 처음부터 끝까지 곁에서 함께하는 파트너가 되겠습니다.
+      </p>
     </div>
 
-    <p class="why-body">
-      "이 업체는 믿을 수 있을까?" 하는 불안함과 조율 과정의 스트레스까지,
-      고객님의 마음을 누구보다 잘 알고 있습니다.<br>
-      라인 인테리어는 단순히 시공만 하는 것이 아니라,
-      늘 고객의 입장에서 함께 고민합니다.
-    </p>
+    <div class="why-item">
+      <div class="why-item-num">02</div>
+      <div class="why-item-title">과정은 편안하게, 결과는 완벽하게</div>
+      <p class="why-item-body">
+        보이지 않는 기초와 마감의 디테일을 먼저 생각합니다. 공사가 끝난 뒤에도
+        부담 없이 들러 커피 한잔 나눌 수 있는 곳이고 싶습니다.
+      </p>
+    </div>
 
-    <div class="why-emphasis">"과정은 편안하게, 결과는 완벽하게."</div>
-
-    <p class="why-body">
-      "공사가 다 끝났는데, 실장님과 매일 나누던 대화가 그리워 아쉽다"고
-      말씀해 주시는 고객님들의 따뜻한 마음을 저희는 항상 기억합니다.<br>
-      공사가 끝난 뒤에도 부담 없이 언제든 들러 맛있는 커피 한잔 나누실 수 있는 곳.
-    </p>
-
-    <p class="why-body">
-      편안한 소통과 뛰어난 시공 퀄리티 덕분에
-      수많은 분들이 지인에게 선뜻 추천해 주시는 곳.<br>
-      이것이 라인 인테리어에 소개 공사가 끊이지 않는 이유입니다.
-    </p>
-
-    <div class="why-btns">
-      <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청하기</button>
-      <button class="btn-ghost" onclick="document.getElementById('cases').scrollIntoView({behavior:'smooth'})">시공사례 보기</button>
+    <div class="why-item">
+      <div class="why-item-num">03</div>
+      <div class="why-item-title">소개 공사가 끊이지 않는 이유</div>
+      <p class="why-item-body">
+        편안한 소통과 꼼꼼한 시공 퀄리티 덕분에, 많은 고객님이 지인에게 먼저 추천해 주십니다.
+      </p>
     </div>
   </div>
 </section>
