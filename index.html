@@ -1824,6 +1824,13 @@ async function init() {
       console.warn('init 오류, 샘플 유지:', e);
     }
   }
+  // 시공사례가 비동기로 로드되면서 페이지 높이가 늘어나,
+  // 로드 전에 브라우저가 처리한 #해시 앵커 점프 위치가 어긋나는 문제 보정
+  if (location.hash === '#contact') {
+    requestAnimationFrame(() => {
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'auto' });
+    });
+  }
 }
 init();
 </script>
