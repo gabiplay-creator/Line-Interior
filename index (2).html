@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라인 인테리어 — LINE INTERIOR</title>
+<meta name="description" content="머물수록 행복해지는 공간, 라인 인테리어. 경기도 부천시 소사로126번길 7 · 032-246-3155">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ─── 디자인 토큰 ─── */
+:root {
+  --bg: #F6EFEA;          /* 바탕 (따뜻한 미색) */
+  --surface: #EFE5DE;     /* 사진 자리 */
+  --card: #FFFFFF;
+  --ink: #3A3431;         /* 회색빛 검정: 본문·다음 버튼 */
+  --ink-2: #4E4743;
+  --muted: #6E655F;
+  --tone: #948A82;        /* 큰 타이틀 웜그레이 */
+  --point: #7B2B2B;       /* 버건디 포인트 */
+  --point-dark: #642121;
+  --line: #D9CEC5;
+  --field-line: #CFC4BB;
+  --field-bg: #FBF8F6;
+  --font-en: 'Inter', 'Noto Sans KR', sans-serif;
+  --font-ko: 'Noto Sans KR', 'Inter', sans-serif;
+  --wrap: 1280px;
+  --gutter: 32px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  font-family: var(--font-ko);
+  background: var(--bg); color: var(--ink);
+  word-break: keep-all; -webkit-font-smoothing: antialiased;
+}
+img, video { display: block; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+.eyebrow {
+  font-family: var(--font-en); font-size: 14px; font-weight: 600;
+  letter-spacing: 0.14em; color: var(--point); margin-bottom: 14px;
+}
+.h2 {
+  font-size: clamp(34px, 4vw, 52px); font-weight: 800; line-height: 1.2;
+  letter-spacing: -0.03em; color: var(--tone);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 28px; border-radius: 999px;
+  font-size: 16px; font-weight: 500; text-decoration: none; cursor: pointer;
+  border: 1.5px solid transparent; transition: background .2s, color .2s, border-color .2s;
+}
+.btn-point { background: var(--point); color: #fff; }
+.btn-point:hover { background: var(--point-dark); }
+.btn-line { border-color: var(--ink); background: transparent; color: var(--ink); }
+.btn-line:hover { background: var(--ink); color: #fff; }
+
+/* ─── NAV ─── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(246, 239, 234, 0.92);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.nav-inner {
+  max-width: var(--wrap); margin: 0 auto; padding: 16px var(--gutter);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo-mark {
+  width: 34px; height: 34px; border: 1.5px solid var(--ink);
+  border-radius: 17px 17px 4px 4px;
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
+  font-family: var(--font-en); font-size: 13px; font-weight: 800;
+}
+.logo-text { font-family: var(--font-en); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; }
+.nav-links { display: flex; align-items: center; gap: 36px; font-size: 15px; font-weight: 500; }
+.nav-links a { text-decoration: none; padding: 8px 0; }
+.nav-links a:hover { color: var(--point); }
+.nav-blog { display: inline-flex; align-items: center; gap: 6px; }
+.nav-cta { min-height: 44px; padding: 0 22px; font-size: 15px; white-space: nowrap; }
+
+/* ─── HERO ─── */
+.hero { padding-top: 8px; }
+.hero-frame {
+  position: relative; height: clamp(320px, 46vw, 620px);
+  border-radius: 6px; overflow: hidden; background: var(--surface);
+}
+.slide { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; pointer-events: none; }
+.slide.active { opacity: 1; pointer-events: auto; }
+.slide img, .slide video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* 영상 위아래에 들어 있는 검은 띠를 잘라내기 위해 살짝 확대 */
+.slide video { transform: scale(1.28); }
+.slide-overlay {
+  position: absolute; left: 24px; bottom: 24px;
+  background: rgba(255, 255, 255, 0.9); border-radius: 4px;
+  padding: 14px 20px; max-width: calc(100% - 48px);
+}
+.slide-tag {
+  font-family: var(--font-en); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.14em; color: var(--point); margin-bottom: 4px;
+}
+.slide-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.video-play-btn {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 64px; height: 64px; border-radius: 50%; border: 0;
+  background: rgba(58, 52, 49, 0.55); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.video-play-btn.hidden { display: none; }
+.slider-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+  width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(255, 255, 255, 0.85); color: var(--ink);
+  display: flex; align-items: center; justify-content: center; transition: background .2s;
+}
+.slider-arrow:hover { background: #fff; }
+.slider-prev { left: 20px; }
+.slider-next { right: 20px; }
+.slider-dots { display: none; }
+.slider-counter {
+  position: absolute; right: 20px; bottom: 24px; z-index: 3;
+  background: rgba(58, 52, 49, 0.7); color: #fff;
+  font-family: var(--font-en); font-size: 13px; font-weight: 500;
+  padding: 6px 12px; border-radius: 999px;
+}
+.slider-progress {
+  position: absolute; left: 0; bottom: 0; z-index: 3;
+  height: 3px; width: 0; background: var(--point);
+}
+.hero-title {
+  margin-top: 28px; text-align: center; white-space: nowrap;
+  font-family: var(--font-en); font-weight: 800;
+  font-size: clamp(48px, 12.4vw, 182px); line-height: 0.9;
+  letter-spacing: -0.035em; color: var(--tone);
+}
+.hero-row {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 24px; padding-top: 40px;
+}
+.hero-lead { font-size: clamp(21px, 2.4vw, 32px); font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; }
+.hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ─── WHY ─── */
+.why {
+  padding-top: 140px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 64px 96px; align-items: start;
+}
+.why-photo {
+  aspect-ratio: 1 / 1; border-radius: 4px; background: var(--surface) center / cover no-repeat;
+}
+.why-text { padding-top: 12px; }
+.why-list { margin-top: 56px; display: flex; flex-direction: column; gap: 44px; }
+.why-num { font-family: var(--font-en); font-size: 15px; font-weight: 600; color: var(--point); margin-bottom: 12px; }
+.why-item h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+.why-item p { font-size: 17px; line-height: 1.8; color: var(--ink-2); }
+
+/* ─── CASES ─── */
+.cases { padding-top: 160px; }
+.cases-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 16px; margin-bottom: 48px;
+}
+.cases-head a { font-size: 16px; font-weight: 500; }
+.cases-head a:hover { color: var(--point); }
+.cases-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 40px 28px;
+}
+.case-card { display: flex; flex-direction: column; gap: 14px; text-decoration: none; }
+.case-thumb {
+  position: relative; aspect-ratio: 4 / 5; border-radius: 4px; overflow: hidden; background: var(--surface);
+}
+.case-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.case-card:hover .case-thumb img { transform: scale(1.03); }
+.case-count {
+  position: absolute; right: 14px; bottom: 14px;
+  background: rgba(255, 255, 255, 0.9); color: var(--ink);
+  font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 999px;
+}
+.case-en { font-family: var(--font-en); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); }
+.case-name { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.case-card:hover .case-name { color: var(--point); }
+.img-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.cases-msg { grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--muted); font-size: 15px; }
+.spinner {
+  width: 36px; height: 36px; margin: 0 auto 16px; border-radius: 50%;
+  border: 2px solid var(--line); border-top-color: var(--point); animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── CONTACT ─── */
+.contact { padding-top: 160px; }
+.contact-card {
+  background: var(--card); border-radius: 8px; padding: clamp(28px, 5vw, 72px);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 56px 80px;
+}
+.contact-desc { font-size: 17px; line-height: 1.8; color: var(--ink-2); margin: 20px 0 44px; }
+.info-list { display: flex; flex-direction: column; gap: 28px; }
+.info-label { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.info-tel {
+  font-family: var(--font-en); font-size: 34px; font-weight: 800; letter-spacing: -0.02em;
+  text-decoration: none;
+}
+.info-tel:hover { color: var(--point); }
+.info-addr { font-size: 19px; font-weight: 500; }
+.map-box {
+  margin-top: 14px; height: 260px; border-radius: 6px; overflow: hidden;
+  border: 1px solid #E2D8CF; background: var(--surface); line-height: 0;
+}
+.map-box iframe { width: 100%; height: 100%; border: 0; }
+.map-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px;
+  border: 1px solid var(--field-line); border-radius: 999px; background: #fff;
+  font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer;
+}
+.pill:hover { border-color: var(--ink); }
+.kakao-btn {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 10px;
+  min-height: 48px; padding: 0 24px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #FEE500; color: #191919; font-size: 16px; font-weight: 500;
+}
+.kakao-btn:hover { filter: brightness(0.96); }
+
+/* ─── 견적 위저드 ─── */
+.form-wrap {
+  background: var(--field-bg); border: 1px solid #E6DCD3; border-radius: 8px;
+  padding: clamp(24px, 3.5vw, 44px); align-self: start;
+}
+.form-wrap h3 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.form-sub { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+.wiz-progress { height: 4px; background: #EAE1D9; border-radius: 2px; overflow: hidden; }
+.wiz-progress-bar { height: 100%; width: 0; background: var(--point); transition: width .3s; }
+.wiz-step-label {
+  margin: 28px 0 10px; font-family: var(--font-en); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.12em; color: var(--point);
+}
+.wiz-question { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.4; margin-bottom: 6px; }
+.wiz-hint { font-size: 14px; color: var(--muted); min-height: 20px; margin-bottom: 14px; }
+.wiz-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.wiz-options-wide { grid-template-columns: minmax(0, 1fr); }
+.wiz-options-tight { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.wiz-option {
+  min-height: 56px; padding: 12px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--field-line); background: #fff; color: var(--ink);
+  font-size: 16px; transition: border-color .15s, background .15s;
+}
+.wiz-option:hover { border-color: var(--point); }
+.wiz-option.selected { background: var(--point); border-color: var(--point); color: #fff; font-weight: 500; }
+.fg { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.fg label { font-size: 15px; font-weight: 500; }
+.fg .req { color: var(--point); }
+.fg input, .fg textarea {
+  font: inherit; font-size: 16px; padding: 14px 16px; color: var(--ink);
+  border: 1px solid var(--field-line); border-radius: 6px; background: #fff;
+}
+.fg input:focus, .fg textarea:focus { outline: 2px solid var(--point); outline-offset: -1px; border-color: transparent; }
+.fg textarea { min-height: 96px; resize: vertical; }
+.wiz-consent { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+.wiz-consent input { width: 18px; height: 18px; accent-color: var(--point); }
+.wiz-nav { display: flex; gap: 10px; margin-top: 24px; }
+.wiz-btn-prev {
+  flex: 0 0 auto; min-height: 52px; padding: 0 26px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--ink); background: transparent; font-size: 16px; font-weight: 500;
+}
+.wiz-btn-next {
+  flex: 1 1 auto; min-height: 52px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--ink); color: #fff; font-size: 16px; font-weight: 500;
+}
+.wiz-btn-next:disabled { background: #E3DAD2; color: var(--muted); cursor: not-allowed; }
+.form-notice { margin-top: 16px; font-size: 13px; color: var(--muted); text-align: center; }
+.form-success { display: none; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 48px 0 32px; }
+.form-success .check {
+  width: 64px; height: 64px; border-radius: 50%; background: var(--point);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 8px;
+}
+.form-success strong { font-size: 22px; }
+.form-success p { font-size: 16px; line-height: 1.7; color: var(--ink-2); }
+
+/* ─── FOOTER ─── */
+.footer { padding-top: 120px; padding-bottom: 56px; }
+.footer-inner {
+  border-top: 1px solid var(--line); padding-top: 40px;
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px;
+}
+.footer-info { display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.7; color: var(--muted); }
+.footer-logo { font-family: var(--font-en); font-size: 16px; font-weight: 800; letter-spacing: 0.04em; color: var(--ink); }
+.footer-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; font-size: 14px; color: var(--muted); }
+.footer-side a { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ─── SCROLL REVEAL ─── */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ─── 모바일 ─── */
+@media (max-width: 860px) {
+  :root { --gutter: 20px; }
+  .nav-links a:not(.nav-cta) { display: none; }
+  .why, .cases, .contact { padding-top: 96px; }
+  .slider-arrow { width: 40px; height: 40px; }
+  .slider-prev { left: 12px; } .slider-next { right: 12px; }
+  .slide-overlay { left: 12px; bottom: 12px; padding: 10px 14px; }
+  .slide-title { font-size: 15px; }
+  .slider-counter { right: 12px; bottom: auto; top: 12px; }
+  .info-tel { font-size: 30px; }
+  .footer-side { align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .wiz-options-tight { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero-btns .btn { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .slide { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="logo" aria-label="라인 인테리어 처음으로">
+      <span class="logo-mark" aria-hidden="true">L</span>
+      <span class="logo-text">LINE INTERIOR</span>
+    </a>
+    <nav class="nav-links" aria-label="주 메뉴">
+      <a href="#why">왜 라인인가</a>
+      <a href="#cases">시공사례</a>
+      <a href="#contact">견적문의</a>
+      <a href="https://blog.naver.com/line_interior_" target="_blank" rel="noopener" class="nav-blog">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#03C75A" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
+        블로그
+      </a>
+      <a href="#contact" class="btn btn-point nav-cta">무료 견적 문의</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ─── HERO ─── -->
+<section class="hero wrap">
+  <div class="hero-frame" id="heroSlider">
+
+    <!-- 슬라이드 0: 영상 -->
+    <div class="slide active" data-type="video">
+      <video id="heroVideo" src="video/0803.mp4" muted autoplay loop playsinline preload="auto"
+        webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
+      <button type="button" class="video-play-btn" id="videoPlayBtn" onclick="playHeroVideo()" aria-label="영상 재생">
+        <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,3 20,12 6,21"/></svg>
+      </button>
+      <div class="slide-overlay">
+        <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
+        <div class="slide-title">공간이 말하는 당신만의 이야기</div>
+      </div>
+    </div>
+
+    <div class="slide" data-type="image">
+      <img src="images/hero/hero_01.jpg" alt="화이트톤 ㄱ자형 주방" loading="eager">
+      <div class="slide-overlay">
+        <div class="slide-tag">KITCHEN</div>
+        <div class="slide-title">화이트로 완성한 모던 주방</div>
+      </div>
+    </div>
+
+    <div class="slide" data-type="image">
+      <img src="images/hero/hero_02.jpg" alt="통창 뷰가 있는 거실" loading="eager">
+      <div class="slide-overlay">
+        <div class="slide-tag">LIVING ROOM</div>
+        <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
+      </div>
+    </div>
+
+    <div class="slide" data-type="image">
+      <img src="images/hero/hero_03.jpg" alt="붙박이장이 있는 침실" loading="lazy">
+      <div class="slide-overlay">
+        <div class="slide-tag">BEDROOM</div>
+        <div class="slide-title">넉넉한 수납이 있는 편안한 침실</div>
+      </div>
+    </div>
+
+    <div class="slide" data-type="image">
+      <img src="images/hero/hero_04.jpg" alt="아일랜드와 펜던트 조명이 있는 주방" loading="lazy">
+      <div class="slide-overlay">
+        <div class="slide-tag">KITCHEN</div>
+        <div class="slide-title">감성 조명이 완성한 주방</div>
+      </div>
+    </div>
+
+    <div class="slide" data-type="image">
+      <img src="images/hero/hero_05.jpg" alt="중문이 있는 현관" loading="lazy">
+      <div class="slide-overlay">
+        <div class="slide-tag">ENTRANCE</div>
+        <div class="slide-title">현관에서 시작되는 세심한 디테일</div>
+      </div>
+    </div>
+
+    <div class="slide" data-type="image">
+      <img src="images/hero/hero_06.jpg" alt="TV월이 있는 모던 거실" loading="lazy">
+      <div class="slide-overlay">
+        <div class="slide-tag">MODERN MINIMAL</div>
+        <div class="slide-title">깔끔한 라인의 모던 거실</div>
+      </div>
+    </div>
+
+    <button type="button" class="slider-arrow slider-prev" onclick="heroSlide(-1)" aria-label="이전 사진">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button type="button" class="slider-arrow slider-next" onclick="heroSlide(1)" aria-label="다음 사진">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="slider-dots" id="sliderDots"></div>
+    <div class="slider-counter"><span id="sliderCurrent">1</span> / <span id="sliderTotal">7</span></div>
+    <div class="slider-progress" id="sliderProgress"></div>
+  </div>
+
+  <h1 class="hero-title">LINE INTERIOR</h1>
+  <div class="hero-row">
+    <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 그려드릴게요.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn btn-point">무료 견적 받기</a>
+      <a href="#cases" class="btn btn-line">시공사례 보기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY ─── -->
+<section id="why" class="why wrap reveal">
+  <div class="why-photo" role="img" aria-label="라인 인테리어 시공 공간" style="background-image:url('images/misc/why_bg.jpg');"></div>
+  <div class="why-text">
+    <p class="eyebrow">WHY LINE INTERIOR</p>
+    <h2 class="h2">왜 라인 인테리어인가?</h2>
+    <div class="why-list">
+      <div class="why-item">
+        <p class="why-num">01</p>
+        <h3>늘 고객의 입장에서 함께 고민합니다</h3>
+        <p>"이 업체는 믿을 수 있을까?" 하는 불안함과 조율 과정의 스트레스까지 잘 알고 있습니다. 단순히 시공만 하는 곳이 아닌, 처음부터 끝까지 곁에서 함께하는 파트너가 되겠습니다.</p>
+      </div>
+      <div class="why-item">
+        <p class="why-num">02</p>
+        <h3>과정은 편안하게, 결과는 완벽하게</h3>
+        <p>보이지 않는 기초와 마감의 디테일을 먼저 생각합니다. 공사가 끝난 뒤에도 부담 없이 들러 커피 한잔 나눌 수 있는 곳이고 싶습니다.</p>
+      </div>
+      <div class="why-item">
+        <p class="why-num">03</p>
+        <h3>소개 공사가 끊이지 않는 이유</h3>
+        <p>편안한 소통과 꼼꼼한 시공 퀄리티 덕분에, 많은 고객님이 지인에게 먼저 추천해 주십니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CASES ─── -->
+<section id="cases" class="cases wrap reveal">
+  <div class="cases-head">
+    <div>
+      <p class="eyebrow">PORTFOLIO</p>
+      <h2 class="h2">시공 사례</h2>
+    </div>
+    <a href="https://blog.naver.com/line_interior_" target="_blank" rel="noopener">블로그에서 더 보기 →</a>
+  </div>
+  <div class="cases-grid" id="casesGrid"></div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact" class="contact wrap reveal">
+  <div class="contact-card">
+    <div>
+      <p class="eyebrow">CONTACT</p>
+      <h2 class="h2">견적 및 문의하기</h2>
+      <p class="contact-desc">머물수록 행복해지는 공간, 라인 인테리어가 함께 그려드릴게요. 보이지 않는 기초와 마감의 디테일을 먼저 생각합니다.</p>
+      <div class="info-list">
+        <div>
+          <p class="info-label">친절상담 · 평일 09:00 – 18:00</p>
+          <a href="tel:032-246-3155" class="info-tel tel-link">032-246-3155</a>
+        </div>
+        <div>
+          <p class="info-label">오시는 길 · 소새울역 1번 출구</p>
+          <p class="info-addr">경기도 부천시 소사로126번길 7</p>
+          <!-- 지도: NAVER_MAP_KEY 를 넣으면 네이버 지도로 바뀝니다 (아래 스크립트 참고) -->
+          <div class="map-box" id="naverMap">
+            <iframe title="라인 인테리어 위치 지도" src="https://maps.google.com/maps?q=경기도+부천시+소사로126번길+7&t=m&z=17&ie=UTF8&iwloc=&output=embed&hl=ko" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <div class="map-links">
+            <a class="pill" target="_blank" rel="noopener" href="https://map.naver.com/p/search/%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EB%B6%80%EC%B2%9C%EC%8B%9C%20%EC%86%8C%EC%82%AC%EB%A1%9C126%EB%B2%88%EA%B8%B8%207">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#03C75A" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
+              네이버 지도로 보기
+            </a>
+          </div>
+        </div>
+        <button type="button" class="kakao-btn" id="kakaoBtn">
+          <svg width="20" height="20" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 6C11.163 6 4 11.373 4 18c0 4.243 2.794 7.974 7 10.172L9.5 32l5.2-2.6C15.7 29.8 17.82 30 20 30c8.837 0 16-5.373 16-12S28.837 6 20 6z" fill="#3A1D1D"/></svg>
+          카카오톡 ID : 라인인테리어
+        </button>
+      </div>
+    </div>
+
+    <div class="form-wrap">
+      <h3>무료 견적 문의</h3>
+      <p class="form-sub">몇 가지만 답해주시면 딱 맞는 상담을 도와드려요</p>
+      <!-- 전송 완료 -->
+      <div class="form-success" id="formSuccess" role="status">
+        <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <strong>문의가 접수되었습니다</strong>
+        <p>빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</p>
+      </div>
+      <!-- 단계별 위저드 -->
+      <div id="wizardBody">
+        <div class="wiz-progress"><div class="wiz-progress-bar" id="wizProgressBar"></div></div>
+        <div id="wizStepLabel" class="wiz-step-label"></div>
+        <div id="wizQuestion" class="wiz-question"></div>
+        <div id="wizHint" class="wiz-hint"></div>
+        <div id="wizContent"></div>
+        <div class="wiz-nav">
+          <button type="button" class="wiz-btn-prev" id="wizPrevBtn" onclick="wizPrev()" style="display:none;">이전</button>
+          <button type="button" class="wiz-btn-next" id="wizNextBtn" onclick="wizNext()" disabled>다음</button>
+        </div>
+        <p class="form-notice">개인정보는 상담 목적 외 사용되지 않습니다</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer wrap">
+  <div class="footer-inner">
+    <div class="footer-info">
+      <span class="footer-logo">LINE INTERIOR</span>
+      <span>상호 라인 인테리어 · 대표 박지희 · 사업자번호 296-24-02323</span>
+      <span>경기도 부천시 소사로126번길 7 · 032-246-3155 · dongjun4944@naver.com</span>
+    </div>
+    <div class="footer-side">
+      <a href="https://blog.naver.com/line_interior_" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#03C75A" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
+        네이버 블로그
+      </a>
+      <span>© 2026 LINE INTERIOR. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  ★ 설정 ★
+// ════════════════════════════════════════════════════════
+// 구글 시트 게시 URL (시공사례)
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTJqltJid6HPBZS18xiJslcf9YpbWOnnvAbEWAB1S8t9pkQ39kQx9ABWJfy-lpPR1MIsjAUxyX7G3gU/pub?output=csv';
+
+// 시공사례 표시 순서 (시트의 프로젝트명 기준) — 여기 없는 이름은 뒤에 붙습니다
+const CASE_ORDER = ['주방', '욕실', '거실', '수납', '중문', '창호'];
+const CASE_EN = {
+  '주방': 'KITCHEN', '욕실': 'BATHROOM', '거실': 'LIVING ROOM', '수납': 'STORAGE',
+  '중문': 'INNER DOOR', '창호': 'WINDOWS', '현관': 'ENTRANCE', '방': 'ROOM', '침실': 'BEDROOM'
+};
+
+// 네이버 지도: 네이버 클라우드 플랫폼 Maps 의 Client ID 를 넣으면 네이버 지도가 표시됩니다.
+// 비어 있으면 임시로 구글 지도가 표시됩니다.
+const NAVER_MAP_KEY = '';
+const MAP_ADDRESS = '경기도 부천시 소사로126번길 7';
+
+// 카카오톡: 카카오톡 채널 채팅 주소(https://pf.kakao.com/_xxxx/chat)를 넣으면 버튼이 채팅으로 연결됩니다.
+// 비어 있으면 버튼을 눌렀을 때 카카오톡 ID 가 복사됩니다.
+const KAKAO_CHANNEL_URL = '';
+const KAKAO_ID = '라인인테리어';
+
+// ─── 구글 시트에서 데이터 불러오기 (CORS 우회 포함) ───
+async function loadFromSheet() {
+  const attempts = [
+    () => fetch(SHEET_URL, { signal: AbortSignal.timeout(8000) }),
+    () => fetch('https://corsproxy.io/?' + encodeURIComponent(SHEET_URL), { signal: AbortSignal.timeout(8000) }),
+  ];
+  for (const attempt of attempts) {
+    try {
+      const res = await attempt();
+      if (!res.ok) continue;
+      const csv = await res.text();
+      const parsed = parseCSV(csv);
+      if (parsed && parsed.length > 0) return parsed;
+    } catch (e) { /* 다음 시도 */ }
+  }
+  console.warn('구글 시트 로드 실패');
+  return null;
+}
+
+// ─── 구글 드라이브 URL 자동 변환 ───
+function toDirectUrl(url) {
+  if (!url || !url.startsWith('http')) return '';
+  const match = url.match(/\/file\/d\/([^/]+)/);
+  if (match) return `https://drive.google.com/uc?id=${match[1]}`;
+  return url;
+}
+
+// ─── CSV → 2차원 배열 (따옴표 안의 줄바꿈·쉼표까지 안전하게 처리) ───
+function csvToRows(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += ch;
+    } else {
+      if (ch === '"') inQuotes = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); field = ''; rows.push(row); row = []; }
+      else field += ch;
+    }
+  }
+  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+// ─── CSV 파싱 ───
+// A 프로젝트명(필수) | B 유형(필수) | C 설명 | D 상세설명 | E 이미지URL(필수) | F 대표이미지(Y) | G 이미지제목 | H 이미지설명
+// id 는 시트에 나온 순서대로 매깁니다 (case.html?id= 와 맞춰야 하므로 정렬 전에 매김)
+function parseCSV(csv) {
+  const allRows = csvToRows(csv.trim());
+  const rows = allRows.filter(cols => {
+    const firstCell = (cols[0] || '').trim();
+    if (!firstCell) return false;
+    if (firstCell.startsWith('http')) return false;
+    if (firstCell.startsWith('(')) return false;
+    if (firstCell.startsWith('※')) return false;
+    if (firstCell.startsWith('LINE')) return false;
+    if (firstCell === '프로젝트명') return false;
+    if (firstCell.includes('필수')) return false;
+    return true;
+  });
+
+  const order = [];
+  const groups = {};
+  rows.forEach(cols => {
+    const c = cols.map(x => x.trim());
+    const name = c[0] || '';
+    if (!name) return;
+    if (!groups[name]) { groups[name] = []; order.push(name); }
+    groups[name].push(c);
+  });
+
+  return order.map((name, i) => {
+    const groupRows = groups[name];
+    const type = groupRows.map(r => r[1]).find(v => v) || '인테리어';
+    const meta = groupRows.map(r => r[2]).find(v => v) || '';
+    const images = [];
+    let thumbnail = '';
+    groupRows.forEach(r => {
+      const url = toDirectUrl(r[4] || '');
+      if (!url || !url.startsWith('http')) return;
+      if ((r[5] || '').trim().toUpperCase() === 'Y') { thumbnail = url; return; }
+      images.push({ url });
+    });
+    if (!thumbnail && images.length) thumbnail = images[0].url;
+    return { id: i + 1, name, type, meta, thumbnail, images };
+  }).filter(c => c.name && c.name.length > 0);
+}
+
+function sortCases(list) {
+  const rank = name => {
+    const i = CASE_ORDER.indexOf(name);
+    return i === -1 ? CASE_ORDER.length : i;
+  };
+  return list.slice().sort((a, b) => rank(a.name) - rank(b.name) || a.id - b.id);
+}
+
+let CASES = [];
+let casesFailed = false;
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+const IMG_EMPTY = `<div class="img-empty"><svg width="36" height="36" fill="none" stroke="#C8BDB3" stroke-width="1.2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+
+// ─── 카드 렌더 ───
+function renderCases() {
+  const grid = document.getElementById('casesGrid');
+  if (!CASES.length) {
+    grid.innerHTML = casesFailed
+      ? `<div class="cases-msg">시공사례를 불러오지 못했어요. 잠시 후 다시 확인해 주세요.</div>`
+      : `<div class="cases-msg"><div class="spinner"></div>시공사례를 불러오는 중입니다...</div>`;
+    return;
+  }
+  grid.innerHTML = CASES.map(c => {
+    const name = escapeHtml(c.name);
+    const en = CASE_EN[c.name] || escapeHtml(c.type).toUpperCase();
+    const thumb = c.thumbnail
+      ? `<img src="${escapeHtml(c.thumbnail)}" alt="${name} 시공사례" loading="lazy" onerror="this.outerHTML=IMG_EMPTY">`
+      : IMG_EMPTY;
+    return `
+      <a class="case-card" href="case.html?id=${c.id}">
+        <div class="case-thumb">
+          ${thumb}
+          ${c.images.length ? `<span class="case-count">사진 ${c.images.length}장</span>` : ''}
+        </div>
+        <span class="case-en">${en}</span>
+        <span class="case-name">${name}</span>
+      </a>`;
+  }).join('');
+}
+
+// ─── HERO SLIDER ───
+(function () {
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('sliderDots');
+  const progressEl = document.getElementById('sliderProgress');
+  const currentEl = document.getElementById('sliderCurrent');
+  const totalEl = document.getElementById('sliderTotal');
+  const TOTAL = slides.length;
+  const DURATION = 3500;
+  const hero = document.getElementById('heroSlider');
+  let current = 0;
+  let timer = null;
+  let isPaused = false;
+
+  totalEl.textContent = TOTAL;
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', '슬라이드 ' + (i + 1));
+    dot.onclick = (function (idx) { return function () { goTo(idx); }; })(i);
+    dotsEl.appendChild(dot);
+  }
+
+  function updateDots(idx) {
+    document.querySelectorAll('.slider-dot').forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+  }
+
+  function durOf(idx) { return slides[idx].dataset.type === 'video' ? 8000 : DURATION; }
+
+  function runProgress(dur) {
+    progressEl.style.transition = 'none';
+    progressEl.style.width = '0%';
+    setTimeout(function () {
+      progressEl.style.transition = 'width ' + dur + 'ms linear';
+      progressEl.style.width = '100%';
+    }, 30);
+  }
+
+  function goTo(idx) {
+    clearTimeout(timer);
+    slides[current].classList.remove('active');
+    current = (idx + TOTAL) % TOTAL;
+    slides[current].classList.add('active');
+    currentEl.textContent = current + 1;
+    updateDots(current);
+    void hero.offsetHeight; // 잔상 방지용 리페인트
+    const dur = durOf(current);
+    runProgress(dur);
+    if (!isPaused) timer = setTimeout(function () { goTo(current + 1); }, dur);
+  }
+
+  window.heroSlide = function (dir) { goTo(current + dir); };
+
+  window.playHeroVideo = function () {
+    const video = document.getElementById('heroVideo');
+    const btn = document.getElementById('videoPlayBtn');
+    if (video) { video.play(); if (btn) btn.classList.add('hidden'); }
+  };
+
+  window.addEventListener('load', function () {
+    const video = document.getElementById('heroVideo');
+    const isMobile = window.innerWidth <= 768;
+    if (video) {
+      video.muted = true;
+      video.volume = 0;
+      video.addEventListener('playing', function () {
+        const btn = document.getElementById('videoPlayBtn');
+        if (btn) btn.classList.add('hidden');
+      });
+      if (!isMobile) {
+        const playAttempt = setInterval(function () {
+          video.play().then(function () { clearInterval(playAttempt); }).catch(function () {});
+        }, 300);
+        setTimeout(function () { clearInterval(playAttempt); }, 2000);
+      }
+      video.addEventListener('error', function () { goTo(1); });
+    }
+    // 첫 슬라이드(영상)는 19초
+    const dur = 19000;
+    setTimeout(function () {
+      progressEl.style.transition = 'width ' + dur + 'ms linear';
+      progressEl.style.width = '100%';
+    }, 100);
+    timer = setTimeout(function () { goTo(1); }, dur);
+  });
+
+  let videoStarted = false;
+  function tryPlayVideo() {
+    if (videoStarted) return;
+    const video = document.getElementById('heroVideo');
+    if (video && current === 0) video.play().then(function () { videoStarted = true; }).catch(function () {});
+  }
+  document.addEventListener('mousemove', tryPlayVideo, { once: true });
+  document.addEventListener('click', tryPlayVideo, { once: true });
+
+  // 사진 설명 상자 위에 마우스가 있을 때만 일시정지
+  document.querySelectorAll('.slide-overlay').forEach(function (ov) {
+    ov.addEventListener('mouseenter', function () {
+      isPaused = true; clearTimeout(timer); progressEl.style.transition = 'none';
+    });
+    ov.addEventListener('mouseleave', function () {
+      isPaused = false;
+      const dur = durOf(current);
+      progressEl.style.transition = 'width ' + dur + 'ms linear';
+      progressEl.style.width = '100%';
+      timer = setTimeout(function () { goTo(current + 1); }, dur);
+    });
+  });
+
+  // 터치 스와이프
+  let touchX = 0;
+  hero.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+  hero.addEventListener('touchend', function (e) {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) heroSlide(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  // 탭 전환 후 복귀 시 어긋남 방지
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      clearTimeout(timer);
+      progressEl.style.transition = 'none';
+    } else {
+      const idx = current;
+      slides.forEach(function (s, i) { s.classList.toggle('active', i === idx); });
+      updateDots(idx);
+      currentEl.textContent = idx + 1;
+      void hero.offsetHeight;
+      const dur = durOf(idx);
+      runProgress(dur);
+      if (!isPaused) timer = setTimeout(function () { goTo(idx + 1); }, dur);
+    }
+  });
+})();
+
+// ─── 견적 위저드 ───
+const WIZ_STEPS = [
+  { key: 'space', q: '인테리어가 필요한 공간은 어디인가요?', type: 'single',
+    options: ['아파트', '빌라/다세대', '단독주택', '오피스텔'] },
+  { key: 'size', q: '인테리어 공간의 평수를 선택해주세요.', type: 'single',
+    options: ['10~20평대', '30평대', '40평대', '50평대 이상'] },
+  { key: 'condition', q: '인테리어 할 집은 어떤 상태인가요?', type: 'single',
+    options: ['거주하며 공사 예정', '현재 공실', '시공 시 공실 예정', '신축 입주', '기타'] },
+  { key: 'reason', q: '인테리어를 고려하시게 된 주요 이유를 선택해주세요.', type: 'single',
+    options: ['집을 구매하여 리모델링 계획 중', '사는 집을 새롭게 바꾸기 위해', '매매나 임대를 위한 리모델링', '기타'] },
+  { key: 'areas', q: '인테리어가 필요한 공간을 모두 골라주세요.', type: 'multi',
+    options: ['키친', '바스', '수납', '마루', '중문', '도어', '창호', '필름', '벽지', '조명', '타일', '전체'] },
+  { key: 'budget', q: '인테리어 예산은 총 얼마를 생각하시나요?', type: 'single',
+    options: ['1천만원 미만', '1~3천만원', '3~5천만원', '5~7천만원', '7천만원~1억원', '1억원 이상', '아직 미정이에요'] },
+  { key: 'timeline', q: '인테리어가 언제 시작되길 희망하시나요?', type: 'single',
+    options: ['1개월 이내', '2개월 이내', '3개월 이내', '3개월 이후', '6개월 이후'] },
+  { key: 'contact', q: '마지막으로, 연락처를 남겨주세요.', type: 'contact' },
+];
+let wizIdx = 0;
+const wizAnswers = { space: '', size: '', condition: '', reason: '', areas: [], budget: '', timeline: '', memo: '' };
+const wizDraft = { name: '', tel: '', building: '', consent: false };
+
+function wizSaveDraft() {
+  const g = id => document.getElementById(id);
+  if (!g('f_name')) return;
+  wizDraft.name = g('f_name').value;
+  wizDraft.tel = g('f_tel').value;
+  wizDraft.building = g('f_building').value;
+  wizDraft.consent = g('f_consent').checked;
+  wizAnswers.memo = g('f_memo').value;
+}
+
+function wizRender() {
+  const step = WIZ_STEPS[wizIdx];
+  document.getElementById('wizProgressBar').style.width = ((wizIdx + 1) / WIZ_STEPS.length * 100) + '%';
+  document.getElementById('wizStepLabel').textContent = `STEP ${wizIdx + 1} / ${WIZ_STEPS.length}`;
+  document.getElementById('wizQuestion').textContent = step.q;
+  document.getElementById('wizHint').textContent = step.type === 'multi' ? '여러 개 선택할 수 있어요' : '';
+  const contentEl = document.getElementById('wizContent');
+  const prevBtn = document.getElementById('wizPrevBtn');
+  const nextBtn = document.getElementById('wizNextBtn');
+  prevBtn.style.display = wizIdx === 0 ? 'none' : 'inline-block';
+  nextBtn.disabled = false;
+
+  if (step.type === 'single' || step.type === 'multi') {
+    const wide = step.options.some(o => o.length > 7);
+    const tight = !wide && step.options.length > 8;
+    const cls = wide ? ' wiz-options-wide' : (tight ? ' wiz-options-tight' : '');
+    contentEl.innerHTML = `<div class="wiz-options${cls}">` +
+      step.options.map((opt, i) => {
+        const selected = step.type === 'single'
+          ? wizAnswers[step.key] === opt
+          : wizAnswers[step.key].includes(opt);
+        return `<button type="button" class="wiz-option${selected ? ' selected' : ''}" aria-pressed="${selected}" data-i="${i}">${escapeHtml(opt)}</button>`;
+      }).join('') + `</div>`;
+    contentEl.querySelectorAll('.wiz-option').forEach(btn => {
+      btn.addEventListener('click', () => wizSelect(step.key, step.options[+btn.dataset.i], step.type));
+    });
+    nextBtn.textContent = '다음';
+    nextBtn.disabled = step.type === 'single' ? !wizAnswers[step.key] : wizAnswers[step.key].length === 0;
+  } else if (step.type === 'contact') {
+    contentEl.innerHTML = `
+      <div class="fg"><label for="f_name">성함 <span class="req">*</span></label><input type="text" id="f_name" placeholder="홍길동" autocomplete="name"></div>
+      <div class="fg"><label for="f_tel">연락처 <span class="req">*</span></label><input type="tel" id="f_tel" placeholder="010-0000-0000" autocomplete="tel"></div>
+      <div class="fg"><label for="f_building">건물명</label><input type="text" id="f_building" placeholder="예) 양우아파트"></div>
+      <div class="fg"><label for="f_memo">요청사항</label><textarea id="f_memo" placeholder="참고하고 싶은 스타일, 특별히 신경 써 주셨으면 하는 부분 등 자유롭게 입력해주세요"></textarea></div>
+      <label class="wiz-consent"><input type="checkbox" id="f_consent"> 개인정보 수집 및 이용에 동의합니다 (상담 목적, 필수)</label>
+    `;
+    document.getElementById('f_name').value = wizDraft.name;
+    document.getElementById('f_tel').value = wizDraft.tel;
+    document.getElementById('f_building').value = wizDraft.building;
+    document.getElementById('f_memo').value = wizAnswers.memo;
+    document.getElementById('f_consent').checked = wizDraft.consent;
+    nextBtn.textContent = '상담 신청하기';
+  }
+}
+
+let wizAutoTimer = null;
+function wizSelect(key, opt, type) {
+  if (type === 'single') {
+    wizAnswers[key] = opt;
+    wizRender();
+    if (wizAutoTimer) clearTimeout(wizAutoTimer);
+    // 단일 선택은 선택 표시를 잠깐 보여준 뒤 자동으로 다음 단계로 이동
+    wizAutoTimer = setTimeout(() => {
+      if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
+    }, 320);
+  } else {
+    const arr = wizAnswers[key];
+    const i = arr.indexOf(opt);
+    if (i > -1) arr.splice(i, 1); else arr.push(opt);
+    wizRender();
+  }
+}
+
+function wizPrev() {
+  if (wizAutoTimer) clearTimeout(wizAutoTimer);
+  if (wizIdx === 0) return;
+  if (WIZ_STEPS[wizIdx].type === 'contact') wizSaveDraft();
+  wizIdx--;
+  wizRender();
+}
+
+function wizNext() {
+  if (wizAutoTimer) clearTimeout(wizAutoTimer);
+  const step = WIZ_STEPS[wizIdx];
+  if (step.type === 'contact') { wizSubmit(); return; }
+  if (wizIdx < WIZ_STEPS.length - 1) { wizIdx++; wizRender(); }
+}
+
+// 시공사례 상세에서 넘어온 경우 요청사항 자동입력
+(function () {
+  const consultCase = sessionStorage.getItem('consultCase');
+  if (consultCase) {
+    wizAnswers.memo = `[시공사례 참고] ${consultCase} 스타일로 상담 요청드립니다.`;
+    sessionStorage.removeItem('consultCase');
+    setTimeout(() => {
+      const contact = document.getElementById('contact');
+      if (contact) contact.scrollIntoView({ behavior: 'smooth' });
+    }, 500);
+  }
+})();
+
+// ─── FORMSPREE 전송 ───
+async function wizSubmit() {
+  const name = document.getElementById('f_name').value.trim();
+  const tel = document.getElementById('f_tel').value.trim();
+  const building = document.getElementById('f_building').value.trim();
+  const memo = document.getElementById('f_memo').value.trim();
+  const consent = document.getElementById('f_consent').checked;
+  if (!name) { alert('성함을 입력해주세요.'); return; }
+  if (!tel) { alert('연락처를 입력해주세요.'); return; }
+  if (!consent) { alert('개인정보 수집 및 이용에 동의해주세요.'); return; }
+
+  const btn = document.getElementById('wizNextBtn');
+  btn.textContent = '전송 중...';
+  btn.disabled = true;
+
+  const data = {
+    성함: name,
+    연락처: tel,
+    건물명: building,
+    공간유형: wizAnswers.space,
+    평수: wizAnswers.size,
+    집상태: wizAnswers.condition,
+    고려이유: wizAnswers.reason,
+    필요한공간: wizAnswers.areas.join(', '),
+    예산범위: wizAnswers.budget,
+    희망시작시기: wizAnswers.timeline,
+    요청사항: memo,
+  };
+
+  try {
+    const res = await fetch('https://formspree.io/f/xjgzllpv', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      document.getElementById('wizardBody').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'flex';
+    } else {
+      alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      btn.textContent = '상담 신청하기';
+      btn.disabled = false;
+    }
+  } catch (e) {
+    alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    btn.textContent = '상담 신청하기';
+    btn.disabled = false;
+  }
+}
+
+wizRender();
+
+// ─── 전화번호: 모바일은 바로 전화, PC는 번호 복사 ───
+(function () {
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+  if (isTouchDevice) return;
+  document.querySelectorAll('.tel-link').forEach(el => {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      const num = this.getAttribute('href').replace('tel:', '');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(num).then(() => alert(`전화번호가 복사되었습니다: ${num}`)).catch(() => {});
+      }
+    });
+  });
+})();
+
+// ─── 카카오톡 버튼 ───
+document.getElementById('kakaoBtn').addEventListener('click', function () {
+  if (KAKAO_CHANNEL_URL) { window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener'); return; }
+  const done = () => alert(`카카오톡 ID '${KAKAO_ID}'가 복사되었어요.\n카카오톡 친구 추가에서 ID로 검색해 주세요.`);
+  if (navigator.clipboard) navigator.clipboard.writeText(KAKAO_ID).then(done).catch(() => alert(`카카오톡 ID: ${KAKAO_ID}`));
+  else alert(`카카오톡 ID: ${KAKAO_ID}`);
+});
+
+// ─── 네이버 지도 (NAVER_MAP_KEY 가 있을 때만) ───
+(function () {
+  if (!NAVER_MAP_KEY) return;
+  const box = document.getElementById('naverMap');
+  const s = document.createElement('script');
+  s.src = 'https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=' + encodeURIComponent(NAVER_MAP_KEY) + '&submodules=geocoder';
+  s.onload = function () {
+    if (!window.naver || !naver.maps) return;
+    const draw = function (pos) {
+      box.innerHTML = '';
+      const map = new naver.maps.Map(box, { center: pos, zoom: 17 });
+      new naver.maps.Marker({ position: pos, map: map, title: '라인 인테리어' });
+    };
+    if (naver.maps.Service && naver.maps.Service.geocode) {
+      naver.maps.Service.geocode({ query: MAP_ADDRESS }, function (status, res) {
+        const a = res && res.v2 && res.v2.addresses && res.v2.addresses[0];
+        if (status === naver.maps.Service.Status.OK && a) draw(new naver.maps.LatLng(+a.y, +a.x));
+        // 주소 찾기에 실패하면 기존 지도를 그대로 둡니다
+      });
+    }
+  };
+  document.head.appendChild(s);
+})();
+
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ─── INIT ───
+async function init() {
+  renderCases();
+  try {
+    const sheetData = await loadFromSheet();
+    if (sheetData && sheetData.length > 0) CASES = sortCases(sheetData);
+    else casesFailed = true;
+  } catch (e) {
+    console.warn('init 오류:', e);
+    casesFailed = true;
+  }
+  renderCases();
+}
+init();
+</script>
+<!-- ─── 채널톡 ─── -->
+<script>
+(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(s,x);}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+ChannelIO('boot', {
+  pluginKey: '32389073-c30f-4c5d-ba11-ffc74b5c60cc'
+});
+</script>
+
+</body>
+</html>
