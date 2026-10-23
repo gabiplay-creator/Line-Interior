@@ -171,6 +171,8 @@ button { font: inherit; color: inherit; }
   .trio-set, .trio-set.active { display: contents; visibility: visible; opacity: 1; }
   .trio-item { flex: 0 0 78%; scroll-snap-align: center; }
   .single .trio-item { flex-basis: 92%; }
+  .trio-item.m-hide { display: none; }   /* 휴대폰에서는 묶음마다 대표 한 장만 */
+  .trio-set:not(.single) .trio-item { flex-basis: 78%; }
   .trio-caption, .trio-dots { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .trio-set, .trio-set.active { transition: none; } }
@@ -412,24 +414,24 @@ button { font: inherit; color: inherit; }
 <section class="hero">
   <div class="hero-stage">
   <div class="hero-trio" id="heroTrio">
-    <div class="trio-set single active">
+    <div class="trio-set single active" data-video>
+      <figure class="trio-item trio-video"><video src="video/0803.mp4" muted loop playsinline preload="auto" aria-label="라인 인테리어 시공 현장 영상"></video></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
+        <div class="slide-title">공간이 말하는 당신만의 이야기</div>
+      </div>
+    </div>
+    <div class="trio-set single">
       <figure class="trio-item"><img src="images/hero/hero_02.jpg" alt="통창 뷰가 있는 거실" loading="eager"></figure>
       <div class="trio-caption">
         <div class="slide-tag">LIVING ROOM</div>
         <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
       </div>
     </div>
-    <div class="trio-set single" data-video>
-      <figure class="trio-item trio-video"><video src="video/0803.mp4" muted loop playsinline preload="metadata" aria-label="라인 인테리어 시공 현장 영상"></video></figure>
-      <div class="trio-caption">
-        <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
-        <div class="slide-title">공간이 말하는 당신만의 이야기</div>
-      </div>
-    </div>
     <div class="trio-set">
       <figure class="trio-item"><img src="images/hero/door_03.jpg" alt="원목 간살 슬라이딩 중문 너머로 보이는 거실" loading="eager"></figure>
-      <figure class="trio-item"><img src="images/hero/door_01.jpg" alt="밝은 그레이 붙박이 신발장과 원목 벤치가 있는 현관" loading="eager"></figure>
-      <figure class="trio-item"><img src="images/hero/door_02.jpg" alt="원목 벤치와 간살 중문이 함께 보이는 현관" loading="eager"></figure>
+      <figure class="trio-item m-hide"><img src="images/hero/door_01.jpg" alt="밝은 그레이 붙박이 신발장과 원목 벤치가 있는 현관" loading="eager"></figure>
+      <figure class="trio-item m-hide"><img src="images/hero/door_02.jpg" alt="원목 벤치와 간살 중문이 함께 보이는 현관" loading="eager"></figure>
       <div class="trio-caption">
         <div class="slide-tag">INNER DOOR</div>
         <div class="slide-title">간살 중문으로 완성한 현관</div>
@@ -443,8 +445,8 @@ button { font: inherit; color: inherit; }
       </div>
     </div>
     <div class="trio-set">
-      <figure class="trio-item"><img src="images/hero/dress_01.jpg" alt="안방에 세운 가벽 뒤로 조명 거울 화장대가 보이는 모습" loading="lazy" style="object-position: 22% center;"></figure>
-      <figure class="trio-item"><img src="images/hero/dress_02.jpg" alt="가벽 안쪽의 화이트 시스템 드레스룸" loading="lazy"></figure>
+      <figure class="trio-item m-hide"><img src="images/hero/dress_01.jpg" alt="안방에 세운 가벽 뒤로 조명 거울 화장대가 보이는 모습" loading="lazy" style="object-position: 22% center;"></figure>
+      <figure class="trio-item m-hide"><img src="images/hero/dress_02.jpg" alt="가벽 안쪽의 화이트 시스템 드레스룸" loading="lazy"></figure>
       <figure class="trio-item"><img src="images/hero/dress_03.jpg" alt="드레스룸 안에서 문 쪽을 바라본 모습" loading="lazy"></figure>
       <div class="trio-caption">
         <div class="slide-tag">DRESS ROOM</div>
@@ -459,9 +461,9 @@ button { font: inherit; color: inherit; }
       </div>
     </div>
     <div class="trio-set">
-      <figure class="trio-item"><img src="images/hero/bath_01.jpg" alt="윗부분에 작은 유리창을 낸 화이트 욕실 문" loading="lazy"></figure>
+      <figure class="trio-item m-hide"><img src="images/hero/bath_01.jpg" alt="윗부분에 작은 유리창을 낸 화이트 욕실 문" loading="lazy"></figure>
       <figure class="trio-item"><img src="images/hero/bath_02.jpg" alt="벽걸이 세면대와 조명 수납장, 거울에 비친 작은 창이 있는 문" loading="lazy"></figure>
-      <figure class="trio-item"><img src="images/hero/bath_03.jpg" alt="베이지 타일과 물결 유리 파티션의 샤워 공간" loading="lazy"></figure>
+      <figure class="trio-item m-hide"><img src="images/hero/bath_03.jpg" alt="베이지 타일과 물결 유리 파티션의 샤워 공간" loading="lazy"></figure>
       <div class="trio-caption">
         <div class="slide-tag">BATHROOM</div>
         <div class="slide-title">문에 작은 창을 낸 욕실</div>
@@ -482,8 +484,8 @@ button { font: inherit; color: inherit; }
       </div>
     </div>
     <div class="trio-dots" role="group" aria-label="대표 사진 선택">
-      <button type="button" class="trio-dot active" aria-label="거실 사진" aria-pressed="true"></button>
-      <button type="button" class="trio-dot" aria-label="시공 영상" aria-pressed="false"></button>
+      <button type="button" class="trio-dot active" aria-label="시공 영상" aria-pressed="true"></button>
+      <button type="button" class="trio-dot" aria-label="거실 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="간살 중문 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="주방 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="드레스룸 사진" aria-pressed="false"></button>
