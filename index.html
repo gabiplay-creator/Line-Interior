@@ -113,7 +113,7 @@ nav {
   display: block;
 }
 /* 세로사진 3장을 나란히 보여주는 갤러리 슬라이드 */
-.slide-gallery { position: absolute; inset: 0; display: flex; }
+.slide-gallery { position: absolute; inset: 0; display: flex; gap: 6px; background: var(--black); }
 .slide-gallery-item { position: relative; flex: 1; overflow: hidden; }
 .slide-gallery-item img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 @media (max-width: 768px) {
@@ -887,6 +887,19 @@ footer {
     </div>
   </div>
 
+  <!-- 슬라이드 2: 안방 가벽 드레스룸 갤러리 (세로/가로 사진 3장) -->
+  <div class="slide" data-type="gallery">
+    <div class="slide-gallery">
+      <div class="slide-gallery-item slide-gallery-desktop-only"><img src="images/misc/dressroom_1.jpg" alt="가벽 드레스룸" loading="lazy"></div>
+      <div class="slide-gallery-item"><img src="images/misc/dressroom_2.jpg" alt="가벽 드레스룸" loading="lazy"></div>
+      <div class="slide-gallery-item slide-gallery-desktop-only"><img src="images/misc/dressroom_3.jpg" alt="가벽 드레스룸" loading="lazy"></div>
+    </div>
+    <div class="slide-overlay">
+      <div class="slide-tag">DRESS ROOM</div>
+      <div class="slide-title">가벽 하나로 완성한<br><em>안방 속 드레스룸</em></div>
+    </div>
+  </div>
+
   <!-- 슬라이드 2: hero_01.jpg = 주방(ㄱ자형, 화이트톤) -->
   <div class="slide" data-type="image">
     <img src="images/hero/hero_01.jpg" alt="주방 인테리어" loading="eager">
@@ -911,24 +924,6 @@ footer {
     <div class="slide-overlay">
       <div class="slide-tag">BEDROOM</div>
       <div class="slide-title">넉넉한 수납이 있는<br><em>편안한 침실</em></div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 4: hero_04.jpg = 주방(아일랜드+링펜던트조명) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_04.jpg" alt="주방 인테리어" loading="lazy">
-    <div class="slide-overlay">
-      <div class="slide-tag">KITCHEN</div>
-      <div class="slide-title">감성 조명이<br><em>완성한 주방</em></div>
-    </div>
-  </div>
-
-  <!-- 슬라이드 6: hero_06.jpg = 거실 TV월(실링팬+거울슬라이딩도어) -->
-  <div class="slide" data-type="image">
-    <img src="images/hero/hero_06.jpg" alt="거실 인테리어" loading="lazy">
-    <div class="slide-overlay">
-      <div class="slide-tag">MODERN MINIMAL</div>
-      <div class="slide-title">깔끔한 라인의<br><em>모던 거실</em></div>
     </div>
   </div>
 
