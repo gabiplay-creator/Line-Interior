@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>시공사례 — LINE INTERIOR</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27 fill=%27none%27 stroke-width=%273%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpolyline points=%273,14 16,3.5 29,14%27 stroke=%27%237B2B2B%27/%3E%3Cpath d=%27M8 12.5V28.5H24%27 stroke=%27%233A3431%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet">
@@ -34,7 +35,7 @@ nav {
   font-weight: 400; letter-spacing: 0.18em; color: var(--black);
   text-decoration: none;
 }
-.nav-logo span { color: var(--gold); }
+
 .nav-back {
   display: flex; align-items: center; gap: 8px;
   font-size: 13px; color: var(--gray); text-decoration: none;
@@ -239,7 +240,7 @@ nav {
 /* ─── 새 디자인 덮어쓰기 ─── */
 nav { background: rgba(246,239,234,0.94); border-bottom: 1px solid var(--border); }
 .nav-logo { font-size: 15px; font-weight: 600; letter-spacing: 0.04em; }
-.nav-logo span { display: none; }
+
 .nav-back { font-size: 14px; }
 .nav-consult { background: var(--gold); color: #fff; border-radius: 999px; padding: 0 22px; min-height: 44px; font-size: 14px; font-weight: 500; letter-spacing: 0; }
 .nav-consult:hover { background: var(--gold-light); }
@@ -259,7 +260,7 @@ nav { background: rgba(246,239,234,0.94); border-bottom: 1px solid var(--border)
 
 <!-- NAV -->
 <nav>
-  <a href="index.html" class="nav-logo">LINE<span>.</span> INTERIOR</a>
+  <a href="index.html" class="nav-logo" aria-label="라인 인테리어 홈으로"><svg class="logo-mark" width="30" height="30" viewBox="0 0 32 32" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline class="roof" points="3,14 16,3.5 29,14"/><path d="M8 12.5V28.5H24" stroke="currentColor"/></svg><span class="logo-swap" aria-hidden="true"><span class="logo-en">LINE INTERIOR</span><span class="logo-ko">라인인테리어</span></span></a>
   <a href="index.html#cases" class="nav-back">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     시공사례 목록
@@ -298,7 +299,15 @@ nav { background: rgba(246,239,234,0.94); border-bottom: 1px solid var(--border)
   <div class="zoom-counter" id="zoomCounter"></div>
 </div>
 
-<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+<style>@keyframes spin { to { transform: rotate(360deg); } }.nav-logo { display: inline-flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif; }
+.logo-mark .roof { stroke: var(--gold); }
+.logo-swap { display: grid; align-items: center; }
+.logo-swap > span { grid-area: 1 / 1; white-space: nowrap; transition: opacity .35s ease, transform .35s ease; }
+.logo-en { font-size: 15px; font-weight: 600; letter-spacing: 0.08em; }
+.logo-ko { font-family: var(--font-body); font-size: 16px; font-weight: 700; letter-spacing: 0.02em; opacity: 0; transform: translateY(6px); }
+.nav-logo:hover .logo-en, .nav-logo:focus-visible .logo-en { opacity: 0; transform: translateY(-6px); }
+.nav-logo:hover .logo-ko, .nav-logo:focus-visible .logo-ko { opacity: 1; transform: none; }
+</style>
 
 <script>
 // ─── 구글 시트 CSV URL ───

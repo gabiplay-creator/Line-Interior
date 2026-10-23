@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>라인 인테리어 — LINE INTERIOR</title>
 <meta name="description" content="머물수록 행복해지는 공간, 라인 인테리어. 경기도 부천시 소사로126번길 7 · 032-246-3155">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27 fill=%27none%27 stroke-width=%273%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpolyline points=%273,14 16,3.5 29,14%27 stroke=%27%237B2B2B%27/%3E%3Cpath d=%27M8 12.5V28.5H24%27 stroke=%27%233A3431%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet">
@@ -26,8 +27,8 @@
   --field-bg: #FBF8F6;
   --font-en: 'Inter', 'Noto Sans KR', sans-serif;
   --font-ko: 'Noto Sans KR', 'Inter', sans-serif;
-  --wrap: 1280px;
-  --gutter: 32px;
+  --wrap: 1640px;   /* 화면을 더 넓게 씀 */
+  --gutter: 40px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -67,27 +68,35 @@ button { font: inherit; color: inherit; }
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 .nav-inner {
-  max-width: var(--wrap); margin: 0 auto; padding: 16px var(--gutter);
+  padding: 16px 24px;   /* 대표 사진 폭에 맞춤 */
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
-.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.logo-mark {
-  width: 34px; height: 34px; border: 1.5px solid var(--ink);
-  border-radius: 17px 17px 4px 4px;
-  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
-  font-family: var(--font-en); font-size: 13px; font-weight: 800;
+/* 로고: 지붕 + L(왼쪽 벽과 바닥) 심볼, 마우스를 올리면 LINE INTERIOR → 라인인테리어 */
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.logo-mark { width: 34px; height: 34px; flex: none; }
+.logo-mark .roof { stroke: var(--point); transition: transform .35s ease; transform-origin: 16px 14px; }
+.logo:hover .logo-mark .roof, .logo:focus-visible .logo-mark .roof { transform: translateY(-1.5px); }
+.logo-swap { display: grid; align-items: center; }
+.logo-swap > span { grid-area: 1 / 1; white-space: nowrap; transition: opacity .35s ease, transform .35s ease; }
+.logo-en { font-family: var(--font-en); font-size: 15px; font-weight: 600; letter-spacing: 0.08em; }
+.logo-ko { font-family: var(--font-ko); font-size: 16px; font-weight: 700; letter-spacing: 0.02em; opacity: 0; transform: translateY(6px); }
+.logo:hover .logo-en, .logo:focus-visible .logo-en, .logo.show-ko .logo-en { opacity: 0; transform: translateY(-6px); }
+.logo:hover .logo-ko, .logo:focus-visible .logo-ko, .logo.show-ko .logo-ko { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .logo-swap > span, .logo-mark .roof { transition: none; }
 }
-.logo-text { font-family: var(--font-en); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; }
 .nav-links { display: flex; align-items: center; gap: 36px; font-size: 15px; font-weight: 500; }
 .nav-links a { text-decoration: none; padding: 8px 0; }
 .nav-links a:hover { color: var(--point); }
 .nav-blog { display: inline-flex; align-items: center; gap: 6px; }
+.nav-links a.nav-cta { padding: 0 22px; }
 .nav-cta { min-height: 44px; padding: 0 22px; font-size: 15px; white-space: nowrap; }
 
 /* ─── HERO ─── */
 .hero { padding-top: 8px; }
 .hero-frame {
-  position: relative; height: clamp(320px, 46vw, 620px);
+  margin: 0 16px;   /* 대표 사진은 화면 양옆 끝까지 넓게 */
+  position: relative; height: clamp(320px, 44vw, 700px);
   border-radius: 6px; overflow: hidden; background: var(--surface);
 }
 .slide { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; pointer-events: none; }
@@ -135,7 +144,7 @@ button { font: inherit; color: inherit; }
 .hero-title {
   margin-top: 28px; text-align: center; white-space: nowrap;
   font-family: var(--font-en); font-weight: 800;
-  font-size: clamp(48px, 12.4vw, 182px); line-height: 0.9;
+  font-size: clamp(44px, calc((min(100vw, var(--wrap)) - 2 * var(--gutter)) / 7.6), 210px); line-height: 0.9;
   letter-spacing: -0.035em; color: var(--tone);
 }
 .hero-row {
@@ -148,13 +157,19 @@ button { font: inherit; color: inherit; }
 /* ─── WHY ─── */
 .why {
   padding-top: 140px;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
-  gap: 64px 96px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 48px 80px; align-items: stretch;   /* 사진 높이 = 오른쪽 글 높이 */
 }
 .why-photo {
-  aspect-ratio: 1 / 1; border-radius: 4px; background: var(--surface) center / cover no-repeat;
+  min-height: 420px; border-radius: 4px;
+  background: var(--surface) 92% center / cover no-repeat;   /* 두 분이 모두 보이도록 오른쪽 기준 */
 }
-.why-text { padding-top: 12px; }
+.why-text { padding: 0; }
+.why-text .eyebrow { line-height: 1; }
+@media (max-width: 1000px) {
+  .why { grid-template-columns: minmax(0, 1fr); }
+  .why-photo { min-height: 0; aspect-ratio: 16 / 10; background-position: 88% center; }
+}
 .why-list { margin-top: 56px; display: flex; flex-direction: column; gap: 44px; }
 .why-num { font-family: var(--font-en); font-size: 15px; font-weight: 600; color: var(--point); margin-bottom: 12px; }
 .why-item h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
@@ -328,8 +343,8 @@ button { font: inherit; color: inherit; }
 <header class="nav">
   <div class="nav-inner">
     <a href="#top" class="logo" aria-label="라인 인테리어 처음으로">
-      <span class="logo-mark" aria-hidden="true">L</span>
-      <span class="logo-text">LINE INTERIOR</span>
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline class="roof" points="3,14 16,3.5 29,14"/><path d="M8 12.5V28.5H24" stroke="currentColor"/></svg>
+      <span class="logo-swap" aria-hidden="true"><span class="logo-en">LINE INTERIOR</span><span class="logo-ko">라인인테리어</span></span>
     </a>
     <nav class="nav-links" aria-label="주 메뉴">
       <a href="#why">왜 라인인가</a>
@@ -347,7 +362,7 @@ button { font: inherit; color: inherit; }
 <main id="top">
 
 <!-- ─── HERO ─── -->
-<section class="hero wrap">
+<section class="hero">
   <div class="hero-frame" id="heroSlider">
 
     <!-- 슬라이드 0: 영상 -->
@@ -422,6 +437,7 @@ button { font: inherit; color: inherit; }
     <div class="slider-progress" id="sliderProgress"></div>
   </div>
 
+  <div class="wrap">
   <h1 class="hero-title">LINE INTERIOR</h1>
   <div class="hero-row">
     <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 그려드릴게요.</p>
@@ -429,6 +445,7 @@ button { font: inherit; color: inherit; }
       <a href="#contact" class="btn btn-point">무료 견적 받기</a>
       <a href="#cases" class="btn btn-line">시공사례 보기</a>
     </div>
+  </div>
   </div>
 </section>
 
@@ -535,7 +552,7 @@ button { font: inherit; color: inherit; }
 <footer class="footer wrap">
   <div class="footer-inner">
     <div class="footer-info">
-      <span class="footer-logo">LINE INTERIOR</span>
+      <span class="footer-logo">LINE INTERIOR · 라인인테리어</span>
       <span>상호 라인 인테리어 · 대표 박지희 · 사업자번호 296-24-02323</span>
       <span>경기도 부천시 소사로126번길 7 · 032-246-3155 · dongjun4944@naver.com</span>
     </div>
@@ -1067,6 +1084,14 @@ document.getElementById('kakaoBtn').addEventListener('click', function () {
     }
   };
   document.head.appendChild(s);
+})();
+
+// ─── 로고: 터치 기기(마우스 없음)에서는 영문/한글이 천천히 번갈아 보임 ───
+(function () {
+  const logo = document.querySelector('.nav .logo');
+  if (!logo || window.matchMedia('(hover: hover)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { logo.classList.add('show-ko'); return; }
+  setInterval(() => logo.classList.toggle('show-ko'), 3500);
 })();
 
 // ─── SCROLL REVEAL ───
