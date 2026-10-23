@@ -21,6 +21,7 @@
   --bg: #f5f2ed;
   --surface: #ede9e2;
   --border: #d8d3ca;
+  --black-elevated: #1c1a16;
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Noto Sans KR', sans-serif;
 }
@@ -528,8 +529,19 @@ nav {
   z-index: 1101;
 }
 
-/* ─── CONTACT ─── */
-#contact { background: var(--surface); }
+/* ─── CONTACT (왜 라인인테리어인가 섹션과 톤 통일: 다크 + 골드) ─── */
+#contact { background: var(--black); color: var(--white); }
+#contact .section-tag { color: var(--gold); }
+#contact .section-title { color: var(--white); }
+#contact .section-title em { color: var(--gold); }
+#contact .section-desc { color: var(--gray-light); }
+#contact .contact-detail { border-bottom-color: rgba(255,255,255,0.1); }
+#contact .contact-icon { border-color: rgba(255,255,255,0.22); color: var(--gold); }
+#contact .contact-detail-value { color: var(--white); }
+#contact .contact-detail-sub { color: var(--gray-light); }
+#contact #naverMap { border-color: rgba(255,255,255,0.15) !important; }
+#contact .call-btn { background: var(--gold); color: var(--black); }
+#contact .call-btn:hover { background: var(--gold-light); }
 .contact-grid {
   display: grid; grid-template-columns: 1fr 1.4fr;
   gap: 80px; align-items: stretch;
@@ -576,45 +588,51 @@ nav {
 .kakao-row:hover { filter: brightness(0.93); }
 .kakao-row span { font-size: 13px; font-weight: 500; color: #3A1D1D; letter-spacing: 0.04em; }
 
-/* Form */
+/* Form (상담 신청하기 버튼과 같은 다크 톤 + 왜 라인인테리어인가 섹션과 같은 폰트 무드) */
 .form-wrap {
-  background: var(--white);
-  padding: 40px; border: 0.5px solid var(--border);
+  background: var(--black);
+  color: var(--white);
+  padding: 40px;
+  border: 0.5px solid rgba(212,184,138,0.28);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.4);
 }
 .form-wrap h3 {
   font-family: var(--font-display);
-  font-size: 24px; font-weight: 300;
-  margin-bottom: 6px; letter-spacing: 0.04em;
+  font-size: 26px; font-weight: 300; color: var(--white);
+  margin-bottom: 14px; letter-spacing: 0.04em;
+  padding-left: 16px; border-left: 2px solid var(--gold);
 }
-.form-sub { font-size: 12px; color: var(--gray); margin-bottom: 28px; letter-spacing: 0.05em; }
+.form-sub { font-size: 12px; color: var(--gray-light); margin-bottom: 28px; letter-spacing: 0.05em; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .fg:last-child { margin-bottom: 0; }
-.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gray); }
+.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gold-light); }
 .fg input, .fg select, .fg textarea {
   font-family: var(--font-body); font-size: 14px;
-  background: var(--bg); border: 0.5px solid var(--border);
-  padding: 11px 14px; color: var(--black);
+  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.18);
+  padding: 11px 14px; color: var(--white);
   outline: none; transition: border-color .2s;
   width: 100%;
 }
+.fg input::placeholder, .fg textarea::placeholder { color: var(--gray); }
+.fg select option { color: var(--black); }
 .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--gold); }
 .fg textarea { min-height: 90px; resize: vertical; }
 .budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .budget-pill {
   font-size: 12px; padding: 6px 16px;
-  background: var(--bg); border: 0.5px solid var(--border);
-  color: var(--gray); cursor: pointer; letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.18);
+  color: var(--gray-light); cursor: pointer; letter-spacing: 0.04em;
   transition: all .2s; font-family: var(--font-body);
 }
-.budget-pill.active { background: var(--black); color: var(--white); border-color: var(--black); }
+.budget-pill.active { background: var(--gold); color: var(--black); border-color: var(--gold); }
 .form-submit {
-  width: 100%; background: var(--black); color: var(--white);
+  width: 100%; background: var(--gold); color: var(--black);
   border: none; padding: 15px; margin-top: 20px;
   font-family: var(--font-body); font-size: 13px;
   letter-spacing: 0.1em; cursor: pointer; transition: background .25s;
 }
-.form-submit:hover { background: var(--gold); }
+.form-submit:hover { background: var(--gold-light); }
 .form-notice {
   font-size: 11px; color: var(--gray-light);
   text-align: center; margin-top: 12px;
@@ -622,40 +640,40 @@ nav {
 }
 
 /* ─── 단계별 견적 위저드 ─── */
-.wiz-progress { height: 3px; background: var(--border); margin-bottom: 22px; position: relative; }
+.wiz-progress { height: 3px; background: rgba(255,255,255,0.12); margin-bottom: 22px; position: relative; }
 .wiz-progress-bar { height: 100%; background: var(--gold); transition: width .35s ease; }
 .wiz-step-label { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 10px; font-weight: 600; }
 .wiz-question {
-  font-family: var(--font-display); font-size: 21px; font-weight: 300;
+  font-family: var(--font-display); font-size: 21px; font-weight: 300; color: var(--white);
   line-height: 1.45; margin-bottom: 22px;
 }
 .wiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
 .wiz-options.wiz-options-wide { grid-template-columns: 1fr; }
 .wiz-option {
-  padding: 15px 14px; text-align: center; background: var(--bg);
-  border: 0.5px solid var(--border); font-size: 13.5px; color: var(--black);
+  padding: 15px 14px; text-align: center; background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.18); font-size: 13.5px; color: var(--white);
   cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
 }
 .wiz-option:hover { border-color: var(--gold); }
-.wiz-option.selected { background: var(--black); color: var(--white); border-color: var(--black); }
+.wiz-option.selected { background: var(--gold); color: var(--black); border-color: var(--gold); }
 .wiz-nav { display: flex; gap: 10px; margin-top: 20px; }
 .wiz-btn-prev {
-  flex: 0 0 auto; padding: 14px 22px; background: var(--bg);
-  border: 0.5px solid var(--border); color: var(--gray);
+  flex: 0 0 auto; padding: 14px 22px; background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.18); color: var(--gray-light);
   font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; cursor: pointer;
   transition: border-color .2s;
 }
 .wiz-btn-prev:hover { border-color: var(--gold); }
 .wiz-btn-next {
-  flex: 1; background: var(--black); color: var(--white);
+  flex: 1; background: var(--gold); color: var(--black);
   border: none; padding: 14px; font-family: var(--font-body);
   font-size: 13px; letter-spacing: 0.08em; cursor: pointer; transition: background .25s;
 }
-.wiz-btn-next:hover:not(:disabled) { background: var(--gold); }
-.wiz-btn-next:disabled { background: var(--border); color: var(--gray-light); cursor: not-allowed; }
+.wiz-btn-next:hover:not(:disabled) { background: var(--gold-light); }
+.wiz-btn-next:disabled { background: rgba(255,255,255,0.1); color: var(--gray); cursor: not-allowed; }
 .wiz-consent {
   display: flex; align-items: flex-start; gap: 8px; font-size: 12px;
-  color: var(--gray); margin-top: 6px; line-height: 1.5;
+  color: var(--gray-light); margin-top: 6px; line-height: 1.5;
 }
 .wiz-consent input { width: auto; margin-top: 2px; }
 
@@ -1048,8 +1066,8 @@ footer {
       <!-- 전송 완료 메시지 -->
       <div id="formSuccess" style="display:none;text-align:center;padding:40px 20px;">
         <div style="font-size:32px;margin-bottom:16px;">✅</div>
-        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;">문의가 접수되었습니다</div>
-        <div style="font-size:13px;color:var(--gray);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
+        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;color:var(--white);">문의가 접수되었습니다</div>
+        <div style="font-size:13px;color:var(--gray-light);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
       </div>
       <!-- 단계별 위저드 -->
       <div id="wizardBody">
