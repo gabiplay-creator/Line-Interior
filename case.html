@@ -28,11 +28,32 @@ nav {
   border-bottom: 0.5px solid var(--border);
 }
 .nav-logo {
+  position: relative;
+  display: inline-block;
+  padding-top: 14px;
   font-family: var(--font-display); font-size: 20px;
   font-weight: 400; letter-spacing: 0.18em; color: var(--black);
   text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
 }
-.nav-logo span { color: var(--gold); }
+.nav-logo-roof {
+  position: absolute;
+  top: -1px; left: 1px;
+  width: 42px; height: 14px;
+  color: var(--gold);
+  line-height: 0;
+}
+.nav-logo-text-wrap { display: inline-grid; vertical-align: top; }
+.nav-logo-text-en, .nav-logo-text-kr {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.nav-logo-text-en { opacity: 1; }
+.nav-logo:hover .nav-logo-text-en { opacity: 0; }
+.nav-logo:hover .nav-logo-text-kr { opacity: 1; }
 .nav-back {
   display: flex; align-items: center; gap: 8px;
   font-size: 13px; color: var(--gray); text-decoration: none;
@@ -239,12 +260,17 @@ nav {
 
 <!-- NAV -->
 <nav>
-  <a href="index.html" class="nav-logo">LINE<span>.</span> INTERIOR</a>
+  <a href="index.html" class="nav-logo" aria-label="라인 인테리어 홈으로">
+    <svg class="nav-logo-roof" viewBox="0 0 100 30" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 25 L36 4 L96 27"/>
+    </svg>
+    <span class="nav-logo-text-wrap"><span class="nav-logo-text-en">LINE INTERIOR</span><span class="nav-logo-text-kr">라인 인테리어</span></span>
+  </a>
   <a href="index.html#cases" class="nav-back">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     시공사례 목록
   </a>
-  <a href="index.html#contact" class="nav-consult">무료 견적 문의</a>
+  <a href="index.html#contact" class="nav-consult">견적문의</a>
 </nav>
 
 <div class="case-layout">
