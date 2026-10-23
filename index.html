@@ -102,8 +102,6 @@ button { font: inherit; color: inherit; }
 .slide { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; pointer-events: none; }
 .slide.active { opacity: 1; pointer-events: auto; }
 .slide img, .slide video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* 영상 위아래에 들어 있는 검은 띠를 잘라내기 위해 살짝 확대 */
-.slide video { transform: scale(1.28); }
 .slide-overlay {
   position: absolute; left: 24px; bottom: 24px;
   background: rgba(255, 255, 255, 0.9); border-radius: 4px;
@@ -114,13 +112,6 @@ button { font: inherit; color: inherit; }
   letter-spacing: 0.14em; color: var(--point); margin-bottom: 4px;
 }
 .slide-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
-.video-play-btn {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 64px; height: 64px; border-radius: 50%; border: 0;
-  background: rgba(58, 52, 49, 0.55); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.video-play-btn.hidden { display: none; }
 .slider-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
   width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer;
@@ -141,6 +132,43 @@ button { font: inherit; color: inherit; }
   position: absolute; left: 0; bottom: 0; z-index: 3;
   height: 3px; width: 0; background: var(--point);
 }
+/* ─── 대표 사진: 세로 사진 3장 묶음, 묶음끼리 번갈아 보여줌 ─── */
+.hero-trio { position: relative; margin: 0 16px; height: clamp(380px, 48vw, 780px); }
+.trio-set {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+  opacity: 0; visibility: hidden; transition: opacity 1s ease, visibility 0s linear 1s;
+}
+.trio-set.active { opacity: 1; visibility: visible; transition: opacity 1s ease; }
+.trio-item { margin: 0; border-radius: 6px; overflow: hidden; background: var(--surface); }
+.trio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
+.trio-item:hover img { transform: scale(1.02); }
+.trio-caption {
+  position: absolute; left: 24px; bottom: 24px;
+  background: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 14px 20px;
+}
+.trio-dots { position: absolute; right: 20px; bottom: 24px; display: flex; gap: 6px; z-index: 2; }
+.trio-dot {
+  width: 44px; height: 44px; border: 0; padding: 0; background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.trio-dot::before {
+  content: ''; width: 10px; height: 10px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75); box-shadow: 0 0 0 1px rgba(58, 52, 49, 0.25); transition: width .3s, background .3s;
+}
+.trio-dot.active::before { width: 28px; background: var(--point); box-shadow: none; }
+@media (max-width: 860px) {
+  /* 휴대폰: 6장을 한 줄로 이어서 옆으로 밀어 보기 (자동 전환 없음) */
+  .hero-trio {
+    display: flex; gap: 8px; height: 480px; margin: 0;
+    padding: 0 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  }
+  .hero-trio::-webkit-scrollbar { display: none; }
+  .trio-set, .trio-set.active { display: contents; visibility: visible; opacity: 1; }
+  .trio-item { flex: 0 0 78%; scroll-snap-align: center; }
+  .trio-caption, .trio-dots { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .trio-set, .trio-set.active { transition: none; } }
 .hero-title {
   margin-top: 28px; text-align: center; white-space: nowrap;
   font-family: var(--font-en); font-weight: 800;
@@ -363,78 +391,39 @@ button { font: inherit; color: inherit; }
 
 <!-- ─── HERO ─── -->
 <section class="hero">
-  <div class="hero-frame" id="heroSlider">
-
-    <!-- 슬라이드 0: 영상 -->
-    <div class="slide active" data-type="video">
-      <video id="heroVideo" src="video/0803.mp4" muted autoplay loop playsinline preload="auto"
-        webkit-playsinline x5-playsinline x5-video-player-type="h5"></video>
-      <button type="button" class="video-play-btn" id="videoPlayBtn" onclick="playHeroVideo()" aria-label="영상 재생">
-        <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,3 20,12 6,21"/></svg>
-      </button>
-      <div class="slide-overlay">
-        <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
-        <div class="slide-title">공간이 말하는 당신만의 이야기</div>
+  <div class="hero-trio" id="heroTrio">
+    <div class="trio-set active">
+      <figure class="trio-item"><img src="images/hero/door_01.jpg" alt="밝은 그레이 붙박이 신발장과 원목 벤치가 있는 현관" loading="eager"></figure>
+      <figure class="trio-item"><img src="images/hero/door_02.jpg" alt="원목 벤치와 간살 중문이 함께 보이는 현관" loading="eager"></figure>
+      <figure class="trio-item"><img src="images/hero/door_03.jpg" alt="원목 간살 슬라이딩 중문 너머로 보이는 거실" loading="eager"></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">INNER DOOR</div>
+        <div class="slide-title">간살 중문으로 완성한 현관</div>
       </div>
     </div>
-
-    <div class="slide" data-type="image">
-      <img src="images/hero/hero_01.jpg" alt="화이트톤 ㄱ자형 주방" loading="eager">
-      <div class="slide-overlay">
-        <div class="slide-tag">KITCHEN</div>
-        <div class="slide-title">화이트로 완성한 모던 주방</div>
+    <div class="trio-set">
+      <figure class="trio-item"><img src="images/hero/dress_01.jpg" alt="안방에 세운 가벽 뒤로 조명 거울 화장대가 보이는 모습" loading="lazy" style="object-position: 22% center;"></figure>
+      <figure class="trio-item"><img src="images/hero/dress_02.jpg" alt="가벽 안쪽의 화이트 시스템 드레스룸" loading="lazy"></figure>
+      <figure class="trio-item"><img src="images/hero/dress_03.jpg" alt="드레스룸 안에서 문 쪽을 바라본 모습" loading="lazy"></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">DRESS ROOM</div>
+        <div class="slide-title">가벽으로 나눈 안방 드레스룸</div>
       </div>
     </div>
-
-    <div class="slide" data-type="image">
-      <img src="images/hero/hero_02.jpg" alt="통창 뷰가 있는 거실" loading="eager">
-      <div class="slide-overlay">
-        <div class="slide-tag">LIVING ROOM</div>
-        <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
+    <div class="trio-set">
+      <figure class="trio-item"><img src="images/hero/bath_01.jpg" alt="윗부분에 작은 유리창을 낸 화이트 화장실 문" loading="lazy"></figure>
+      <figure class="trio-item"><img src="images/hero/bath_02.jpg" alt="벽걸이 세면대와 조명 수납장, 거울에 비친 작은 창이 있는 문" loading="lazy"></figure>
+      <figure class="trio-item"><img src="images/hero/bath_03.jpg" alt="베이지 타일과 물결 유리 파티션의 샤워 공간" loading="lazy"></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">BATHROOM</div>
+        <div class="slide-title">문에 작은 창을 낸 화장실</div>
       </div>
     </div>
-
-    <div class="slide" data-type="image">
-      <img src="images/hero/hero_03.jpg" alt="붙박이장이 있는 침실" loading="lazy">
-      <div class="slide-overlay">
-        <div class="slide-tag">BEDROOM</div>
-        <div class="slide-title">넉넉한 수납이 있는 편안한 침실</div>
-      </div>
+    <div class="trio-dots" role="group" aria-label="대표 사진 묶음 선택">
+      <button type="button" class="trio-dot active" aria-label="간살 중문 사진" aria-pressed="true"></button>
+      <button type="button" class="trio-dot" aria-label="드레스룸 사진" aria-pressed="false"></button>
+      <button type="button" class="trio-dot" aria-label="화장실 사진" aria-pressed="false"></button>
     </div>
-
-    <div class="slide" data-type="image">
-      <img src="images/hero/hero_04.jpg" alt="아일랜드와 펜던트 조명이 있는 주방" loading="lazy">
-      <div class="slide-overlay">
-        <div class="slide-tag">KITCHEN</div>
-        <div class="slide-title">감성 조명이 완성한 주방</div>
-      </div>
-    </div>
-
-    <div class="slide" data-type="image">
-      <img src="images/hero/hero_05.jpg" alt="중문이 있는 현관" loading="lazy">
-      <div class="slide-overlay">
-        <div class="slide-tag">ENTRANCE</div>
-        <div class="slide-title">현관에서 시작되는 세심한 디테일</div>
-      </div>
-    </div>
-
-    <div class="slide" data-type="image">
-      <img src="images/hero/hero_06.jpg" alt="TV월이 있는 모던 거실" loading="lazy">
-      <div class="slide-overlay">
-        <div class="slide-tag">MODERN MINIMAL</div>
-        <div class="slide-title">깔끔한 라인의 모던 거실</div>
-      </div>
-    </div>
-
-    <button type="button" class="slider-arrow slider-prev" onclick="heroSlide(-1)" aria-label="이전 사진">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <button type="button" class="slider-arrow slider-next" onclick="heroSlide(1)" aria-label="다음 사진">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-    <div class="slider-dots" id="sliderDots"></div>
-    <div class="slider-counter"><span id="sliderCurrent">1</span> / <span id="sliderTotal">7</span></div>
-    <div class="slider-progress" id="sliderProgress"></div>
   </div>
 
   <div class="wrap">
@@ -728,140 +717,28 @@ function renderCases() {
   }).join('');
 }
 
-// ─── HERO SLIDER ───
+// ─── 대표 사진 묶음 번갈아 보여주기 (PC) ───
 (function () {
-  const slides = document.querySelectorAll('.slide');
-  const dotsEl = document.getElementById('sliderDots');
-  const progressEl = document.getElementById('sliderProgress');
-  const currentEl = document.getElementById('sliderCurrent');
-  const totalEl = document.getElementById('sliderTotal');
-  const TOTAL = slides.length;
-  const DURATION = 3500;
-  const hero = document.getElementById('heroSlider');
-  let current = 0;
-  let timer = null;
-  let isPaused = false;
-
-  totalEl.textContent = TOTAL;
-  for (let i = 0; i < TOTAL; i++) {
-    const dot = document.createElement('button');
-    dot.type = 'button';
-    dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', '슬라이드 ' + (i + 1));
-    dot.onclick = (function (idx) { return function () { goTo(idx); }; })(i);
-    dotsEl.appendChild(dot);
+  const wrap = document.getElementById('heroTrio');
+  if (!wrap) return;
+  const sets = wrap.querySelectorAll('.trio-set');
+  const dots = wrap.querySelectorAll('.trio-dot');
+  if (sets.length < 2) return;
+  let cur = 0, timer = null;
+  const INTERVAL = 6000;
+  function show(i) {
+    cur = (i + sets.length) % sets.length;
+    sets.forEach((s, k) => s.classList.toggle('active', k === cur));
+    dots.forEach((d, k) => { d.classList.toggle('active', k === cur); d.setAttribute('aria-pressed', k === cur); });
   }
-
-  function updateDots(idx) {
-    document.querySelectorAll('.slider-dot').forEach(function (d, i) { d.classList.toggle('active', i === idx); });
-  }
-
-  function durOf(idx) { return slides[idx].dataset.type === 'video' ? 8000 : DURATION; }
-
-  function runProgress(dur) {
-    progressEl.style.transition = 'none';
-    progressEl.style.width = '0%';
-    setTimeout(function () {
-      progressEl.style.transition = 'width ' + dur + 'ms linear';
-      progressEl.style.width = '100%';
-    }, 30);
-  }
-
-  function goTo(idx) {
-    clearTimeout(timer);
-    slides[current].classList.remove('active');
-    current = (idx + TOTAL) % TOTAL;
-    slides[current].classList.add('active');
-    currentEl.textContent = current + 1;
-    updateDots(current);
-    void hero.offsetHeight; // 잔상 방지용 리페인트
-    const dur = durOf(current);
-    runProgress(dur);
-    if (!isPaused) timer = setTimeout(function () { goTo(current + 1); }, dur);
-  }
-
-  window.heroSlide = function (dir) { goTo(current + dir); };
-
-  window.playHeroVideo = function () {
-    const video = document.getElementById('heroVideo');
-    const btn = document.getElementById('videoPlayBtn');
-    if (video) { video.play(); if (btn) btn.classList.add('hidden'); }
-  };
-
-  window.addEventListener('load', function () {
-    const video = document.getElementById('heroVideo');
-    const isMobile = window.innerWidth <= 768;
-    if (video) {
-      video.muted = true;
-      video.volume = 0;
-      video.addEventListener('playing', function () {
-        const btn = document.getElementById('videoPlayBtn');
-        if (btn) btn.classList.add('hidden');
-      });
-      if (!isMobile) {
-        const playAttempt = setInterval(function () {
-          video.play().then(function () { clearInterval(playAttempt); }).catch(function () {});
-        }, 300);
-        setTimeout(function () { clearInterval(playAttempt); }, 2000);
-      }
-      video.addEventListener('error', function () { goTo(1); });
-    }
-    // 첫 슬라이드(영상)는 19초
-    const dur = 19000;
-    setTimeout(function () {
-      progressEl.style.transition = 'width ' + dur + 'ms linear';
-      progressEl.style.width = '100%';
-    }, 100);
-    timer = setTimeout(function () { goTo(1); }, dur);
-  });
-
-  let videoStarted = false;
-  function tryPlayVideo() {
-    if (videoStarted) return;
-    const video = document.getElementById('heroVideo');
-    if (video && current === 0) video.play().then(function () { videoStarted = true; }).catch(function () {});
-  }
-  document.addEventListener('mousemove', tryPlayVideo, { once: true });
-  document.addEventListener('click', tryPlayVideo, { once: true });
-
-  // 사진 설명 상자 위에 마우스가 있을 때만 일시정지
-  document.querySelectorAll('.slide-overlay').forEach(function (ov) {
-    ov.addEventListener('mouseenter', function () {
-      isPaused = true; clearTimeout(timer); progressEl.style.transition = 'none';
-    });
-    ov.addEventListener('mouseleave', function () {
-      isPaused = false;
-      const dur = durOf(current);
-      progressEl.style.transition = 'width ' + dur + 'ms linear';
-      progressEl.style.width = '100%';
-      timer = setTimeout(function () { goTo(current + 1); }, dur);
-    });
-  });
-
-  // 터치 스와이프
-  let touchX = 0;
-  hero.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
-  hero.addEventListener('touchend', function (e) {
-    const dx = e.changedTouches[0].clientX - touchX;
-    if (Math.abs(dx) > 50) heroSlide(dx < 0 ? 1 : -1);
-  }, { passive: true });
-
-  // 탭 전환 후 복귀 시 어긋남 방지
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) {
-      clearTimeout(timer);
-      progressEl.style.transition = 'none';
-    } else {
-      const idx = current;
-      slides.forEach(function (s, i) { s.classList.toggle('active', i === idx); });
-      updateDots(idx);
-      currentEl.textContent = idx + 1;
-      void hero.offsetHeight;
-      const dur = durOf(idx);
-      runProgress(dur);
-      if (!isPaused) timer = setTimeout(function () { goTo(idx + 1); }, dur);
-    }
-  });
+  const auto = () => matchMedia('(min-width: 861px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function start() { stop(); if (auto()) timer = setInterval(() => show(cur + 1), INTERVAL); }
+  function stop() { clearInterval(timer); timer = null; }
+  dots.forEach((d, k) => d.addEventListener('click', () => { show(k); start(); }));
+  wrap.addEventListener('mouseenter', stop);
+  wrap.addEventListener('mouseleave', start);
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  start();
 })();
 
 // ─── 견적 위저드 ───
