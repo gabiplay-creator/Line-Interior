@@ -89,6 +89,7 @@ button { font: inherit; color: inherit; }
 .nav-links { display: flex; align-items: center; gap: 36px; font-size: 15px; font-weight: 500; }
 .nav-links a { text-decoration: none; padding: 8px 0; }
 .nav-links a:hover { color: var(--point); }
+.nav-point { color: var(--point); font-weight: 600; }
 .nav-blog { display: inline-flex; align-items: center; gap: 6px; }
 .nav-links a.nav-cta { padding: 0 22px; }
 .nav-cta { min-height: 44px; padding: 0 22px; font-size: 15px; white-space: nowrap; }
@@ -201,6 +202,7 @@ button { font: inherit; color: inherit; }
   display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
   gap: 24px; padding-top: 40px;
 }
+.smile { color: var(--point); font-weight: 700; display: inline-block; transform: translateY(-0.3em); margin-left: 2px; }
 .hero-lead { font-size: clamp(21px, 2.4vw, 32px); font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; }
 .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
 
@@ -391,7 +393,7 @@ button { font: inherit; color: inherit; }
       <span class="logo-swap" aria-hidden="true"><span class="logo-en">LINE INTERIOR</span><span class="logo-ko">라인인테리어</span></span>
     </a>
     <nav class="nav-links" aria-label="주 메뉴">
-      <a href="#why">왜 라인인가</a>
+      <a href="#why">왜 <span class="nav-point">라인</span>인가</a>
       <a href="#cases">시공사례</a>
       <a href="#contact">견적문의</a>
       <a href="https://blog.naver.com/line_interior_" target="_blank" rel="noopener" class="nav-blog">
@@ -493,7 +495,7 @@ button { font: inherit; color: inherit; }
   <div class="wrap">
   <h1 class="hero-title">LINE INTERIOR</h1>
   <div class="hero-row">
-    <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 그려드릴게요.</p>
+    <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 그려드릴게요. <span class="smile" aria-hidden="true">◡</span></p>
     <div class="hero-btns">
       <a href="#contact" class="btn btn-point">견적 문의</a>
       <a href="#cases" class="btn btn-line">시공사례 보기</a>
