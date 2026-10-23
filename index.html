@@ -140,6 +140,7 @@ button { font: inherit; color: inherit; }
   opacity: 0; visibility: hidden; transition: opacity 1s ease, visibility 0s linear 1s;
 }
 .trio-set.active { opacity: 1; visibility: visible; transition: opacity 1s ease; }
+.trio-set.single { grid-template-columns: minmax(0, 1fr); }
 .trio-item { margin: 0; border-radius: 6px; overflow: hidden; background: var(--surface); }
 .trio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
 .trio-item:hover img { transform: scale(1.02); }
@@ -147,7 +148,7 @@ button { font: inherit; color: inherit; }
   position: absolute; left: 24px; bottom: 24px;
   background: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 14px 20px;
 }
-.trio-dots { position: absolute; right: 20px; bottom: 24px; display: flex; gap: 6px; z-index: 2; }
+.trio-dots { position: absolute; right: 16px; bottom: 24px; display: flex; gap: 0; z-index: 2; }
 .trio-dot {
   width: 44px; height: 44px; border: 0; padding: 0; background: transparent; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -166,6 +167,7 @@ button { font: inherit; color: inherit; }
   .hero-trio::-webkit-scrollbar { display: none; }
   .trio-set, .trio-set.active { display: contents; visibility: visible; opacity: 1; }
   .trio-item { flex: 0 0 78%; scroll-snap-align: center; }
+  .single .trio-item { flex-basis: 92%; }
   .trio-caption, .trio-dots { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .trio-set, .trio-set.active { transition: none; } }
@@ -392,13 +394,27 @@ button { font: inherit; color: inherit; }
 <!-- ─── HERO ─── -->
 <section class="hero">
   <div class="hero-trio" id="heroTrio">
-    <div class="trio-set active">
+    <div class="trio-set single active">
+      <figure class="trio-item"><img src="images/hero/hero_06.jpg" alt="TV월이 있는 모던 거실" loading="eager"></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">MODERN MINIMAL</div>
+        <div class="slide-title">깔끔한 라인의 모던 거실</div>
+      </div>
+    </div>
+    <div class="trio-set">
+      <figure class="trio-item"><img src="images/hero/door_03.jpg" alt="원목 간살 슬라이딩 중문 너머로 보이는 거실" loading="eager"></figure>
       <figure class="trio-item"><img src="images/hero/door_01.jpg" alt="밝은 그레이 붙박이 신발장과 원목 벤치가 있는 현관" loading="eager"></figure>
       <figure class="trio-item"><img src="images/hero/door_02.jpg" alt="원목 벤치와 간살 중문이 함께 보이는 현관" loading="eager"></figure>
-      <figure class="trio-item"><img src="images/hero/door_03.jpg" alt="원목 간살 슬라이딩 중문 너머로 보이는 거실" loading="eager"></figure>
       <div class="trio-caption">
         <div class="slide-tag">INNER DOOR</div>
         <div class="slide-title">간살 중문으로 완성한 현관</div>
+      </div>
+    </div>
+    <div class="trio-set single">
+      <figure class="trio-item"><img src="images/hero/hero_02.jpg" alt="통창 뷰가 있는 거실" loading="lazy"></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">LIVING ROOM</div>
+        <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
       </div>
     </div>
     <div class="trio-set">
@@ -410,6 +426,13 @@ button { font: inherit; color: inherit; }
         <div class="slide-title">가벽으로 나눈 안방 드레스룸</div>
       </div>
     </div>
+    <div class="trio-set single">
+      <figure class="trio-item"><img src="images/hero/hero_03.jpg" alt="붙박이장이 있는 침실" loading="lazy"></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">BEDROOM</div>
+        <div class="slide-title">넉넉한 수납이 있는 편안한 침실</div>
+      </div>
+    </div>
     <div class="trio-set">
       <figure class="trio-item"><img src="images/hero/bath_01.jpg" alt="윗부분에 작은 유리창을 낸 화이트 화장실 문" loading="lazy"></figure>
       <figure class="trio-item"><img src="images/hero/bath_02.jpg" alt="벽걸이 세면대와 조명 수납장, 거울에 비친 작은 창이 있는 문" loading="lazy"></figure>
@@ -419,9 +442,12 @@ button { font: inherit; color: inherit; }
         <div class="slide-title">문에 작은 창을 낸 화장실</div>
       </div>
     </div>
-    <div class="trio-dots" role="group" aria-label="대표 사진 묶음 선택">
-      <button type="button" class="trio-dot active" aria-label="간살 중문 사진" aria-pressed="true"></button>
+    <div class="trio-dots" role="group" aria-label="대표 사진 선택">
+      <button type="button" class="trio-dot active" aria-label="모던 거실 사진" aria-pressed="true"></button>
+      <button type="button" class="trio-dot" aria-label="간살 중문 사진" aria-pressed="false"></button>
+      <button type="button" class="trio-dot" aria-label="거실 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="드레스룸 사진" aria-pressed="false"></button>
+      <button type="button" class="trio-dot" aria-label="침실 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="화장실 사진" aria-pressed="false"></button>
     </div>
   </div>
@@ -725,7 +751,7 @@ function renderCases() {
   const dots = wrap.querySelectorAll('.trio-dot');
   if (sets.length < 2) return;
   let cur = 0, timer = null;
-  const INTERVAL = 6000;
+  const INTERVAL = 5000;
   function show(i) {
     cur = (i + sets.length) % sets.length;
     sets.forEach((s, k) => s.classList.toggle('active', k === cur));
