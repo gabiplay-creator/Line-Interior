@@ -46,6 +46,7 @@ button { font: inherit; color: inherit; }
   font-family: var(--font-en); font-size: 14px; font-weight: 600;
   letter-spacing: 0.14em; color: var(--point); margin-bottom: 14px;
 }
+.h2-point { color: var(--point); }
 .h2 {
   font-size: clamp(34px, 4vw, 52px); font-weight: 800; line-height: 1.2;
   letter-spacing: -0.03em; color: var(--tone);
@@ -171,6 +172,25 @@ button { font: inherit; color: inherit; }
   .trio-caption, .trio-dots { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .trio-set, .trio-set.active { transition: none; } }
+/* 사진 좌우 꺽쇠 (흐리게) */
+.hero-stage { position: relative; }
+.trio-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+  width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.45); color: rgba(58, 52, 49, 0.7);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  opacity: 0.75; transition: opacity .2s, background .2s;
+}
+.trio-arrow:hover, .trio-arrow:focus-visible { opacity: 1; background: rgba(255, 255, 255, 0.85); }
+.trio-arrow:disabled { opacity: 0.25; cursor: default; }
+.trio-prev { left: 28px; }
+.trio-next { right: 28px; }
+@media (max-width: 860px) {
+  .trio-arrow { width: 38px; height: 38px; }
+  .trio-prev { left: 22px; }
+  .trio-next { right: 22px; }
+}
 .hero-title {
   margin-top: 28px; text-align: center; white-space: nowrap;
   font-family: var(--font-en); font-weight: 800;
@@ -266,12 +286,6 @@ button { font: inherit; color: inherit; }
   font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer;
 }
 .pill:hover { border-color: var(--ink); }
-.kakao-btn {
-  align-self: flex-start; display: inline-flex; align-items: center; gap: 10px;
-  min-height: 48px; padding: 0 24px; border: 0; border-radius: 999px; cursor: pointer;
-  background: #FEE500; color: #191919; font-size: 16px; font-weight: 500;
-}
-.kakao-btn:hover { filter: brightness(0.96); }
 
 /* ─── 견적 위저드 ─── */
 .form-wrap {
@@ -384,7 +398,7 @@ button { font: inherit; color: inherit; }
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#03C75A" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
         블로그
       </a>
-      <a href="#contact" class="btn btn-point nav-cta">무료 견적 문의</a>
+      <a href="#contact" class="btn btn-point nav-cta">견적 문의</a>
     </nav>
   </div>
 </header>
@@ -393,12 +407,13 @@ button { font: inherit; color: inherit; }
 
 <!-- ─── HERO ─── -->
 <section class="hero">
+  <div class="hero-stage">
   <div class="hero-trio" id="heroTrio">
     <div class="trio-set single active">
-      <figure class="trio-item"><img src="images/hero/hero_06.jpg" alt="TV월이 있는 모던 거실" loading="eager"></figure>
+      <figure class="trio-item"><img src="images/hero/hero_02.jpg" alt="통창 뷰가 있는 거실" loading="eager"></figure>
       <div class="trio-caption">
-        <div class="slide-tag">MODERN MINIMAL</div>
-        <div class="slide-title">깔끔한 라인의 모던 거실</div>
+        <div class="slide-tag">LIVING ROOM</div>
+        <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
       </div>
     </div>
     <div class="trio-set">
@@ -408,13 +423,6 @@ button { font: inherit; color: inherit; }
       <div class="trio-caption">
         <div class="slide-tag">INNER DOOR</div>
         <div class="slide-title">간살 중문으로 완성한 현관</div>
-      </div>
-    </div>
-    <div class="trio-set single">
-      <figure class="trio-item"><img src="images/hero/hero_02.jpg" alt="통창 뷰가 있는 거실" loading="lazy"></figure>
-      <div class="trio-caption">
-        <div class="slide-tag">LIVING ROOM</div>
-        <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
       </div>
     </div>
     <div class="trio-set">
@@ -443,13 +451,19 @@ button { font: inherit; color: inherit; }
       </div>
     </div>
     <div class="trio-dots" role="group" aria-label="대표 사진 선택">
-      <button type="button" class="trio-dot active" aria-label="모던 거실 사진" aria-pressed="true"></button>
+      <button type="button" class="trio-dot active" aria-label="거실 사진" aria-pressed="true"></button>
       <button type="button" class="trio-dot" aria-label="간살 중문 사진" aria-pressed="false"></button>
-      <button type="button" class="trio-dot" aria-label="거실 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="드레스룸 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="침실 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="화장실 사진" aria-pressed="false"></button>
     </div>
+  </div>
+    <button type="button" class="trio-arrow trio-prev" aria-label="이전 사진">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button type="button" class="trio-arrow trio-next" aria-label="다음 사진">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
   </div>
 
   <div class="wrap">
@@ -457,7 +471,7 @@ button { font: inherit; color: inherit; }
   <div class="hero-row">
     <p class="hero-lead">머물수록 행복해지는 공간,<br>라인 인테리어가 함께 그려드릴게요.</p>
     <div class="hero-btns">
-      <a href="#contact" class="btn btn-point">무료 견적 받기</a>
+      <a href="#contact" class="btn btn-point">견적 문의</a>
       <a href="#cases" class="btn btn-line">시공사례 보기</a>
     </div>
   </div>
@@ -469,7 +483,7 @@ button { font: inherit; color: inherit; }
   <div class="why-photo" role="img" aria-label="라인 인테리어 시공 공간" style="background-image:url('images/misc/why_bg.jpg');"></div>
   <div class="why-text">
     <p class="eyebrow">WHY LINE INTERIOR</p>
-    <h2 class="h2">왜 라인 인테리어인가?</h2>
+    <h2 class="h2">왜 <span class="h2-point">라인 인테리어</span>인가?</h2>
     <div class="why-list">
       <div class="why-item">
         <p class="why-num">01</p>
@@ -528,15 +542,11 @@ button { font: inherit; color: inherit; }
             </a>
           </div>
         </div>
-        <button type="button" class="kakao-btn" id="kakaoBtn">
-          <svg width="20" height="20" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 6C11.163 6 4 11.373 4 18c0 4.243 2.794 7.974 7 10.172L9.5 32l5.2-2.6C15.7 29.8 17.82 30 20 30c8.837 0 16-5.373 16-12S28.837 6 20 6z" fill="#3A1D1D"/></svg>
-          카카오톡 ID : 라인인테리어
-        </button>
       </div>
     </div>
 
     <div class="form-wrap">
-      <h3>무료 견적 문의</h3>
+      <h3>견적 문의</h3>
       <p class="form-sub">몇 가지만 답해주시면 딱 맞는 상담을 도와드려요</p>
       <!-- 전송 완료 -->
       <div class="form-success" id="formSuccess" role="status">
@@ -600,10 +610,6 @@ const CASE_EN = {
 const NAVER_MAP_KEY = '';
 const MAP_ADDRESS = '경기도 부천시 소사로126번길 7';
 
-// 카카오톡: 카카오톡 채널 채팅 주소(https://pf.kakao.com/_xxxx/chat)를 넣으면 버튼이 채팅으로 연결됩니다.
-// 비어 있으면 버튼을 눌렀을 때 카카오톡 ID 가 복사됩니다.
-const KAKAO_CHANNEL_URL = '';
-const KAKAO_ID = '라인인테리어';
 
 // ─── 구글 시트에서 데이터 불러오기 (CORS 우회 포함) ───
 async function loadFromSheet() {
@@ -761,6 +767,27 @@ function renderCases() {
   function start() { stop(); if (auto()) timer = setInterval(() => show(cur + 1), INTERVAL); }
   function stop() { clearInterval(timer); timer = null; }
   dots.forEach((d, k) => d.addEventListener('click', () => { show(k); start(); }));
+  // 좌우 꺽쇠: PC는 이전/다음 사진, 휴대폰은 옆으로 한 장씩 이동
+  const prevBtn = document.querySelector('.trio-prev');
+  const nextBtn = document.querySelector('.trio-next');
+  const isPhone = () => matchMedia('(max-width: 860px)').matches;
+  function step(dir) {
+    if (isPhone()) {
+      const item = wrap.querySelector('.trio-item');
+      const w = item ? item.getBoundingClientRect().width + 8 : wrap.clientWidth * 0.8;
+      wrap.scrollBy({ left: dir * w, behavior: 'smooth' });
+    } else { show(cur + dir); start(); }
+  }
+  function updateArrows() {
+    if (!isPhone()) { prevBtn.disabled = false; nextBtn.disabled = false; return; }
+    prevBtn.disabled = wrap.scrollLeft <= 4;
+    nextBtn.disabled = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 4;
+  }
+  prevBtn.addEventListener('click', () => step(-1));
+  nextBtn.addEventListener('click', () => step(1));
+  wrap.addEventListener('scroll', updateArrows, { passive: true });
+  window.addEventListener('resize', updateArrows);
+  updateArrows();
   wrap.addEventListener('mouseenter', stop);
   wrap.addEventListener('mouseleave', start);
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
@@ -957,13 +984,6 @@ wizRender();
   });
 })();
 
-// ─── 카카오톡 버튼 ───
-document.getElementById('kakaoBtn').addEventListener('click', function () {
-  if (KAKAO_CHANNEL_URL) { window.open(KAKAO_CHANNEL_URL, '_blank', 'noopener'); return; }
-  const done = () => alert(`카카오톡 ID '${KAKAO_ID}'가 복사되었어요.\n카카오톡 친구 추가에서 ID로 검색해 주세요.`);
-  if (navigator.clipboard) navigator.clipboard.writeText(KAKAO_ID).then(done).catch(() => alert(`카카오톡 ID: ${KAKAO_ID}`));
-  else alert(`카카오톡 ID: ${KAKAO_ID}`);
-});
 
 // ─── 네이버 지도 (NAVER_MAP_KEY 가 있을 때만) ───
 (function () {
@@ -1018,13 +1038,7 @@ async function init() {
 }
 init();
 </script>
-<!-- ─── 채널톡 ─── -->
-<script>
-(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(s,x);}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
-ChannelIO('boot', {
-  pluginKey: '32389073-c30f-4c5d-ba11-ffc74b5c60cc'
-});
-</script>
+
 
 </body>
 </html>
