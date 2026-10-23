@@ -144,6 +144,7 @@ button { font: inherit; color: inherit; }
 .trio-set.active { opacity: 1; visibility: visible; transition: opacity 1s ease; }
 .trio-set.single { grid-template-columns: minmax(0, 1fr); }
 .trio-item { margin: 0; border-radius: 6px; overflow: hidden; background: var(--surface); }
+.trio-video video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.28); }
 .trio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
 .trio-item:hover img { transform: scale(1.02); }
 .trio-caption {
@@ -418,6 +419,13 @@ button { font: inherit; color: inherit; }
         <div class="slide-title">탁 트인 뷰가 있는 프리미엄 거실</div>
       </div>
     </div>
+    <div class="trio-set single" data-video>
+      <figure class="trio-item trio-video"><video src="video/0803.mp4" muted loop playsinline preload="metadata" aria-label="라인 인테리어 시공 현장 영상"></video></figure>
+      <div class="trio-caption">
+        <div class="slide-tag">PREMIUM INTERIOR DESIGN</div>
+        <div class="slide-title">공간이 말하는 당신만의 이야기</div>
+      </div>
+    </div>
     <div class="trio-set">
       <figure class="trio-item"><img src="images/hero/door_03.jpg" alt="원목 간살 슬라이딩 중문 너머로 보이는 거실" loading="eager"></figure>
       <figure class="trio-item"><img src="images/hero/door_01.jpg" alt="밝은 그레이 붙박이 신발장과 원목 벤치가 있는 현관" loading="eager"></figure>
@@ -475,6 +483,7 @@ button { font: inherit; color: inherit; }
     </div>
     <div class="trio-dots" role="group" aria-label="대표 사진 선택">
       <button type="button" class="trio-dot active" aria-label="거실 사진" aria-pressed="true"></button>
+      <button type="button" class="trio-dot" aria-label="시공 영상" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="간살 중문 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="주방 사진" aria-pressed="false"></button>
       <button type="button" class="trio-dot" aria-label="드레스룸 사진" aria-pressed="false"></button>
@@ -806,18 +815,45 @@ function renderCases() {
     else if (dir < 0 && atStart) wrap.scrollTo({ left: wrap.scrollWidth, behavior: 'smooth' });
     else wrap.scrollBy({ left: dir * w, behavior: 'smooth' });
   }
-  function advance() { isPhone() ? phoneStep(1) : show(cur + 1); }
+  // 영상: 보이는 영상만 처음부터 재생, 나머지는 멈춤
+  const videos = [...wrap.querySelectorAll('video')];
+  function currentVideo() {
+    if (!isPhone()) return sets[cur].querySelector('video');
+    const mid = wrap.getBoundingClientRect().left + wrap.clientWidth / 2;
+    return videos.find(v => { const r = v.closest('.trio-item').getBoundingClientRect(); return r.left < mid && r.right > mid; }) || null;
+  }
+  function syncVideos() {
+    const v = currentVideo();
+    videos.forEach(x => {
+      if (x === v) { if (x.paused) { x.currentTime = 0; x.play().catch(() => {}); } }
+      else if (!x.paused) x.pause();
+    });
+    return v;
+  }
+  function dwell() {
+    const v = currentVideo();
+    return v && isFinite(v.duration) && v.duration > 0 ? Math.round(v.duration * 1000) : (v ? 19000 : INTERVAL);
+  }
+  function advance() { isPhone() ? phoneStep(1) : show(cur + 1); setTimeout(syncVideos, 450); }
 
-  function stop() { clearInterval(timer); timer = null; }
-  function start() { stop(); if (!reduced() && !document.hidden) timer = setInterval(advance, INTERVAL); }
+  let running = false;
+  function stop() { running = false; clearTimeout(timer); timer = null; }
+  // 지금 보이는 장면이 사진이면 3초, 영상이면 영상 길이만큼 머문 뒤 넘김
+  function schedule() {
+    clearTimeout(timer);
+    if (!running) return;
+    timer = setTimeout(() => { advance(); setTimeout(() => { if (running) schedule(); }, 500); }, dwell());
+  }
+  function start() { stop(); syncVideos(); if (reduced() || document.hidden) return; running = true; schedule(); }
   function pauseForUser() {
     stop(); clearTimeout(resumeTimer);
     resumeTimer = setTimeout(start, RESUME_AFTER);
   }
 
-  dots.forEach((d, k) => d.addEventListener('click', () => { show(k); pauseForUser(); }));
-  prevBtn.addEventListener('click', () => { isPhone() ? phoneStep(-1) : show(cur - 1); pauseForUser(); });
-  nextBtn.addEventListener('click', () => { isPhone() ? phoneStep(1) : show(cur + 1); pauseForUser(); });
+  dots.forEach((d, k) => d.addEventListener('click', () => { show(k); syncVideos(); pauseForUser(); }));
+  prevBtn.addEventListener('click', () => { isPhone() ? phoneStep(-1) : show(cur - 1); setTimeout(syncVideos, 450); pauseForUser(); });
+  nextBtn.addEventListener('click', () => { isPhone() ? phoneStep(1) : show(cur + 1); setTimeout(syncVideos, 450); pauseForUser(); });
+  let scrollT; wrap.addEventListener('scroll', () => { clearTimeout(scrollT); scrollT = setTimeout(syncVideos, 200); }, { passive: true });
   // 휴대폰에서 손가락으로 밀어 넘긴 경우도 직접 넘긴 것으로 봄
   wrap.addEventListener('touchstart', pauseForUser, { passive: true });
   wrap.addEventListener('wheel', e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) pauseForUser(); }, { passive: true });
