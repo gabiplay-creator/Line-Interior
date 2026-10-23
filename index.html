@@ -278,6 +278,12 @@ button { font: inherit; color: inherit; }
   text-decoration: none;
 }
 .info-tel:hover { color: var(--point); }
+.call-btn {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
+  min-height: 46px; padding: 0 22px; border-radius: 999px; text-decoration: none;
+  background: var(--ink); color: #fff; font-size: 15px; font-weight: 500;
+}
+.call-btn:hover { background: var(--point); color: #fff; }
 .info-addr { font-size: 19px; font-weight: 500; }
 .map-box {
   margin-top: 14px; height: 260px; border-radius: 6px; overflow: hidden;
@@ -563,7 +569,11 @@ button { font: inherit; color: inherit; }
       <div class="info-list">
         <div>
           <p class="info-label">친절상담 · 평일 09:00 – 18:00</p>
-          <a href="tel:032-246-3155" class="info-tel tel-link">032-246-3155</a>
+          <a href="tel:032-246-3155" class="info-tel tel-link" data-call="문의_전화번호">032-246-3155</a>
+          <div><a href="tel:032-246-3155" class="call-btn tel-link" data-call="문의_전화걸기버튼">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            전화 걸기
+          </a></div>
         </div>
         <div>
           <p class="info-label">오시는 길 · 소새울역 1번 출구</p>
@@ -616,7 +626,7 @@ button { font: inherit; color: inherit; }
     <div class="footer-info">
       <span class="footer-logo">LINE INTERIOR · 라인인테리어</span>
       <span>상호 라인 인테리어 · 대표 박지희 · 사업자번호 296-24-02323</span>
-      <span>경기도 부천시 소사로126번길 7 · 032-246-3155 · dongjun4944@naver.com</span>
+      <span>경기도 부천시 소사로126번길 7 · 032-246-3155 · <a href="mailto:dongjun4944@naver.com">dongjun4944@naver.com</a></span>
     </div>
     <div class="footer-side">
       <a href="https://blog.naver.com/line_interior_" target="_blank" rel="noopener">
@@ -645,6 +655,11 @@ const CASE_EN = {
 // 네이버 지도: 네이버 클라우드 플랫폼 Maps 의 Client ID 를 넣으면 네이버 지도가 표시됩니다.
 // 비어 있으면 임시로 구글 지도가 표시됩니다.
 const NAVER_MAP_KEY = '';
+
+// 구글 애널리틱스(GA4) 측정 ID (예: 'G-ABC123XYZ'). 비어 있으면 GA 를 쓰지 않습니다.
+const GA_ID = 'G-2K23S1SNSZ';
+// 구글 시트 기록용 Apps Script 웹 앱 주소 (https://script.google.com/macros/s/.../exec). 비어 있으면 기록하지 않습니다.
+const LEADS_URL = 'https://script.google.com/macros/s/AKfycbzJ28gzk5q3vDdjQaRHGQQYLnEYU1U8rEgNNT15_5ZjLW_AIjaFZRpKcCR7qCDZVf45KA/exec';
 const MAP_ADDRESS = '경기도 부천시 소사로126번길 7';
 
 
@@ -873,6 +888,43 @@ function renderCases() {
   start();
 })();
 
+// ─── 방문 분석: GA4 + 구글 시트 기록 ───
+const Track = (function () {
+  // 처음 들어온 경로(광고 utm, 이전 사이트)를 이 방문 동안 기억
+  let first = {};
+  try {
+    first = JSON.parse(sessionStorage.getItem('li_first') || 'null') || {};
+    if (!first.page) {
+      const q = new URLSearchParams(location.search);
+      const utm = ['utm_source', 'utm_medium', 'utm_campaign'].map(k => q.get(k)).filter(Boolean).join(' / ');
+      first = { page: location.href, referrer: document.referrer || '직접 방문', utm: utm };
+      sessionStorage.setItem('li_first', JSON.stringify(first));
+    }
+  } catch (e) { first = { page: location.href, referrer: document.referrer || '직접 방문', utm: '' }; }
+
+  const device = () => (matchMedia('(pointer: coarse)').matches ? '모바일' : 'PC');
+  const ctx = () => ({ device: device(), referrer: first.referrer || '', utm: first.utm || '', page: first.page || location.href });
+
+  if (GA_ID) {
+    const g = document.createElement('script');
+    g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID);
+    document.head.appendChild(g);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag('js', new Date()); gtag('config', GA_ID);
+  }
+  function ga(name, params) { if (GA_ID && window.gtag) gtag('event', name, params || {}); }
+  function sheet(payload) {
+    if (!LEADS_URL) return;
+    const body = JSON.stringify(Object.assign(ctx(), payload));
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(LEADS_URL, new Blob([body], { type: 'text/plain;charset=utf-8' }))) return;
+    } catch (e) { /* fetch 로 재시도 */ }
+    fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body }).catch(() => {});
+  }
+  return { ga: ga, sheet: sheet, device: device };
+})();
+
 // ─── 견적 위저드 ───
 const WIZ_STEPS = [
   { key: 'space', q: '인테리어가 필요한 공간은 어디인가요?', type: 'single',
@@ -1025,6 +1077,9 @@ async function wizSubmit() {
     요청사항: memo,
   };
 
+  // 구글 시트에 먼저 기록 (메일 전송이 실패해도 접수 내용이 남도록)
+  Track.sheet({ type: 'lead', fields: data });
+
   try {
     const res = await fetch('https://formspree.io/f/xjgzllpv', {
       method: 'POST',
@@ -1032,6 +1087,7 @@ async function wizSubmit() {
       body: JSON.stringify(data)
     });
     if (res.ok) {
+      Track.ga('generate_lead', { form: '견적문의', space: wizAnswers.space, budget: wizAnswers.budget });
       document.getElementById('wizardBody').style.display = 'none';
       document.getElementById('formSuccess').style.display = 'flex';
     } else {
@@ -1048,9 +1104,17 @@ async function wizSubmit() {
 
 wizRender();
 
-// ─── 전화번호: 모바일은 바로 전화, PC는 번호 복사 ───
+// ─── 전화번호: 모바일은 바로 전화, PC는 번호 복사 (누를 때마다 GA·시트에 기록) ───
 (function () {
   const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+  document.querySelectorAll('.tel-link').forEach(el => {
+    el.addEventListener('click', function () {
+      const where = this.dataset.call || '전화번호';
+      const action = isTouchDevice ? '전화 연결' : '번호 복사(PC)';
+      Track.ga('phone_call_click', { link_location: where, call_action: action });
+      Track.sheet({ type: 'call', where: where, action: action });
+    });
+  });
   if (isTouchDevice) return;
   document.querySelectorAll('.tel-link').forEach(el => {
     el.addEventListener('click', function (e) {
