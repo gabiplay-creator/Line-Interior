@@ -68,7 +68,6 @@ nav {
   cursor: pointer;
   line-height: 1;
 }
-.nav-logo span { color: var(--gold); }
 .nav-logo-roof {
   position: absolute;
   top: -1px; left: 1px;
@@ -76,6 +75,16 @@ nav {
   color: var(--gold);
   line-height: 0;
 }
+.nav-logo-text-wrap { display: inline-grid; vertical-align: top; }
+.nav-logo-text-en, .nav-logo-text-kr {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.nav-logo-text-en { opacity: 1; }
+.nav-logo:hover .nav-logo-text-en { opacity: 0; }
+.nav-logo:hover .nav-logo-text-kr { opacity: 1; }
 .nav-links { display: flex; gap: 32px; }
 .nav-links a {
   font-size: 14px;
@@ -621,27 +630,27 @@ nav {
 
 /* Form (상담 신청하기 버튼과 같은 다크 톤 + 왜 라인인테리어인가 섹션과 같은 폰트 무드) */
 .form-wrap {
-  background: var(--black);
-  color: var(--white);
+  background: #ffffff;
+  color: var(--black);
   padding: 40px;
-  border: 0.5px solid rgba(212,184,138,0.28);
-  box-shadow: 0 24px 70px rgba(0,0,0,0.4);
+  border: 0.5px solid var(--border);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.12);
 }
 .form-wrap h3 {
   font-family: var(--font-display);
-  font-size: 26px; font-weight: 300; color: var(--white);
+  font-size: 26px; font-weight: 300; color: var(--black);
   margin-bottom: 14px; letter-spacing: 0.04em;
   padding-left: 16px; border-left: 2px solid var(--gold);
 }
-.form-sub { font-size: 12px; color: var(--gray-light); margin-bottom: 28px; letter-spacing: 0.05em; }
+.form-sub { font-size: 12px; color: var(--gray); margin-bottom: 28px; letter-spacing: 0.05em; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .fg:last-child { margin-bottom: 0; }
-.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gold-light); }
+.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gold); }
 .fg input, .fg select, .fg textarea {
   font-family: var(--font-body); font-size: 14px;
-  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.18);
-  padding: 11px 14px; color: var(--white);
+  background: var(--surface); border: 0.5px solid var(--border);
+  padding: 11px 14px; color: var(--black);
   outline: none; transition: border-color .2s;
   width: 100%;
 }
@@ -652,8 +661,8 @@ nav {
 .budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .budget-pill {
   font-size: 12px; padding: 6px 16px;
-  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.18);
-  color: var(--gray-light); cursor: pointer; letter-spacing: 0.04em;
+  background: var(--surface); border: 0.5px solid var(--border);
+  color: var(--gray); cursor: pointer; letter-spacing: 0.04em;
   transition: all .2s; font-family: var(--font-body);
 }
 .budget-pill.active { background: var(--gold); color: var(--black); border-color: var(--gold); }
@@ -665,32 +674,32 @@ nav {
 }
 .form-submit:hover { background: var(--gold-light); }
 .form-notice {
-  font-size: 11px; color: var(--gray-light);
+  font-size: 11px; color: var(--gray);
   text-align: center; margin-top: 12px;
   letter-spacing: 0.04em;
 }
 
 /* ─── 단계별 견적 위저드 ─── */
-.wiz-progress { height: 3px; background: rgba(255,255,255,0.12); margin-bottom: 22px; position: relative; }
+.wiz-progress { height: 3px; background: var(--border); margin-bottom: 22px; position: relative; }
 .wiz-progress-bar { height: 100%; background: var(--gold); transition: width .35s ease; }
 .wiz-step-label { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 10px; font-weight: 600; }
 .wiz-question {
-  font-family: var(--font-display); font-size: 21px; font-weight: 300; color: var(--white);
+  font-family: var(--font-display); font-size: 21px; font-weight: 300; color: var(--black);
   line-height: 1.45; margin-bottom: 22px;
 }
 .wiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
 .wiz-options.wiz-options-wide { grid-template-columns: 1fr; }
 .wiz-option {
-  padding: 15px 14px; text-align: center; background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.18); font-size: 13.5px; color: var(--white);
+  padding: 15px 14px; text-align: center; background: var(--surface);
+  border: 0.5px solid var(--border); font-size: 13.5px; color: var(--black);
   cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
 }
 .wiz-option:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
 .wiz-option.selected { background: var(--gold); color: var(--black); border-color: var(--gold); }
 .wiz-nav { display: flex; gap: 10px; margin-top: 20px; }
 .wiz-btn-prev {
-  flex: 0 0 auto; padding: 14px 22px; background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.18); color: var(--gray-light);
+  flex: 0 0 auto; padding: 14px 22px; background: var(--surface);
+  border: 0.5px solid var(--border); color: var(--gray);
   font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; cursor: pointer;
   transition: border-color .2s;
 }
@@ -701,10 +710,10 @@ nav {
   font-size: 13px; letter-spacing: 0.08em; cursor: pointer; transition: background .25s;
 }
 .wiz-btn-next:hover:not(:disabled) { background: var(--gold-light); }
-.wiz-btn-next:disabled { background: rgba(255,255,255,0.1); color: var(--gray); cursor: not-allowed; }
+.wiz-btn-next:disabled { background: var(--border); color: var(--gray); cursor: not-allowed; }
 .wiz-consent {
   display: flex; align-items: flex-start; gap: 8px; font-size: 12px;
-  color: var(--gray-light); margin-top: 6px; line-height: 1.5;
+  color: var(--gray); margin-top: 6px; line-height: 1.5;
 }
 .wiz-consent input { width: auto; margin-top: 2px; }
 
@@ -866,11 +875,11 @@ footer {
 
 <!-- ─── NAV ─── -->
 <nav>
-  <a class="nav-logo" href="./" onclick="location.reload(); return false;" aria-label="라인 인테리어 홈으로" title="라인 인테리어">
+  <a class="nav-logo" href="./" onclick="location.reload(); return false;" aria-label="라인 인테리어 홈으로">
     <svg class="nav-logo-roof" viewBox="0 0 100 30" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
       <path d="M8 25 L36 4 L96 27"/>
     </svg>
-    LINE INTERIOR
+    <span class="nav-logo-text-wrap"><span class="nav-logo-text-en">LINE INTERIOR</span><span class="nav-logo-text-kr">라인 인테리어</span></span>
   </a>
   <div class="nav-links">
     <a href="#why">왜 라인인가</a>
@@ -1081,13 +1090,13 @@ footer {
       </button>
     </div>
     <div class="form-wrap">
-      <h3>무료 견적 문의</h3>
+      <h3>견적 문의</h3>
       <p class="form-sub">몇 가지만 답해주시면 딱 맞는 상담을 도와드려요</p>
       <!-- 전송 완료 메시지 -->
       <div id="formSuccess" style="display:none;text-align:center;padding:40px 20px;">
         <div style="font-size:32px;margin-bottom:16px;">✅</div>
-        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;color:var(--white);">문의가 접수되었습니다</div>
-        <div style="font-size:13px;color:var(--gray-light);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
+        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;color:var(--black);">문의가 접수되었습니다</div>
+        <div style="font-size:13px;color:var(--gray);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
       </div>
       <!-- 단계별 위저드 -->
       <div id="wizardBody">
