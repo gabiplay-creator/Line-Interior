@@ -57,17 +57,29 @@ nav {
   transition: all .3s;
 }
 .nav-logo {
+  position: relative;
+  display: inline-block;
+  padding-top: 15px;
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 400;
   letter-spacing: 0.18em;
   color: #f5f2ed;
+  cursor: pointer;
+  line-height: 1;
 }
 .nav-logo span { color: var(--gold); }
+.nav-logo-roof {
+  position: absolute;
+  top: -1px; left: 1px;
+  width: 46px; height: 15px;
+  color: var(--gold);
+  line-height: 0;
+}
 .nav-links { display: flex; gap: 32px; }
 .nav-links a {
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 14px;
+  letter-spacing: 0.08em;
   color: rgba(245,242,237,0.75);
   transition: color .2s;
   text-decoration: none;
@@ -854,7 +866,12 @@ footer {
 
 <!-- ─── NAV ─── -->
 <nav>
-  <div class="nav-logo">LINE<span>.</span> INTERIOR</div>
+  <a class="nav-logo" href="./" onclick="location.reload(); return false;" aria-label="라인 인테리어 홈으로" title="라인 인테리어">
+    <svg class="nav-logo-roof" viewBox="0 0 100 30" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 25 L36 4 L96 27"/>
+    </svg>
+    LINE INTERIOR
+  </a>
   <div class="nav-links">
     <a href="#why">왜 라인인가</a>
     <a href="#cases">시공사례</a>
