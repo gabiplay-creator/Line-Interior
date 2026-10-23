@@ -6,7 +6,7 @@
 <title>라인 인테리어 — LINE INTERIOR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
 /* ─── RESET & BASE ─── */
@@ -24,6 +24,7 @@
   --black-elevated: #1c1a16;
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Noto Sans KR', sans-serif;
+  --font-impact: 'Black Han Sans', 'Noto Sans KR', sans-serif;
 }
 /* Cormorant Garamond는 숫자를 올드스타일(들쭉날쭉한 높이)로 그려서
    한글과 섞이면 어색해 보인다 → 라이닝(표준 높이) 숫자로 강제 */
@@ -532,13 +533,16 @@ nav {
 /* ─── CONTACT (왜 라인인테리어인가 섹션과 톤 통일: 다크 + 골드) ─── */
 #contact { background: var(--black); color: var(--white); }
 #contact .section-tag { color: var(--gold); }
-#contact .section-title { color: var(--white); }
-#contact .section-title em { color: var(--gold); }
-#contact .section-desc { color: var(--gray-light); }
+#contact .section-title {
+  color: var(--white);
+}
+#contact .section-title em { color: var(--gold-light); font-style: italic; }
+#contact .section-desc { color: var(--gray-light); font-weight: 500; line-height: 1.8; }
 #contact .contact-detail { border-bottom-color: rgba(255,255,255,0.1); }
 #contact .contact-icon { border-color: rgba(255,255,255,0.22); color: var(--gold); }
-#contact .contact-detail-value { color: var(--white); }
-#contact .contact-detail-sub { color: var(--gray-light); }
+#contact .contact-detail-label { color: #f0ebe4; font-weight: 700; }
+#contact .contact-detail-value { color: var(--white); font-family: var(--font-impact); font-weight: 400; letter-spacing: 0.01em; }
+#contact .contact-detail-sub { color: var(--gray-light); font-weight: 700; }
 #contact #naverMap { border-color: rgba(255,255,255,0.15) !important; }
 #contact .call-btn { background: var(--gold); color: var(--black); }
 #contact .call-btn:hover { background: var(--gold-light); }
@@ -588,41 +592,40 @@ nav {
 .kakao-row:hover { filter: brightness(0.93); }
 .kakao-row span { font-size: 13px; font-weight: 500; color: #3A1D1D; letter-spacing: 0.04em; }
 
-/* Form (상담 신청하기 버튼과 같은 다크 톤 + 왜 라인인테리어인가 섹션과 같은 폰트 무드) */
+/* Form (박스는 화이트, 섹션 자체는 다크 유지) */
 .form-wrap {
-  background: var(--black);
-  color: var(--white);
+  background: var(--white);
+  color: var(--black);
   padding: 40px;
-  border: 0.5px solid rgba(212,184,138,0.28);
-  box-shadow: 0 24px 70px rgba(0,0,0,0.4);
+  border: 0.5px solid var(--border);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.3);
 }
 .form-wrap h3 {
   font-family: var(--font-display);
-  font-size: 26px; font-weight: 300; color: var(--white);
+  font-size: 26px; font-weight: 300; color: var(--black);
   margin-bottom: 14px; letter-spacing: 0.04em;
   padding-left: 16px; border-left: 2px solid var(--gold);
 }
-.form-sub { font-size: 12px; color: var(--gray-light); margin-bottom: 28px; letter-spacing: 0.05em; }
+.form-sub { font-size: 12px; color: var(--gray); margin-bottom: 28px; letter-spacing: 0.05em; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 .fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .fg:last-child { margin-bottom: 0; }
-.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gold-light); }
+.fg label { font-size: 11px; letter-spacing: 0.12em; color: var(--gray); }
 .fg input, .fg select, .fg textarea {
   font-family: var(--font-body); font-size: 14px;
-  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.18);
-  padding: 11px 14px; color: var(--white);
+  background: var(--bg); border: 0.5px solid var(--border);
+  padding: 11px 14px; color: var(--black);
   outline: none; transition: border-color .2s;
   width: 100%;
 }
 .fg input::placeholder, .fg textarea::placeholder { color: var(--gray); }
-.fg select option { color: var(--black); }
 .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--gold); }
 .fg textarea { min-height: 90px; resize: vertical; }
 .budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .budget-pill {
   font-size: 12px; padding: 6px 16px;
-  background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.18);
-  color: var(--gray-light); cursor: pointer; letter-spacing: 0.04em;
+  background: var(--bg); border: 0.5px solid var(--border);
+  color: var(--gray); cursor: pointer; letter-spacing: 0.04em;
   transition: all .2s; font-family: var(--font-body);
 }
 .budget-pill.active { background: var(--gold); color: var(--black); border-color: var(--gold); }
@@ -640,26 +643,26 @@ nav {
 }
 
 /* ─── 단계별 견적 위저드 ─── */
-.wiz-progress { height: 3px; background: rgba(255,255,255,0.12); margin-bottom: 22px; position: relative; }
+.wiz-progress { height: 3px; background: var(--border); margin-bottom: 22px; position: relative; }
 .wiz-progress-bar { height: 100%; background: var(--gold); transition: width .35s ease; }
 .wiz-step-label { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 10px; font-weight: 600; }
 .wiz-question {
-  font-family: var(--font-display); font-size: 21px; font-weight: 300; color: var(--white);
+  font-family: var(--font-display); font-size: 21px; font-weight: 300; color: var(--black);
   line-height: 1.45; margin-bottom: 22px;
 }
 .wiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
 .wiz-options.wiz-options-wide { grid-template-columns: 1fr; }
 .wiz-option {
-  padding: 15px 14px; text-align: center; background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.18); font-size: 13.5px; color: var(--white);
+  padding: 15px 14px; text-align: center; background: var(--bg);
+  border: 0.5px solid var(--border); font-size: 13.5px; color: var(--black);
   cursor: pointer; transition: all .2s; letter-spacing: 0.02em;
 }
-.wiz-option:hover { border-color: var(--gold); }
+.wiz-option:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
 .wiz-option.selected { background: var(--gold); color: var(--black); border-color: var(--gold); }
 .wiz-nav { display: flex; gap: 10px; margin-top: 20px; }
 .wiz-btn-prev {
-  flex: 0 0 auto; padding: 14px 22px; background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.18); color: var(--gray-light);
+  flex: 0 0 auto; padding: 14px 22px; background: var(--bg);
+  border: 0.5px solid var(--border); color: var(--gray);
   font-family: var(--font-body); font-size: 13px; letter-spacing: 0.06em; cursor: pointer;
   transition: border-color .2s;
 }
@@ -670,10 +673,10 @@ nav {
   font-size: 13px; letter-spacing: 0.08em; cursor: pointer; transition: background .25s;
 }
 .wiz-btn-next:hover:not(:disabled) { background: var(--gold-light); }
-.wiz-btn-next:disabled { background: rgba(255,255,255,0.1); color: var(--gray); cursor: not-allowed; }
+.wiz-btn-next:disabled { background: var(--border); color: var(--gray-light); cursor: not-allowed; }
 .wiz-consent {
   display: flex; align-items: flex-start; gap: 8px; font-size: 12px;
-  color: var(--gray-light); margin-top: 6px; line-height: 1.5;
+  color: var(--gray); margin-top: 6px; line-height: 1.5;
 }
 .wiz-consent input { width: auto; margin-top: 2px; }
 
@@ -1019,7 +1022,7 @@ footer {
   <div class="section-header">
     <div class="section-tag">CONTACT</div>
     <h2 class="section-title">견적 및 <em>문의하기</em></h2>
-    <p class="section-desc">어떤 공간이든 무료 상담을 통해 최적의 방향을 제안해드립니다.</p>
+    <p class="section-desc">머물수록 행복해지는 공간, 라인인테리어가 함께 그려드릴게요.<br>보이지 않는 기초와 마감의 디테일을 먼저 생각합니다.</p>
   </div>
   <div class="contact-grid">
     <div class="contact-info">
@@ -1045,9 +1048,9 @@ footer {
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           </div>
           <div>
-            <div class="contact-detail-label">LOCATION</div>
-            <div class="contact-detail-value">경기도 부천시 소사로126번길 7</div>
-            <div class="contact-detail-sub">전국 상담 가능</div>
+            <div class="contact-detail-label">오시는 길</div>
+            <div class="contact-detail-value">소새울역 1번 출구</div>
+            <div class="contact-detail-sub">경기도 부천시 소사로126번길 7</div>
           </div>
         </div>
         <!-- 구글맵 임베드 -->
@@ -1066,8 +1069,8 @@ footer {
       <!-- 전송 완료 메시지 -->
       <div id="formSuccess" style="display:none;text-align:center;padding:40px 20px;">
         <div style="font-size:32px;margin-bottom:16px;">✅</div>
-        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;color:var(--white);">문의가 접수되었습니다</div>
-        <div style="font-size:13px;color:var(--gray-light);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
+        <div style="font-family:var(--font-display);font-size:22px;font-weight:300;margin-bottom:8px;color:var(--black);">문의가 접수되었습니다</div>
+        <div style="font-size:13px;color:var(--gray);line-height:1.8;">빠른 시일 내에 담당자가 연락드리겠습니다.<br>감사합니다.</div>
       </div>
       <!-- 단계별 위저드 -->
       <div id="wizardBody">
